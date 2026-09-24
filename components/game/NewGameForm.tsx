@@ -29,12 +29,18 @@ function parseEvents(text: string): string[] {
     });
 }
 
+function toAbsoluteUrl(path: string): string {
+  return new URL(path, location.origin).toString();
+}
+
 /** Lets the organizer set up a game and share its link. */
 export default function NewGameForm() {
   const [title, setTitle] = useState("");
   const [size, setSize] = useState<GridSize>(DEFAULT_GRID_SIZE);
   const [eventsText, setEventsText] = useState("");
-  const [isCopied, setIsCopied] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">(
+    "idle",
+  );
 
   const events = parseEvents(eventsText);
   const required = size ** 2;
@@ -59,11 +65,14 @@ export default function NewGameForm() {
     if (!href) {
       return;
     }
-    await navigator.clipboard.writeText(
-      new URL(href, location.origin).toString(),
-    );
-    setIsCopied(true);
-    setTimeout(() => setIsCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(toAbsoluteUrl(href));
+      setCopyStatus("copied");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    } catch {
+      // No clipboard on plain-HTTP pages, or access refused: show the link to copy by hand
+      setCopyStatus("failed");
+    }
   }
 
   return (
@@ -148,7 +157,7 @@ export default function NewGameForm() {
               onClick={copyLink}
               className="rounded-lg bg-violet-600 px-4 py-2.5 font-semibold text-white hover:bg-violet-700"
             >
-              {isCopied ? "Copied!" : "Copy link"}
+              {copyStatus === "copied" ? "Copied!" : "Copy link"}
             </button>
             <Link
               href={href}
@@ -157,6 +166,15 @@ export default function NewGameForm() {
               Open game
             </Link>
           </div>
+          {copyStatus === "failed" && (
+            <input
+              readOnly
+              aria-label="Game link"
+              value={toAbsoluteUrl(href)}
+              onFocus={(e) => e.target.select()}
+              className={INPUT_CLASSES}
+            />
+          )}
         </div>
       )}
     </div>

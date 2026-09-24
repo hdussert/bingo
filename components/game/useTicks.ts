@@ -5,10 +5,14 @@ const listeners = new Set<() => void>();
 const memory = new Map<string, string>();
 
 function read(key: string): string | null {
+  // Checked first: a failed write (full or read-only storage) left its value here
+  if (memory.has(key)) {
+    return memory.get(key) ?? null;
+  }
   try {
     return localStorage.getItem(key);
   } catch {
-    return memory.get(key) ?? null;
+    return null;
   }
 }
 
