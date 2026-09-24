@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local notes, not shared (e.g. .claude/practices.local.md, the backlog)
+.claude/*.local.md
+/BACKLOG.md
