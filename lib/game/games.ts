@@ -1,11 +1,12 @@
 import { randomBytes } from "crypto";
-import { and, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { games, players } from "@/db/schema";
 import { findGridLines } from "./bingo";
 import { buildGrid, toNameKey } from "./grid";
 import type { NewGame } from "./schemas";
-import type { Game, Player } from "./types";
+import { RUNNING_GAME_HOURS } from "./const";
+import type { Game, Player, RunningGame } from "./types";
 
 function newId(bytes: number): string {
   return randomBytes(bytes).toString("base64url");
@@ -39,6 +40,27 @@ export async function findGame(id: string): Promise<Game | null> {
     .where(eq(games.id, id))
     .limit(1);
   return row ?? null;
+}
+
+/** Lists the games with recent activity, most recently active first. */
+export async function listRunningGames(): Promise<RunningGame[]> {
+  // greatest() skips the null of a game nobody joined yet
+  const lastActivityAt = sql`greatest(${games.createdAt}, max(${players.updatedAt}))`;
+  return db
+    .select({
+      id: games.id,
+      title: games.title,
+      size: games.size,
+      playerCount: count(players.gameId),
+      lastActivityAt: lastActivityAt.mapWith(games.createdAt),
+    })
+    .from(games)
+    .leftJoin(players, eq(players.gameId, games.id))
+    .groupBy(games.id)
+    .having(
+      sql`${lastActivityAt} > now() - make_interval(hours => ${RUNNING_GAME_HOURS})`,
+    )
+    .orderBy(desc(lastActivityAt));
 }
 
 /** Lists the players of a game, in the order they joined. */

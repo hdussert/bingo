@@ -29,3 +29,12 @@ export type Player = {
   /** When the player first completed a line, or `null` without a line. */
   bingoAt: Date | null;
 };
+
+/** A game as shown in the list of running games. */
+export type RunningGame = {
+  id: string;
+  title: string;
+  size: GridSize;
+  playerCount: number;
+  lastActivityAt: Date;
+};
