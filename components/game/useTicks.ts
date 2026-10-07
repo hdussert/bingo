@@ -60,13 +60,14 @@ export function useTicks(key: string, count: number) {
   );
   const ticked = useMemo(() => parse(raw, count), [raw, count]);
 
-  function toggle(index: number) {
-    write(
-      key,
-      JSON.stringify(
-        ticked.map((isTicked, i) => (i === index ? !isTicked : isTicked)),
-      ),
+  /** Flips a cell and returns the new ticks. */
+  function toggle(index: number): boolean[] {
+    // Reads the store rather than `ticked`, which is stale until the next render
+    const next = parse(read(key), count).map((isTicked, i) =>
+      i === index ? !isTicked : isTicked,
     );
+    write(key, JSON.stringify(next));
+    return next;
   }
 
   return { ticked, toggle };
