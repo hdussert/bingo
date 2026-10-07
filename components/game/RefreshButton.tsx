@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCwIcon } from "lucide-react";
+import { RefreshCwIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,11 +15,15 @@ export default function RefreshButton() {
     <Button
       variant="outline"
       size="icon-lg"
+      className="size-12"
       aria-label="Refresh games"
       disabled={isRefreshing}
       onClick={() => startTransition(() => router.refresh())}
     >
-      <RotateCwIcon className={cn("size-6", isRefreshing && "animate-spin")} />
+      <RefreshCwIcon
+        strokeWidth={3}
+        className={cn("size-7", isRefreshing && "animate-spin")}
+      />
     </Button>
   );
 }
