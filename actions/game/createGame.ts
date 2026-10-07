@@ -24,6 +24,10 @@ export async function createGame(
     };
   }
 
-  const gameId = await saveGame(result.data);
-  return { gameId };
+  try {
+    const gameId = await saveGame(result.data);
+    return { gameId };
+  } catch {
+    return { errors: ["Couldn't save the game, try again"] };
+  }
 }

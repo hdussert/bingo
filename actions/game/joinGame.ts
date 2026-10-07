@@ -21,11 +21,16 @@ export async function joinGame(
     return { message: result.error.issues[0].message, values: { name } };
   }
 
-  const game = await findGame(gameId);
-  if (!game) {
-    return { message: "This game doesn't exist anymore", values: { name } };
+  try {
+    const game = await findGame(gameId);
+    if (!game) {
+      return { message: "This game doesn't exist anymore", values: { name } };
+    }
+    await addPlayer(game, result.data);
+  } catch {
+    return { message: "Couldn't join the game, try again", values: { name } };
   }
 
-  await addPlayer(game, result.data);
+  // Outside the try: redirect works by throwing
   redirect(`/play/${gameId}?name=${encodeURIComponent(result.data)}`);
 }
