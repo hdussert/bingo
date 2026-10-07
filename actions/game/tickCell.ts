@@ -1,8 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import { setCellTicked } from "@/lib/game/games";
+import { publishGameChange } from "@/lib/game/live";
 import { playerNameSchema } from "@/lib/game/schemas";
 
 const tickSchema = z.object({
@@ -27,4 +29,5 @@ export async function tickCell(
   const tick = result.data;
   await setCellTicked(tick.gameId, tick.name, tick.index, tick.isTicked);
   revalidatePath(`/play/${tick.gameId}`);
+  after(() => publishGameChange(tick.gameId));
 }
