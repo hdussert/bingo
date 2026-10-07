@@ -12,11 +12,11 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-3">
-        <Button size="lg" nativeButton={false} render={<Link href="/new" />}>
+        <Button size="xl" nativeButton={false} render={<Link href="/new" />}>
           Create a game
         </Button>
         <Button
-          size="lg"
+          size="xl"
           variant="outline"
           nativeButton={false}
           render={<Link href="/games" />}
