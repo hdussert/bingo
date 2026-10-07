@@ -128,4 +128,10 @@
   html {
     @apply font-mono;
   }
+  h1,
+  h2,
+  h3,
+  [data-slot="card-title"] {
+    @apply uppercase;
+  }
 }
