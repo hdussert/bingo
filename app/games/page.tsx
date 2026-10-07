@@ -18,6 +18,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { listRunningGames } from "@/lib/game/games";
+import { NAV_BACK, NAV_FORWARD } from "@/lib/transitions";
 
 const timeAgo = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
@@ -41,7 +42,7 @@ export default async function GamesPage() {
           variant="ghost"
           size="sm"
           nativeButton={false}
-          render={<Link href="/" />}
+          render={<Link href="/" transitionTypes={NAV_BACK} />}
         >
           <ArrowLeftIcon data-icon="inline-start" />
           Back
@@ -60,7 +61,10 @@ export default async function GamesPage() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button nativeButton={false} render={<Link href="/new" />}>
+            <Button
+              nativeButton={false}
+              render={<Link href="/new" transitionTypes={NAV_FORWARD} />}
+            >
               Create a game
             </Button>
           </EmptyContent>
@@ -71,7 +75,9 @@ export default async function GamesPage() {
             <Item
               key={game.id}
               variant="outline"
-              render={<Link href={`/play/${game.id}`} />}
+              render={
+                <Link href={`/play/${game.id}`} transitionTypes={NAV_FORWARD} />
+              }
             >
               <ItemContent>
                 <ItemTitle>{game.title}</ItemTitle>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { NAV_FORWARD } from "@/lib/transitions";
 
 export default function Home() {
   return (
@@ -12,16 +13,20 @@ export default function Home() {
         </p>
       </div>
       <div className="flex flex-col gap-3">
-        <Button size="xl" nativeButton={false} render={<Link href="/new" />}>
-          Create a game
+        <Button
+          size="xl"
+          nativeButton={false}
+          render={<Link href="/new" transitionTypes={NAV_FORWARD} />}
+        >
+          New game
         </Button>
         <Button
           size="xl"
           variant="outline"
           nativeButton={false}
-          render={<Link href="/games" />}
+          render={<Link href="/games" transitionTypes={NAV_FORWARD} />}
         >
-          Join a game
+          Join
         </Button>
       </div>
     </main>

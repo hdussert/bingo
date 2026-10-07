@@ -33,6 +33,7 @@ import {
 } from "@/lib/game/const";
 import { newGameSchema, parseEvents } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
+import { NAV_FORWARD } from "@/lib/transitions";
 
 function toAbsoluteUrl(path: string): string {
   return new URL(path, location.origin).toString();
@@ -105,7 +106,7 @@ export default function NewGameForm() {
           <Button
             variant="outline"
             nativeButton={false}
-            render={<Link href={href} />}
+            render={<Link href={href} transitionTypes={NAV_FORWARD} />}
           >
             Open game
           </Button>

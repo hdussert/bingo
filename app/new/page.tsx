@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import NewGameForm from "@/components/game/NewGameForm";
 import { Button } from "@/components/ui/button";
+import { NAV_BACK } from "@/lib/transitions";
 
 export default function NewGamePage() {
   return (
@@ -11,7 +12,7 @@ export default function NewGamePage() {
           variant="ghost"
           size="sm"
           nativeButton={false}
-          render={<Link href="/" />}
+          render={<Link href="/" transitionTypes={NAV_BACK} />}
         >
           <ArrowLeftIcon data-icon="inline-start" />
           Back

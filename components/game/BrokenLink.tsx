@@ -9,6 +9,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { NAV_FORWARD } from "@/lib/transitions";
 
 /** Shown for a game link that leads nowhere. */
 export default function BrokenLink() {
@@ -25,7 +26,10 @@ export default function BrokenLink() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button nativeButton={false} render={<Link href="/" />}>
+          <Button
+            nativeButton={false}
+            render={<Link href="/new" transitionTypes={NAV_FORWARD} />}
+          >
             Create a game
           </Button>
         </EmptyContent>
