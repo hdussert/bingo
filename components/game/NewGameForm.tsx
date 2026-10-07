@@ -126,7 +126,7 @@ export default function NewGameForm() {
             <ToggleGroupItem
               key={option}
               value={String(option)}
-              className="flex-1"
+              className="flex-1 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary aria-pressed:hover:text-primary-foreground"
             >
               {option}×{option}
             </ToggleGroupItem>

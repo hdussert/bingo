@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={cn(
-        "h-full antialiased",
+        "dark h-full antialiased",
         fredoka.variable,
         luckiestGuy.variable,
       )}

@@ -2,7 +2,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (@media (prefers-color-scheme: dark));
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
@@ -50,26 +50,26 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.496 0.265 301.924);
-  --primary-foreground: oklch(0.977 0.014 308.299);
+  --background: oklch(0.36 0.16 295);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.45 0.17 295);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.45 0.17 295);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.65 0.24 355);
+  --primary-foreground: oklch(0.985 0 0);
   --highlight: oklch(0.88 0.18 95);
-  --highlight-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --highlight-foreground: oklch(0.25 0.08 295);
+  --secondary: oklch(1 0 0 / 15%);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(1 0 0 / 12%);
+  --muted-foreground: oklch(0.85 0.06 300);
+  --accent: oklch(1 0 0 / 12%);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 22%);
+  --input: oklch(1 0 0 / 30%);
+  --ring: oklch(0.88 0.18 95);
   --chart-1: oklch(0.879 0.169 91.605);
   --chart-2: oklch(0.769 0.188 70.08);
   --chart-3: oklch(0.666 0.179 58.318);
@@ -84,44 +84,6 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.438 0.218 303.724);
-    --primary-foreground: oklch(0.977 0.014 308.299);
-    --highlight: oklch(0.85 0.17 92);
-    --highlight-foreground: oklch(0.145 0 0);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.879 0.169 91.605);
-    --chart-2: oklch(0.769 0.188 70.08);
-    --chart-3: oklch(0.666 0.179 58.318);
-    --chart-4: oklch(0.555 0.163 48.998);
-    --chart-5: oklch(0.473 0.137 46.201);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.627 0.265 303.9);
-    --sidebar-primary-foreground: oklch(0.977 0.014 308.299);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-  }
 }
 
 /* White letters with a thick outline and a stepped rainbow shadow, like a cartoon or game title */
@@ -148,6 +110,7 @@
   }
   html {
     @apply font-sans tracking-[0.01em];
+    color-scheme: dark;
   }
   /* Every heading uses the heading font. Also sets --tw-leading, which text-* size utilities read, so the line height survives them */
   .font-heading {
