@@ -1,22 +1,11 @@
-import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
+import BackLink from "@/components/game/BackLink";
 import NewGameForm from "@/components/game/NewGameForm";
-import { Button } from "@/components/ui/button";
-import { NAV_BACK } from "@/lib/transitions";
 
 export default function NewGamePage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={false}
-          render={<Link href="/" transitionTypes={NAV_BACK} />}
-        >
-          <ArrowLeftIcon data-icon="inline-start" />
-          Back
-        </Button>
+        <BackLink href="/" />
         <h1 className="font-heading text-4xl text-primary">New game</h1>
         <p className="text-muted-foreground">
           List what might happen, pick a grid size, and share the link.

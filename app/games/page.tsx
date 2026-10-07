@@ -1,6 +1,7 @@
-import { ArrowLeftIcon, Grid3x3Icon } from "lucide-react";
+import { Grid3x3Icon } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
+import BackLink from "@/components/game/BackLink";
 import { Button } from "@/components/ui/button";
 import {
   Empty,
@@ -18,7 +19,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import { listRunningGames } from "@/lib/game/games";
-import { NAV_BACK, NAV_FORWARD } from "@/lib/transitions";
+import { NAV_FORWARD } from "@/lib/transitions";
 
 const timeAgo = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
@@ -38,15 +39,7 @@ export default async function GamesPage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          nativeButton={false}
-          render={<Link href="/" transitionTypes={NAV_BACK} />}
-        >
-          <ArrowLeftIcon data-icon="inline-start" />
-          Back
-        </Button>
+        <BackLink href="/" />
         <h1 className="font-heading text-4xl text-primary">Join a game</h1>
       </div>
       {games.length === 0 ? (
