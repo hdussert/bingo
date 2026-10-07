@@ -126,12 +126,13 @@
     @apply bg-background text-foreground;
   }
   html {
-    @apply font-sans;
+    @apply font-sans tracking-[0.01em];
   }
+  /* Also sets --tw-leading, which text-* size utilities read, so the line height survives them */
   h1,
   h2,
   h3,
   [data-slot="card-title"] {
-    @apply uppercase;
+    @apply leading-[1.1] tracking-[0.04em] uppercase;
   }
 }
