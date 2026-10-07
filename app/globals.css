@@ -60,19 +60,23 @@
   --radius: 1.5rem;
 }
 
-/* White letters with a thick outline and a stepped rainbow shadow, like a cartoon or game title */
+/* White letters with a thick pink outline on a pink 3D extrusion, like a cartoon or game logo */
 @utility text-cartoon {
   color: white;
   -webkit-text-stroke: 0.12em var(--color-primary);
   /* Draws the stroke under the fill, so it only thickens the outside of the letters */
   paint-order: stroke fill;
   text-shadow:
-    0.06em 0.06em 0 oklch(0.65 0.24 25),
-    0.12em 0.12em 0 oklch(0.78 0.17 60),
-    0.18em 0.18em 0 oklch(0.88 0.18 95),
-    0.24em 0.24em 0 oklch(0.72 0.19 145),
-    0.3em 0.3em 0 oklch(0.62 0.19 250),
-    0.36em 0.36em 0 oklch(0.55 0.24 300);
+    0.015em 0.015em 0 var(--color-primary),
+    0.03em 0.03em 0 var(--color-primary),
+    0.045em 0.045em 0 var(--color-primary),
+    0.06em 0.06em 0 var(--color-primary),
+    0.075em 0.075em 0 var(--color-primary),
+    0.09em 0.09em 0 var(--color-primary),
+    0.105em 0.105em 0 var(--color-primary),
+    0.12em 0.12em 0 var(--color-primary),
+    0.135em 0.135em 0 var(--color-primary),
+    0.15em 0.15em 0 var(--color-primary);
 }
 
 /* White letters on a pink 3D extrusion, for page headings */
