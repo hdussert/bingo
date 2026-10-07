@@ -1,7 +1,30 @@
 "use client";
 
+import { CheckIcon, CircleAlertIcon, CopyIcon } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSet,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { encodeGame, gameSchema } from "@/lib/game/code";
 import {
   DEFAULT_GRID_SIZE,
@@ -9,9 +32,6 @@ import {
   MAX_TITLE_LENGTH,
 } from "@/lib/game/const";
 import type { GridSize } from "@/lib/game/types";
-
-const INPUT_CLASSES =
-  "rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900";
 
 /** Returns the non-empty lines of `text`, trimmed and without duplicates (ignoring case). */
 function parseEvents(text: string): string[] {
@@ -42,6 +62,7 @@ export default function NewGameForm() {
     "idle",
   );
 
+  const isCopied = copyStatus === "copied";
   const events = parseEvents(eventsText);
   const required = size ** 2;
   const result = gameSchema.safeParse({ title, size, events });
@@ -76,107 +97,112 @@ export default function NewGameForm() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-2">
-        <label htmlFor="title" className="font-medium">
-          Title
-        </label>
-        <input
+    <FieldGroup>
+      <Field>
+        <FieldLabel htmlFor="title">Title</FieldLabel>
+        <Input
           id="title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={MAX_TITLE_LENGTH}
           placeholder="Team building bingo"
-          className={INPUT_CLASSES}
         />
-      </div>
+      </Field>
 
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 font-medium">Grid size</legend>
-        <div className="grid grid-cols-3 gap-2">
+      <FieldSet>
+        <FieldLegend variant="label">Grid size</FieldLegend>
+        <ToggleGroup
+          variant="primary"
+          value={[String(size)]}
+          onValueChange={(value) => {
+            // Tapping the selected size unselects it: keep the current size instead
+            if (value.length === 0) {
+              return;
+            }
+            setSize(Number(value[0]) as GridSize);
+          }}
+          className="w-full"
+        >
           {GRID_SIZES.map((option) => (
-            <label
+            <ToggleGroupItem
               key={option}
-              className="cursor-pointer rounded-lg border border-zinc-300 py-2 text-center has-checked:border-violet-600 has-checked:bg-violet-600 has-checked:text-white dark:border-zinc-700"
+              value={String(option)}
+              className="flex-1"
             >
-              <input
-                type="radio"
-                name="size"
-                value={option}
-                checked={size === option}
-                onChange={() => setSize(option)}
-                className="sr-only"
-              />
               {option}×{option}
-            </label>
+            </ToggleGroupItem>
           ))}
-        </div>
-      </fieldset>
+        </ToggleGroup>
+      </FieldSet>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-baseline justify-between">
-          <label htmlFor="events" className="font-medium">
-            Events, one per line
-          </label>
-          <span
-            className={`text-sm ${events.length >= required ? "text-green-600" : "text-zinc-500"}`}
-          >
+      <Field>
+        <div className="flex items-center justify-between">
+          <FieldLabel htmlFor="events">Events, one per line</FieldLabel>
+          <Badge variant={events.length >= required ? "default" : "secondary"}>
             {events.length} / {required}
-          </span>
+          </Badge>
         </div>
-        <textarea
+        <Textarea
           id="events"
           value={eventsText}
           onChange={(e) => setEventsText(e.target.value)}
-          rows={10}
           placeholder={"Greg says kudos\nBakari talks about AI\n…"}
-          className={INPUT_CLASSES}
+          className="min-h-48"
         />
-        <p className="text-sm text-zinc-500">
+        <FieldDescription>
           At least {required} events for a {size}×{size} grid. With more, each
           player gets a different selection.
-        </p>
-      </div>
+        </FieldDescription>
+      </Field>
 
       {errors.length > 0 && (
-        <ul className="text-sm text-red-600">
-          {errors.map((error) => (
-            <li key={error}>{error}</li>
-          ))}
-        </ul>
+        <Alert variant="destructive">
+          <CircleAlertIcon />
+          <AlertDescription>
+            <ul>
+              {errors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
       )}
 
       {href && (
-        <div className="flex flex-col gap-2 rounded-lg border border-violet-600 p-4">
-          <p className="font-medium">
-            Your game is ready. Share its link with the players.
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={copyLink}
-              className="rounded-lg bg-violet-600 px-4 py-2.5 font-semibold text-white hover:bg-violet-700"
-            >
-              {copyStatus === "copied" ? "Copied!" : "Copy link"}
-            </button>
-            <Link
-              href={href}
-              className="rounded-lg border border-violet-600 px-4 py-2.5 text-center font-semibold text-violet-600"
+        <Card>
+          <CardHeader>
+            <CardTitle>Your game is ready 🎉</CardTitle>
+            <CardDescription>Share its link with the players.</CardDescription>
+          </CardHeader>
+          {copyStatus === "failed" && (
+            <CardContent>
+              <Input
+                readOnly
+                aria-label="Game link"
+                value={toAbsoluteUrl(href)}
+                onFocus={(e) => e.target.select()}
+              />
+            </CardContent>
+          )}
+          <CardFooter className="grid grid-cols-2 gap-2">
+            <Button onClick={copyLink}>
+              {isCopied ? (
+                <CheckIcon data-icon="inline-start" />
+              ) : (
+                <CopyIcon data-icon="inline-start" />
+              )}
+              {isCopied ? "Copied!" : "Copy link"}
+            </Button>
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link href={href} />}
             >
               Open game
-            </Link>
-          </div>
-          {copyStatus === "failed" && (
-            <input
-              readOnly
-              aria-label="Game link"
-              value={toAbsoluteUrl(href)}
-              onFocus={(e) => e.target.select()}
-              className={INPUT_CLASSES}
-            />
-          )}
-        </div>
+            </Button>
+          </CardFooter>
+        </Card>
       )}
-    </div>
+    </FieldGroup>
   );
 }

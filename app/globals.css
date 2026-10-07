@@ -1,25 +1,93 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --background: oklch(0.36 0.16 295);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.45 0.17 295);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.45 0.17 295);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.65 0.24 355);
+  --primary-foreground: oklch(0.985 0 0);
+  --highlight: oklch(0.88 0.18 95);
+  --highlight-foreground: oklch(0.25 0.08 295);
+  --secondary: oklch(1 0 0 / 15%);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(1 0 0 / 12%);
+  --muted-foreground: oklch(0.85 0.06 300);
+  --accent: oklch(1 0 0 / 12%);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 22%);
+  --input: oklch(1 0 0 / 30%);
+  --ring: var(--highlight);
+  --radius: 1.5rem;
+}
+
+/* White letters with a thick outline and a stepped rainbow shadow, like a cartoon or game title */
+@utility text-cartoon {
+  color: white;
+  -webkit-text-stroke: 0.12em var(--color-primary);
+  /* Draws the stroke under the fill, so it only thickens the outside of the letters */
+  paint-order: stroke fill;
+  text-shadow:
+    0.06em 0.06em 0 oklch(0.65 0.24 25),
+    0.12em 0.12em 0 oklch(0.78 0.17 60),
+    0.18em 0.18em 0 oklch(0.88 0.18 95),
+    0.24em 0.24em 0 oklch(0.72 0.19 145),
+    0.3em 0.3em 0 oklch(0.62 0.19 250),
+    0.36em 0.36em 0 oklch(0.55 0.24 300);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans tracking-[0.01em];
+    color-scheme: dark;
+  }
+  /* Every heading uses the heading font. Also sets --tw-leading, which text-* size utilities read, so the line height survives them */
+  .font-heading {
+    @apply leading-[1.1] tracking-[0.04em] uppercase;
+  }
 }

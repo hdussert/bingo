@@ -1,4 +1,14 @@
 import Form from "next/form";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { MAX_NAME_LENGTH } from "@/lib/game/const";
 
 type Props = {
@@ -8,25 +18,31 @@ type Props = {
 /** Asks the player's name, which picks their grid. */
 export default function JoinForm({ code }: Props) {
   return (
-    <Form action="/play" className="flex flex-col gap-3">
-      <input type="hidden" name="g" value={code} />
-      <label htmlFor="name" className="font-medium">
-        Your name
-      </label>
-      <input
-        id="name"
-        name="name"
-        required
-        maxLength={MAX_NAME_LENGTH}
-        autoComplete="given-name"
-        className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-base dark:border-zinc-700 dark:bg-zinc-900"
-      />
-      <button
-        type="submit"
-        className="rounded-lg bg-violet-600 px-4 py-2.5 font-semibold text-white hover:bg-violet-700"
-      >
-        Get my grid
-      </button>
-    </Form>
+    <Card>
+      <CardHeader>
+        <CardTitle>Join the game</CardTitle>
+        <CardDescription>
+          Your name picks your grid: enter the same name to get it back.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Form action="/play">
+          <input type="hidden" name="g" value={code} />
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="name">Your name</FieldLabel>
+              <Input
+                id="name"
+                name="name"
+                required
+                maxLength={MAX_NAME_LENGTH}
+                autoComplete="given-name"
+              />
+            </Field>
+            <Button type="submit">Get my grid</Button>
+          </FieldGroup>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
