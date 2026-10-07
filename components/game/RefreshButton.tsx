@@ -13,9 +13,9 @@ export default function RefreshButton() {
 
   return (
     <Button
-      variant="outline"
+      variant="ghost"
       size="icon-lg"
-      className="size-12"
+      className="-mr-3 size-12"
       aria-label="Refresh games"
       disabled={isRefreshing}
       onClick={() => startTransition(() => router.refresh())}
