@@ -16,7 +16,11 @@ export default async function PlayPage({
   const { name } = await searchParams;
   const playerName = typeof name === "string" ? name.trim() : "";
 
-  const [game, players] = await Promise.all([findGame(id), listPlayers(id)]);
+  // Visitors who haven't joined only see the join form: no need for the players
+  const [game, players] = await Promise.all([
+    findGame(id),
+    playerName ? listPlayers(id) : [],
+  ]);
   if (!game) {
     return <BrokenLink />;
   }

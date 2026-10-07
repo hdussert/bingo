@@ -95,5 +95,11 @@ export async function setCellTicked(
   await db
     .update(players)
     .set({ bingoAt: hasBingo ? new Date() : null })
-    .where(isPlayer(gameId, name));
+    // Only if the grid is still the one checked: a newer tick from another device decides instead
+    .where(
+      and(
+        isPlayer(gameId, name),
+        sql`${players.grid} = ${JSON.stringify(player.grid)}::jsonb`,
+      ),
+    );
 }
