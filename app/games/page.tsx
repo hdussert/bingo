@@ -37,7 +37,7 @@ export default async function GamesPage() {
         <BackLink href="/" />
         <div className="flex w-full items-center justify-between gap-4">
           {/* Trims the font's empty space around the capitals, so the button centers on the letters */}
-          <h1 className="font-heading text-4xl text-primary [text-box:trim-both_cap_alphabetic]">
+          <h1 className="font-heading text-4xl text-extruded [text-box:trim-both_cap_alphabetic]">
             Join a game
           </h1>
           <RefreshButton />

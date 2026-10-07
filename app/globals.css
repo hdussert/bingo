@@ -75,6 +75,18 @@
     0.36em 0.36em 0 oklch(0.55 0.24 300);
 }
 
+/* White letters on a pink 3D extrusion, for page headings */
+@utility text-extruded {
+  color: white;
+  text-shadow:
+    0.015em 0.015em 0 var(--color-primary),
+    0.03em 0.03em 0 var(--color-primary),
+    0.045em 0.045em 0 var(--color-primary),
+    0.06em 0.06em 0 var(--color-primary),
+    0.075em 0.075em 0 var(--color-primary),
+    0.09em 0.09em 0 var(--color-primary);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

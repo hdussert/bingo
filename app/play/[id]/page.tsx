@@ -40,7 +40,7 @@ export default async function PlayPage({
         </div>
       )}
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="font-heading text-4xl break-words text-primary">
+        <h1 className="font-heading text-4xl break-words text-extruded">
           {game.title}
         </h1>
         {player && (
