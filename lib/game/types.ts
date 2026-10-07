@@ -2,9 +2,26 @@ import type { GRID_SIZES } from "./const";
 
 export type GridSize = (typeof GRID_SIZES)[number];
 
-/** A bingo game, as encoded in its shareable link. */
+/** An event that might happen during the game. Its id stays the same if its text is edited. */
+export type GameEvent = {
+  id: string;
+  text: string;
+};
+
 export type Game = {
+  id: string;
   title: string;
   size: GridSize;
-  events: string[];
+  events: GameEvent[];
+};
+
+/** A cell of a player's grid, row by row. */
+export type GridCell = {
+  eventId: string;
+  isTicked: boolean;
+};
+
+export type Player = {
+  name: string;
+  grid: GridCell[];
 };

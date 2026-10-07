@@ -3,12 +3,12 @@ import {
   GRID_SIZES,
   MAX_EVENT_LENGTH,
   MAX_EVENTS,
+  MAX_NAME_LENGTH,
   MAX_TITLE_LENGTH,
 } from "./const";
-import type { Game } from "./types";
 
-/** Validates a game, with messages meant for the organizer. */
-export const gameSchema = z
+/** Validates a new game, with messages meant for the organizer. */
+export const newGameSchema = z
   .object({
     title: z
       .string()
@@ -37,26 +37,26 @@ export const gameSchema = z
     path: ["events"],
   });
 
-/** Encodes a game as a URL-safe string (base64url of its JSON). */
-export function encodeGame(game: Game): string {
-  const bytes = new TextEncoder().encode(JSON.stringify(game));
-  const binary = String.fromCharCode(...bytes);
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/, "");
-}
+export type NewGame = z.infer<typeof newGameSchema>;
 
-/** Decodes a game from its link code, or returns `null` if the code is invalid. */
-export function decodeGame(code: string): Game | null {
-  try {
-    const binary = atob(code.replace(/-/g, "+").replace(/_/g, "/"));
-    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-    const result = gameSchema.safeParse(
-      JSON.parse(new TextDecoder().decode(bytes)),
-    );
-    return result.success ? result.data : null;
-  } catch {
-    return null;
-  }
+export const playerNameSchema = z
+  .string()
+  .trim()
+  .min(1, "Enter your name")
+  .max(MAX_NAME_LENGTH, `Names are limited to ${MAX_NAME_LENGTH} characters`);
+
+/** Returns the non-empty lines of `text`, trimmed and without duplicates (ignoring case). */
+export function parseEvents(text: string): string[] {
+  const seen = new Set<string>();
+  return text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => {
+      const key = line.toLowerCase();
+      if (!line || seen.has(key)) {
+        return false;
+      }
+      seen.add(key);
+      return true;
+    });
 }

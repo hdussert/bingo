@@ -1,10 +1,11 @@
 "use client";
 
+import { useOptimistic, useTransition } from "react";
+import { tickCell } from "@/actions/game/tickCell";
 import { Toggle } from "@/components/ui/toggle";
 import { findBingoLines } from "@/lib/game/bingo";
 import type { GridSize } from "@/lib/game/types";
 import { cn } from "@/lib/utils";
-import { useTicks } from "./useTicks";
 
 const COLUMNS: Record<GridSize, string> = {
   3: "grid-cols-3",
@@ -19,9 +20,10 @@ const TEXT_SIZES: Record<GridSize, string> = {
 };
 
 type Props = {
-  cells: string[];
+  gameId: string;
+  playerName: string;
   size: GridSize;
-  storageKey: string;
+  cells: { text: string; isTicked: boolean }[];
 };
 
 async function celebrate() {
@@ -35,16 +37,27 @@ async function celebrate() {
 }
 
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
-export default function BingoGrid({ cells, size, storageKey }: Props) {
-  const { ticked, toggle } = useTicks(storageKey, cells.length);
+export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
+  const [, startTransition] = useTransition();
+  const [ticked, setOptimisticTick] = useOptimistic(
+    cells.map((cell) => cell.isTicked),
+    (state, tick: { index: number; isTicked: boolean }) =>
+      state.map((isTicked, i) => (i === tick.index ? tick.isTicked : isTicked)),
+  );
   const lines = findBingoLines(ticked, size);
   const winningCells = new Set(lines.flat());
 
   function handleToggle(index: number) {
-    const next = toggle(index);
+    const isTicked = !ticked[index];
+    const next = ticked.map((value, i) => (i === index ? isTicked : value));
     if (findBingoLines(next, size).length > lines.length) {
       void celebrate();
     }
+    startTransition(async () => {
+      setOptimisticTick({ index, isTicked });
+      // If saving fails, the cell goes back to its saved state when the transition ends
+      await tickCell(gameId, playerName, index, isTicked).catch(() => {});
+    });
   }
 
   return (
@@ -65,7 +78,7 @@ export default function BingoGrid({ cells, size, storageKey }: Props) {
                 : "aria-pressed:translate-y-1 aria-pressed:shadow-none",
             )}
           >
-            {cell}
+            {cell.text}
           </Toggle>
         ))}
       </div>

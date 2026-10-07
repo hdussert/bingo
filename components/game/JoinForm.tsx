@@ -1,4 +1,7 @@
-import Form from "next/form";
+"use client";
+
+import { useActionState } from "react";
+import { joinGame } from "@/actions/game/joinGame";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,29 +10,40 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { MAX_NAME_LENGTH } from "@/lib/game/const";
 
 type Props = {
-  code: string;
+  gameId: string;
+  defaultName: string;
 };
 
-/** Asks the player's name, which picks their grid. */
-export default function JoinForm({ code }: Props) {
+/** Asks the player's name: a new name gets a new grid, a known one gets its grid back. */
+export default function JoinForm({ gameId, defaultName }: Props) {
+  const [state, formAction, isPending] = useActionState(
+    joinGame.bind(null, gameId),
+    { values: { name: defaultName } },
+  );
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Join the game</CardTitle>
         <CardDescription>
-          Your name picks your grid: enter the same name to get it back.
+          Your name picks your grid: enter the same name to get it back, on any
+          phone.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form action="/play">
-          <input type="hidden" name="g" value={code} />
+        <form action={formAction}>
           <FieldGroup>
-            <Field>
+            <Field data-invalid={!!state.message}>
               <FieldLabel htmlFor="name">Your name</FieldLabel>
               <Input
                 id="name"
@@ -37,11 +51,16 @@ export default function JoinForm({ code }: Props) {
                 required
                 maxLength={MAX_NAME_LENGTH}
                 autoComplete="given-name"
+                defaultValue={state.values?.name}
+                aria-invalid={!!state.message}
               />
+              {state.message && <FieldError>{state.message}</FieldError>}
             </Field>
-            <Button type="submit">Get my grid</Button>
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Joining…" : "Get my grid"}
+            </Button>
           </FieldGroup>
-        </Form>
+        </form>
       </CardContent>
     </Card>
   );
