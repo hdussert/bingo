@@ -23,7 +23,12 @@ Fix anything that fails, commit, and re-run.
 
 ## 3. Self-review
 
-Run `/code-review` on the branch diff (`<base>...HEAD`). Fix the findings that hold up, commit, and re-verify if code changed. Findings unrelated to this task go to `BACKLOG.md`, not into this PR.
+Size the review to the diff (`git diff --stat <base>...HEAD`):
+
+- **Under ~150 changed lines**: skip `/simplify` (its parallel agents cost far more than such a diff needs). Read the diff yourself for reuse, simplification and dead code, then run `/code-review` once.
+- **Larger**: run `/simplify` on the branch diff: keep the readability fixes that hold up (it applies them; revert any that change behavior or fight the conventions), commit, and re-verify. Then run `/code-review` on the diff.
+
+Fix the findings that hold up, commit, and re-verify if code changed. Findings unrelated to this task go to `BACKLOG.md`, not into this PR.
 
 ## 4. Update the PR
 
