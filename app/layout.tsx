@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Luckiest_Guy } from "next/font/google";
+import { Fredoka, Luckiest_Guy } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
+const fredoka = Fredoka({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -24,8 +24,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       className={cn(
-        "h-full font-mono antialiased",
-        jetbrainsMono.variable,
+        "h-full antialiased",
+        fredoka.variable,
         luckiestGuy.variable,
       )}
     >
