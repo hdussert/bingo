@@ -1,6 +1,16 @@
+import { Link2OffIcon } from "lucide-react";
 import Link from "next/link";
 import BingoGrid from "@/components/game/BingoGrid";
 import JoinForm from "@/components/game/JoinForm";
+import { Button } from "@/components/ui/button";
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { decodeGame } from "@/lib/game/code";
 import { buildGrid, gridId } from "@/lib/game/grid";
 
@@ -12,28 +22,42 @@ export default async function PlayPage({ searchParams }: PageProps<"/play">) {
 
   if (!game) {
     return (
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-4 px-4 py-8">
-        <h1 className="text-2xl font-bold">This game link is broken</h1>
-        <p className="text-zinc-500">
-          Ask the organizer for the link again, or create your own game.
-        </p>
-        <Link href="/" className="font-semibold text-violet-600">
-          Create a game
-        </Link>
+      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col px-4 py-8">
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Link2OffIcon />
+            </EmptyMedia>
+            <EmptyTitle>This game link is broken</EmptyTitle>
+            <EmptyDescription>
+              Ask the organizer for the link again, or create your own game.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button nativeButton={false} render={<Link href="/" />}>
+              Create a game
+            </Button>
+          </EmptyContent>
+        </Empty>
       </main>
     );
   }
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-black tracking-tight break-words">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="font-heading text-4xl break-words text-primary">
           {game.title}
         </h1>
         {playerName && (
-          <p className="text-zinc-500">
-            Playing as <span className="font-semibold">{playerName}</span> ·{" "}
-            <Link href={`/play?g=${code}`} className="text-violet-600">
+          <p className="text-muted-foreground">
+            Playing as{" "}
+            <span className="font-semibold text-foreground">{playerName}</span>{" "}
+            ·{" "}
+            <Link
+              href={`/play?g=${code}`}
+              className="text-primary underline-offset-4 hover:underline"
+            >
               Not you?
             </Link>
           </p>
