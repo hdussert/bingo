@@ -65,12 +65,9 @@ export default function NewGameForm() {
         .map((issue) => issue.message);
   const errors = [...new Set([...liveErrors, ...(state.errors ?? [])])];
 
-  async function copyLink() {
-    if (!href) {
-      return;
-    }
+  async function copyLink(path: string) {
     try {
-      await navigator.clipboard.writeText(toAbsoluteUrl(href));
+      await navigator.clipboard.writeText(toAbsoluteUrl(path));
       setCopyStatus("copied");
       setTimeout(() => setCopyStatus("idle"), 2000);
     } catch {
@@ -97,7 +94,7 @@ export default function NewGameForm() {
           </CardContent>
         )}
         <CardFooter className="grid grid-cols-2 gap-2">
-          <Button onClick={copyLink}>
+          <Button onClick={() => copyLink(href)}>
             {isCopied ? (
               <CheckIcon data-icon="inline-start" />
             ) : (

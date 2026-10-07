@@ -2,7 +2,7 @@ import type { GRID_SIZES } from "./const";
 
 export type GridSize = (typeof GRID_SIZES)[number];
 
-/** An event that might happen during the game. Its id stays the same if its text is edited. */
+/** An event that might happen during the game. Grid cells refer to it by id. */
 export type GameEvent = {
   id: string;
   text: string;

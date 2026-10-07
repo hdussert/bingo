@@ -12,11 +12,13 @@ export default async function PlayPage({
   const { name } = await searchParams;
   const playerName = typeof name === "string" ? name.trim() : "";
 
-  const game = await findGame(id);
+  const [game, player] = await Promise.all([
+    findGame(id),
+    playerName ? findPlayer(id, playerName) : null,
+  ]);
   if (!game) {
     return <BrokenLink />;
   }
-  const player = playerName ? await findPlayer(game.id, playerName) : null;
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );

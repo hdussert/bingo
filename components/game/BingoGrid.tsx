@@ -1,6 +1,6 @@
 "use client";
 
-import { useOptimistic, useTransition } from "react";
+import { startTransition, useOptimistic } from "react";
 import { tickCell } from "@/actions/game/tickCell";
 import { Toggle } from "@/components/ui/toggle";
 import { findBingoLines } from "@/lib/game/bingo";
@@ -38,11 +38,9 @@ async function celebrate() {
 
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
 export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
-  const [, startTransition] = useTransition();
-  const [ticked, setOptimisticTick] = useOptimistic(
+  const [ticked, setOptimisticTicks] = useOptimistic(
     cells.map((cell) => cell.isTicked),
-    (state, tick: { index: number; isTicked: boolean }) =>
-      state.map((isTicked, i) => (i === tick.index ? tick.isTicked : isTicked)),
+    (_, next: boolean[]) => next,
   );
   const lines = findBingoLines(ticked, size);
   const winningCells = new Set(lines.flat());
@@ -54,7 +52,7 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
       void celebrate();
     }
     startTransition(async () => {
-      setOptimisticTick({ index, isTicked });
+      setOptimisticTicks(next);
       // If saving fails, the cell goes back to its saved state when the transition ends
       await tickCell(gameId, playerName, index, isTicked).catch(() => {});
     });
