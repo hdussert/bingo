@@ -19,8 +19,8 @@ const MEDALS = ["🥇", "🥈", "🥉"];
 
 type Props = {
   rows: LobbyRow[];
-  playerName: string;
-  cellCount: number;
+  /** The current player's name key, to highlight their row. */
+  playerKey: string;
 };
 
 function rankBadge(row: LobbyRow): string {
@@ -31,7 +31,7 @@ function rankBadge(row: LobbyRow): string {
 }
 
 /** Every player of the game, with their progress, bingos first. */
-export default function Lobby({ rows, playerName, cellCount }: Props) {
+export default function Lobby({ rows, playerKey }: Props) {
   return (
     <Card>
       <CardHeader>
@@ -44,10 +44,10 @@ export default function Lobby({ rows, playerName, cellCount }: Props) {
       <CardContent>
         <ItemGroup className="gap-2">
           {rows.map((row) => {
-            const isMe = row.name === playerName;
+            const isMe = row.nameKey === playerKey;
             return (
               <Item
-                key={row.name}
+                key={row.nameKey}
                 size="sm"
                 variant={isMe ? "muted" : "outline"}
               >
@@ -58,7 +58,7 @@ export default function Lobby({ rows, playerName, cellCount }: Props) {
                     {isMe && " (you)"}
                   </ItemTitle>
                   <ItemDescription>
-                    {row.tickCount}/{cellCount} ticked ·{" "}
+                    {row.tickCount}/{row.cellCount} ticked ·{" "}
                     {row.lineCount === 1 ? "1 line" : `${row.lineCount} lines`}
                   </ItemDescription>
                 </ItemContent>

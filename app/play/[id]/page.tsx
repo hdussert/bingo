@@ -20,11 +20,9 @@ export default async function PlayPage({
   if (!game) {
     return <BrokenLink />;
   }
-  const player = playerName
-    ? players.find(
-        (candidate) => toNameKey(candidate.name) === toNameKey(playerName),
-      )
-    : undefined;
+  const player = players.find(
+    (candidate) => candidate.nameKey === toNameKey(playerName),
+  );
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
@@ -50,25 +48,21 @@ export default async function PlayPage({
         )}
       </div>
       {player ? (
-        <BingoGrid
-          gameId={game.id}
-          playerName={player.name}
-          size={game.size}
-          cells={player.grid.map((cell) => ({
-            text: eventTexts.get(cell.eventId) ?? "",
-            isTicked: cell.isTicked,
-          }))}
-        />
+        <>
+          <BingoGrid
+            gameId={game.id}
+            playerName={player.name}
+            size={game.size}
+            cells={player.grid.map((cell) => ({
+              text: eventTexts.get(cell.eventId) ?? "",
+              isTicked: cell.isTicked,
+            }))}
+          />
+          <Lobby rows={rankPlayers(players)} playerKey={player.nameKey} />
+          <AutoRefresh />
+        </>
       ) : (
         <JoinForm gameId={game.id} defaultName={playerName} />
-      )}
-      {player && <AutoRefresh />}
-      {player && (
-        <Lobby
-          rows={rankPlayers(players, game.size)}
-          playerName={player.name}
-          cellCount={game.size ** 2}
-        />
       )}
     </main>
   );

@@ -23,6 +23,8 @@ export type GridCell = {
 
 export type Player = {
   name: string;
+  /** Identifies the player within the game: see `toNameKey`. */
+  nameKey: string;
   grid: GridCell[];
   /** When the player first completed a line, or `null` without a line. */
   bingoAt: Date | null;

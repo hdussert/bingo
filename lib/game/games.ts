@@ -2,7 +2,7 @@ import { randomBytes } from "crypto";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { games, players } from "@/db/schema";
-import { findBingoLines } from "./bingo";
+import { findGridLines } from "./bingo";
 import { buildGrid, toNameKey } from "./grid";
 import type { NewGame } from "./schemas";
 import type { Game, Player } from "./types";
@@ -46,6 +46,7 @@ export async function listPlayers(gameId: string): Promise<Player[]> {
   return db
     .select({
       name: players.name,
+      nameKey: players.nameKey,
       grid: players.grid,
       bingoAt: players.bingoAt,
     })
@@ -87,8 +88,7 @@ export async function setCellTicked(
     return;
   }
 
-  const ticked = player.grid.map((cell) => cell.isTicked);
-  const hasBingo = findBingoLines(ticked, Math.sqrt(ticked.length)).length > 0;
+  const hasBingo = findGridLines(player.grid).length > 0;
   if (hasBingo === (player.bingoAt !== null)) {
     return;
   }
