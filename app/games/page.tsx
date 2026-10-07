@@ -2,6 +2,7 @@ import { ClockIcon, Grid3x3Icon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
 import BackLink from "@/components/game/BackLink";
+import RefreshButton from "@/components/game/RefreshButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -34,7 +35,10 @@ export default async function GamesPage() {
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
         <BackLink href="/" />
-        <h1 className="font-heading text-4xl text-primary">Join a game</h1>
+        <div className="flex w-full items-center justify-between gap-4">
+          <h1 className="font-heading text-4xl text-primary">Join a game</h1>
+          <RefreshButton />
+        </div>
       </div>
       {games.length === 0 ? (
         <Empty>
