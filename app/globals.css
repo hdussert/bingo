@@ -118,6 +118,21 @@
   }
 }
 
+/* White letters with a thick outline and a stepped rainbow shadow, like a cartoon or game title */
+@utility text-cartoon {
+  color: white;
+  -webkit-text-stroke: 0.12em var(--color-primary);
+  /* Draws the stroke under the fill, so it only thickens the outside of the letters */
+  paint-order: stroke fill;
+  text-shadow:
+    0.06em 0.06em 0 oklch(0.65 0.24 25),
+    0.12em 0.12em 0 oklch(0.78 0.17 60),
+    0.18em 0.18em 0 oklch(0.88 0.18 95),
+    0.24em 0.24em 0 oklch(0.72 0.19 145),
+    0.3em 0.3em 0 oklch(0.62 0.19 250),
+    0.36em 0.36em 0 oklch(0.55 0.24 300);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
