@@ -2,6 +2,7 @@ import { randomBytes } from "crypto";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { games, players } from "@/db/schema";
+import { findGridLines } from "./bingo";
 import { buildGrid, toNameKey } from "./grid";
 import type { NewGame } from "./schemas";
 import type { Game, Player } from "./types";
@@ -40,16 +41,18 @@ export async function findGame(id: string): Promise<Game | null> {
   return row ?? null;
 }
 
-export async function findPlayer(
-  gameId: string,
-  name: string,
-): Promise<Player | null> {
-  const [row] = await db
-    .select({ name: players.name, grid: players.grid })
+/** Lists the players of a game, in the order they joined. */
+export async function listPlayers(gameId: string): Promise<Player[]> {
+  return db
+    .select({
+      name: players.name,
+      nameKey: players.nameKey,
+      grid: players.grid,
+      bingoAt: players.bingoAt,
+    })
     .from(players)
-    .where(isPlayer(gameId, name))
-    .limit(1);
-  return row ?? null;
+    .where(eq(players.gameId, gameId))
+    .orderBy(players.createdAt);
 }
 
 /** Adds a player with a new grid, or keeps the existing player of that name. */
@@ -65,19 +68,38 @@ export async function addPlayer(game: Game, name: string): Promise<void> {
     .onConflictDoNothing({ target: [players.gameId, players.nameKey] });
 }
 
-/** Ticks or unticks one cell of a player's grid. An index outside the grid changes nothing. */
+/** Ticks or unticks one cell of a player's grid, and records when they first reach a bingo. An index outside the grid changes nothing. */
 export async function setCellTicked(
   gameId: string,
   name: string,
   index: number,
   isTicked: boolean,
 ): Promise<void> {
-  await db
+  const [player] = await db
     .update(players)
     .set({
       // Updates the cell in the database, so two quick taps can't overwrite each other
       grid: sql`jsonb_set(${players.grid}, array[${String(index)}, 'isTicked'], to_jsonb(${isTicked}::boolean), false)`,
       updatedAt: new Date(),
     })
-    .where(isPlayer(gameId, name));
+    .where(isPlayer(gameId, name))
+    .returning({ grid: players.grid, bingoAt: players.bingoAt });
+  if (!player) {
+    return;
+  }
+
+  const hasBingo = findGridLines(player.grid).length > 0;
+  if (hasBingo === (player.bingoAt !== null)) {
+    return;
+  }
+  await db
+    .update(players)
+    .set({ bingoAt: hasBingo ? new Date() : null })
+    // Only if the grid is still the one checked: a newer tick from another device decides instead
+    .where(
+      and(
+        isPlayer(gameId, name),
+        sql`${players.grid} = ${JSON.stringify(player.grid)}::jsonb`,
+      ),
+    );
 }
