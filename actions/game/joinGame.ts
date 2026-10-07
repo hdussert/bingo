@@ -1,9 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { after } from "next/server";
 import { addPlayer, findGame } from "@/lib/game/games";
-import { publishGameChange } from "@/lib/game/live";
 import { playerNameSchema } from "@/lib/game/schemas";
 
 export type JoinGameState = {
@@ -33,7 +31,6 @@ export async function joinGame(
     return { message: "Couldn't join the game, try again", values: { name } };
   }
 
-  after(() => publishGameChange(gameId));
   // Outside the try: redirect works by throwing
   redirect(`/play/${gameId}?name=${encodeURIComponent(result.data)}`);
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import JoinForm from "@/components/game/JoinForm";
-import LiveUpdates from "@/components/game/LiveUpdates";
+import AutoRefresh from "@/components/game/AutoRefresh";
 import Lobby from "@/components/game/Lobby";
 import { findGame, listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
@@ -62,7 +62,7 @@ export default async function PlayPage({
       ) : (
         <JoinForm gameId={game.id} defaultName={playerName} />
       )}
-      {player && <LiveUpdates gameId={game.id} />}
+      {player && <AutoRefresh />}
       {player && (
         <Lobby
           rows={rankPlayers(players, game.size)}
