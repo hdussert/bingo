@@ -1,8 +1,9 @@
-import { Grid3x3Icon } from "lucide-react";
+import { ClockIcon, Grid3x3Icon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
 import BackLink from "@/components/game/BackLink";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
@@ -11,13 +12,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import {
-  Item,
-  ItemContent,
-  ItemDescription,
-  ItemGroup,
-  ItemTitle,
-} from "@/components/ui/item";
 import { listRunningGames } from "@/lib/game/games";
 import { NAV_FORWARD } from "@/lib/transitions";
 
@@ -63,28 +57,41 @@ export default async function GamesPage() {
           </EmptyContent>
         </Empty>
       ) : (
-        <ItemGroup className="gap-2">
+        <ul className="flex flex-col gap-4">
           {games.map((game) => (
-            <Item
-              key={game.id}
-              variant="outline"
-              render={
-                <Link href={`/play/${game.id}`} transitionTypes={NAV_FORWARD} />
-              }
-            >
-              <ItemContent>
-                <ItemTitle>{game.title}</ItemTitle>
-                <ItemDescription>
-                  {game.size}×{game.size} ·{" "}
-                  {game.playerCount === 1
-                    ? "1 player"
-                    : `${game.playerCount} players`}{" "}
-                  · active {formatTimeAgo(game.lastActivityAt)}
-                </ItemDescription>
-              </ItemContent>
-            </Item>
+            <li key={game.id}>
+              <Link
+                href={`/play/${game.id}`}
+                transitionTypes={NAV_FORWARD}
+                className="block rounded-2xl transition-transform active:scale-[0.98]"
+              >
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-2xl break-words">
+                      {game.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <Grid3x3Icon className="size-4" />
+                      {game.size}×{game.size}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <UsersIcon className="size-4" />
+                      {game.playerCount === 1
+                        ? "1 player"
+                        : `${game.playerCount} players`}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <ClockIcon className="size-4" />
+                      {formatTimeAgo(game.lastActivityAt)}
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            </li>
           ))}
-        </ItemGroup>
+        </ul>
       )}
     </main>
   );
