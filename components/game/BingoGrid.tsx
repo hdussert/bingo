@@ -53,6 +53,7 @@ export default function BingoGrid({ cells, size, storageKey }: Props) {
         {cells.map((cell, i) => (
           <Toggle
             key={i}
+            variant="primary"
             pressed={ticked[i]}
             onPressedChange={() => handleToggle(i)}
             className={cn(
@@ -60,8 +61,8 @@ export default function BingoGrid({ cells, size, storageKey }: Props) {
               "aspect-square h-auto min-w-0 rounded-[22%] border-2 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
               TEXT_SIZES[size],
               winningCells.has(i)
-                ? "translate-y-1 border-highlight font-semibold shadow-none aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
-                : "aria-pressed:translate-y-1 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary aria-pressed:hover:text-primary-foreground",
+                ? "translate-y-1 font-semibold shadow-none aria-pressed:border-highlight aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
+                : "aria-pressed:translate-y-1 aria-pressed:shadow-none",
             )}
           >
             {cell}

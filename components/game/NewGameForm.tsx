@@ -62,6 +62,7 @@ export default function NewGameForm() {
     "idle",
   );
 
+  const isCopied = copyStatus === "copied";
   const events = parseEvents(eventsText);
   const required = size ** 2;
   const result = gameSchema.safeParse({ title, size, events });
@@ -111,7 +112,7 @@ export default function NewGameForm() {
       <FieldSet>
         <FieldLegend variant="label">Grid size</FieldLegend>
         <ToggleGroup
-          variant="outline"
+          variant="primary"
           value={[String(size)]}
           onValueChange={(value) => {
             // Tapping the selected size unselects it: keep the current size instead
@@ -126,7 +127,7 @@ export default function NewGameForm() {
             <ToggleGroupItem
               key={option}
               value={String(option)}
-              className="flex-1 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:hover:bg-primary aria-pressed:hover:text-primary-foreground"
+              className="flex-1"
             >
               {option}×{option}
             </ToggleGroupItem>
@@ -185,12 +186,12 @@ export default function NewGameForm() {
           )}
           <CardFooter className="grid grid-cols-2 gap-2">
             <Button onClick={copyLink}>
-              {copyStatus === "copied" ? (
+              {isCopied ? (
                 <CheckIcon data-icon="inline-start" />
               ) : (
                 <CopyIcon data-icon="inline-start" />
               )}
-              {copyStatus === "copied" ? "Copied!" : "Copy link"}
+              {isCopied ? "Copied!" : "Copy link"}
             </Button>
             <Button
               variant="outline"
