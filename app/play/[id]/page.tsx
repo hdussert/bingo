@@ -2,7 +2,11 @@ import Link from "next/link";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import JoinForm from "@/components/game/JoinForm";
-import { findGame, findPlayer } from "@/lib/game/games";
+import LiveUpdates from "@/components/game/LiveUpdates";
+import Lobby from "@/components/game/Lobby";
+import { findGame, listPlayers } from "@/lib/game/games";
+import { toNameKey } from "@/lib/game/grid";
+import { rankPlayers } from "@/lib/game/lobby";
 
 export default async function PlayPage({
   params,
@@ -12,13 +16,15 @@ export default async function PlayPage({
   const { name } = await searchParams;
   const playerName = typeof name === "string" ? name.trim() : "";
 
-  const [game, player] = await Promise.all([
-    findGame(id),
-    playerName ? findPlayer(id, playerName) : null,
-  ]);
+  const [game, players] = await Promise.all([findGame(id), listPlayers(id)]);
   if (!game) {
     return <BrokenLink />;
   }
+  const player = playerName
+    ? players.find(
+        (candidate) => toNameKey(candidate.name) === toNameKey(playerName),
+      )
+    : undefined;
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
@@ -55,6 +61,14 @@ export default async function PlayPage({
         />
       ) : (
         <JoinForm gameId={game.id} defaultName={playerName} />
+      )}
+      {player && <LiveUpdates gameId={game.id} />}
+      {player && (
+        <Lobby
+          rows={rankPlayers(players, game.size)}
+          playerName={player.name}
+          cellCount={game.size ** 2}
+        />
       )}
     </main>
   );

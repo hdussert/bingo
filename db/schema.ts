@@ -30,6 +30,8 @@ export const players = snakeCase.table(
     // Lowercased and trimmed name, so rejoining with the same name finds the same player
     nameKey: text().notNull(),
     grid: jsonb().$type<GridCell[]>().notNull(),
+    // When the player first completed a line; cleared if they untick back to no line
+    bingoAt: timestamp(),
   },
   (table) => [primaryKey({ columns: [table.gameId, table.nameKey] })],
 );

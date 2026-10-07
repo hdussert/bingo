@@ -24,4 +24,6 @@ export type GridCell = {
 export type Player = {
   name: string;
   grid: GridCell[];
+  /** When the player first completed a line, or `null` without a line. */
+  bingoAt: Date | null;
 };
