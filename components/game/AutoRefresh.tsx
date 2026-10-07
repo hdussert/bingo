@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-const REFRESH_INTERVAL_MS = 3_000;
+const REFRESH_INTERVAL_MS = 10_000;
 
 /** Keeps the page live: re-renders it from the server every few seconds while it's visible. */
 export default function AutoRefresh() {
