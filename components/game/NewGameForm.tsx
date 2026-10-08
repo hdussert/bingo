@@ -1,48 +1,34 @@
 "use client";
 
-import { CheckIcon, CircleAlertIcon, CopyIcon } from "lucide-react";
+import { CircleAlertIcon, LockIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import { createGame } from "@/actions/game/createGame";
+import EventsProgress from "@/components/game/EventsProgress";
+import FormStep from "@/components/game/FormStep";
+import GameReady from "@/components/game/GameReady";
+import GridSizePicker from "@/components/game/GridSizePicker";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Field,
   FieldContent,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldLegend,
-  FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   DEFAULT_GRID_SIZE,
-  GRID_SIZES,
   MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
   MIN_PASSWORD_LENGTH,
 } from "@/lib/game/const";
 import { newGameSchema, parseEvents } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
-import ButtonLink from "@/components/game/ButtonLink";
 
-function toAbsoluteUrl(path: string): string {
-  return new URL(path, location.origin).toString();
-}
-
-/** Lets the organizer set up a game and share its link. */
+/** Lets the organizer set up a game, step by step, and share its link. */
 export default function NewGameForm() {
   const [state, formAction, isPending] = useActionState(createGame, {});
   const [title, setTitle] = useState("");
@@ -50,21 +36,15 @@ export default function NewGameForm() {
   const [eventsText, setEventsText] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState("");
-  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">(
-    "idle",
-  );
 
-  const isCopied = copyStatus === "copied";
   const events = parseEvents(eventsText);
-  const required = size ** 2;
   const result = newGameSchema.safeParse({
     title,
     size,
     events,
     password: isPrivate ? password : null,
   });
-  const href = state.gameId ? `/play/${state.gameId}` : null;
-  // The counter already shows missing events, and an empty title or password only disables the button
+  // The progress bar already shows missing events, and an empty title or password only disables the button
   const liveErrors = result.success
     ? []
     : result.error.issues
@@ -77,165 +57,107 @@ export default function NewGameForm() {
         .map((issue) => issue.message);
   const errors = [...new Set([...liveErrors, ...(state.errors ?? [])])];
 
-  async function copyLink(path: string) {
-    try {
-      await navigator.clipboard.writeText(toAbsoluteUrl(path));
-      setCopyStatus("copied");
-      setTimeout(() => setCopyStatus("idle"), 2000);
-    } catch {
-      // No clipboard on plain-HTTP pages, or access refused: show the link to copy by hand
-      setCopyStatus("failed");
-    }
-  }
-
-  if (href) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Your game is ready 🎉</CardTitle>
-          <CardDescription>Share its link with the players.</CardDescription>
-        </CardHeader>
-        {copyStatus === "failed" && (
-          <CardContent>
-            <Input
-              readOnly
-              aria-label="Game link"
-              value={toAbsoluteUrl(href)}
-              onFocus={(e) => e.target.select()}
-            />
-          </CardContent>
-        )}
-        <CardFooter className="grid grid-cols-2 gap-2">
-          <Button onClick={() => copyLink(href)}>
-            {isCopied ? (
-              <CheckIcon data-icon="inline-start" />
-            ) : (
-              <CopyIcon data-icon="inline-start" />
-            )}
-            {isCopied ? "Copied!" : "Copy link"}
-          </Button>
-          <ButtonLink href={href} variant="outline">
-            Open game
-          </ButtonLink>
-        </CardFooter>
-      </Card>
-    );
+  if (state.gameId) {
+    return <GameReady gameId={state.gameId} />;
   }
 
   return (
-    <form action={formAction}>
-      <FieldGroup>
-        <Field>
-          <FieldLabel htmlFor="title">Title</FieldLabel>
-          <Input
-            id="title"
-            name="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={MAX_TITLE_LENGTH}
-            placeholder="Team building bingo"
-          />
-        </Field>
+    <form action={formAction} className="flex flex-col gap-4">
+      <FormStep step={1} title="Name it">
+        <Input
+          name="title"
+          aria-label="Game title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          maxLength={MAX_TITLE_LENGTH}
+          placeholder="Team building bingo"
+        />
+      </FormStep>
 
-        <FieldSet>
-          <FieldLegend variant="label">Grid size</FieldLegend>
-          <input type="hidden" name="size" value={size} />
-          <ToggleGroup
-            variant="primary"
-            value={[String(size)]}
-            onValueChange={(value) => {
-              // Tapping the selected size unselects it: keep the current size instead
-              if (value.length === 0) {
-                return;
-              }
-              setSize(Number(value[0]) as GridSize);
-            }}
-            className="w-full"
-          >
-            {GRID_SIZES.map((option) => (
-              <ToggleGroupItem
-                key={option}
-                value={String(option)}
-                className="flex-1"
-              >
-                {option}×{option}
-              </ToggleGroupItem>
-            ))}
-          </ToggleGroup>
-        </FieldSet>
+      <FormStep step={2} title="Grid size">
+        <GridSizePicker size={size} onChange={setSize} />
+      </FormStep>
 
-        <Field>
-          <div className="flex items-center justify-between">
-            <FieldLabel htmlFor="events">Events, one per line</FieldLabel>
-            <Badge
-              variant={events.length >= required ? "default" : "secondary"}
-            >
-              {events.length} / {required}
-            </Badge>
-          </div>
+      <FormStep
+        step={3}
+        title="What might happen?"
+        description="One event per line. With more than the grid needs, each player gets a different mix."
+      >
+        <FieldGroup className="gap-4">
           <Textarea
-            id="events"
             name="events"
+            aria-label="Events, one per line"
             value={eventsText}
             onChange={(e) => setEventsText(e.target.value)}
             placeholder={"Greg says kudos\nBakari talks about AI\n…"}
-            className="min-h-48"
+            className="min-h-56"
           />
-          <FieldDescription>
-            At least {required} events for a {size}×{size} grid. With more, each
-            player gets a different selection.
-          </FieldDescription>
-        </Field>
+          <EventsProgress count={events.length} required={size ** 2} />
+        </FieldGroup>
+      </FormStep>
 
-        <Field orientation="horizontal">
-          <FieldContent>
-            <FieldLabel htmlFor="isPrivate">Private game</FieldLabel>
-            <FieldDescription>
-              Players need a password to join.
-            </FieldDescription>
-          </FieldContent>
-          <Switch
-            id="isPrivate"
-            checked={isPrivate}
-            onCheckedChange={setIsPrivate}
-          />
-        </Field>
-        {isPrivate && (
-          <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <Input
-              id="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              maxLength={MAX_PASSWORD_LENGTH}
-              autoComplete="off"
-              placeholder="party2026"
+      <FormStep step={4} title="Who can join">
+        <FieldGroup className="gap-4">
+          <Field orientation="horizontal">
+            <FieldContent>
+              <FieldLabel htmlFor="isPrivate">
+                <LockIcon strokeWidth={3} className="size-4" />
+                Private game
+              </FieldLabel>
+              <FieldDescription>
+                Players need a password to join.
+              </FieldDescription>
+            </FieldContent>
+            <Switch
+              id="isPrivate"
+              checked={isPrivate}
+              onCheckedChange={setIsPrivate}
             />
-            <FieldDescription>
-              At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
-              will tell it to the players, and case doesn&apos;t matter.
-            </FieldDescription>
           </Field>
-        )}
+          {isPrivate && (
+            <Field>
+              <Input
+                name="password"
+                aria-label="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                maxLength={MAX_PASSWORD_LENGTH}
+                autoComplete="off"
+                placeholder="party2026"
+              />
+              <FieldDescription>
+                At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
+                will say it out loud, and case doesn&apos;t matter.
+              </FieldDescription>
+            </Field>
+          )}
+        </FieldGroup>
+      </FormStep>
 
-        {errors.length > 0 && (
-          <Alert variant="destructive">
-            <CircleAlertIcon />
-            <AlertDescription>
-              <ul>
-                {errors.map((error) => (
-                  <li key={error}>{error}</li>
-                ))}
-              </ul>
-            </AlertDescription>
-          </Alert>
-        )}
+      {errors.length > 0 && (
+        <Alert variant="destructive">
+          <CircleAlertIcon />
+          <AlertDescription>
+            <ul>
+              {errors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
 
-        <Button type="submit" disabled={!result.success || isPending}>
+      {/* Stays reachable at the bottom of the screen while scrolling through the steps */}
+      <div className="sticky bottom-0 -mx-4 bg-linear-to-t from-background from-60% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <Button
+          type="submit"
+          size="xl"
+          className="w-full"
+          disabled={!result.success || isPending}
+        >
           {isPending ? "Creating…" : "Create game"}
         </Button>
-      </FieldGroup>
+      </div>
     </form>
   );
 }
