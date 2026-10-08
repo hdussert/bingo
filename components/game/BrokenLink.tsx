@@ -1,6 +1,5 @@
 import { Link2OffIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import ButtonLink from "@/components/game/ButtonLink";
 import {
   Empty,
   EmptyContent,
@@ -9,7 +8,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { NAV_FORWARD } from "@/lib/transitions";
 
 /** Shown for a game link that leads nowhere. */
 export default function BrokenLink() {
@@ -26,12 +24,7 @@ export default function BrokenLink() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button
-            nativeButton={false}
-            render={<Link href="/new" transitionTypes={NAV_FORWARD} />}
-          >
-            Create a game
-          </Button>
+          <ButtonLink href="/new">Create a game</ButtonLink>
         </EmptyContent>
       </Empty>
     </main>

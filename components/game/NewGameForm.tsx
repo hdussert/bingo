@@ -1,7 +1,6 @@
 "use client";
 
 import { CheckIcon, CircleAlertIcon, CopyIcon } from "lucide-react";
-import Link from "next/link";
 import { useActionState, useState } from "react";
 import { createGame } from "@/actions/game/createGame";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -33,7 +32,7 @@ import {
 } from "@/lib/game/const";
 import { newGameSchema, parseEvents } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
-import { NAV_FORWARD } from "@/lib/transitions";
+import ButtonLink from "@/components/game/ButtonLink";
 
 function toAbsoluteUrl(path: string): string {
   return new URL(path, location.origin).toString();
@@ -103,13 +102,9 @@ export default function NewGameForm() {
             )}
             {isCopied ? "Copied!" : "Copy link"}
           </Button>
-          <Button
-            variant="outline"
-            nativeButton={false}
-            render={<Link href={href} transitionTypes={NAV_FORWARD} />}
-          >
+          <ButtonLink href={href} variant="outline">
             Open game
-          </Button>
+          </ButtonLink>
         </CardFooter>
       </Card>
     );

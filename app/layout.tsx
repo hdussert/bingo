@@ -10,7 +10,7 @@ const fredoka = Fredoka({
 });
 
 const luckiestGuy = localFont({
-  src: "./fonts/LuckiestGuy-Regular.ttf",
+  src: "./fonts/LuckiestGuy-Latin.woff2",
   variable: "--font-heading",
   // The font reserves 30% of its height below the baseline for descenders, but its letters are
   // all capitals 71% tall: moving that space above centers them in any box

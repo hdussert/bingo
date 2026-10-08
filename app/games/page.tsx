@@ -3,7 +3,6 @@ import Link from "next/link";
 import { connection } from "next/server";
 import BackLink from "@/components/game/BackLink";
 import RefreshButton from "@/components/game/RefreshButton";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Empty,
@@ -15,6 +14,9 @@ import {
 } from "@/components/ui/empty";
 import { listRunningGames } from "@/lib/game/games";
 import { NAV_FORWARD } from "@/lib/transitions";
+import ButtonLink from "@/components/game/ButtonLink";
+import PageTitle from "@/components/game/PageTitle";
+import { pluralize } from "@/lib/game/format";
 
 const timeAgo = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
 
@@ -36,7 +38,7 @@ export default async function GamesPage() {
       <div className="flex flex-col items-start gap-2">
         <BackLink href="/" />
         <div className="flex w-full items-center justify-between gap-4">
-          <h1 className="font-heading text-4xl text-extruded">Join a game</h1>
+          <PageTitle>Join a game</PageTitle>
           <RefreshButton />
         </div>
       </div>
@@ -52,12 +54,7 @@ export default async function GamesPage() {
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent>
-            <Button
-              nativeButton={false}
-              render={<Link href="/new" transitionTypes={NAV_FORWARD} />}
-            >
-              Create a game
-            </Button>
+            <ButtonLink href="/new">Create a game</ButtonLink>
           </EmptyContent>
         </Empty>
       ) : (
@@ -82,9 +79,7 @@ export default async function GamesPage() {
                     </span>
                     <span className="flex items-center gap-1.5">
                       <UsersIcon className="size-4" />
-                      {game.playerCount === 1
-                        ? "1 player"
-                        : `${game.playerCount} players`}
+                      {pluralize(game.playerCount, "player")}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <ClockIcon className="size-4" />

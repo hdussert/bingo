@@ -14,15 +14,15 @@ export default function RefreshButton() {
   return (
     <Button
       variant="ghost"
-      size="icon-lg"
-      className="-mr-3 size-12"
+      size="icon-xl"
+      className="-mr-3"
       aria-label="Refresh games"
       disabled={isRefreshing}
       onClick={() => startTransition(() => router.refresh())}
     >
       <RefreshCwIcon
         strokeWidth={3}
-        className={cn("size-7", isRefreshing && "animate-spin")}
+        className={cn(isRefreshing && "animate-spin")}
       />
     </Button>
   );

@@ -60,19 +60,24 @@
   --radius: 1.5rem;
 }
 
-/* White letters with a thick pink outline on a pink 3D extrusion, like a cartoon or game logo */
+/* A pink 3D extrusion, one shadow every 0.015em so it reads as a solid block */
+:root {
+  --extrusion:
+    0.015em 0.015em 0 var(--color-primary),
+    0.03em 0.03em 0 var(--color-primary),
+    0.045em 0.045em 0 var(--color-primary),
+    0.06em 0.06em 0 var(--color-primary),
+    0.075em 0.075em 0 var(--color-primary), 0.09em 0.09em 0 var(--color-primary);
+}
+
+/* White letters with a thick pink outline on a deep pink extrusion, like a cartoon or game logo */
 @utility text-cartoon {
   color: white;
   -webkit-text-stroke: 0.12em var(--color-primary);
   /* Draws the stroke under the fill, so it only thickens the outside of the letters */
   paint-order: stroke fill;
   text-shadow:
-    0.015em 0.015em 0 var(--color-primary),
-    0.03em 0.03em 0 var(--color-primary),
-    0.045em 0.045em 0 var(--color-primary),
-    0.06em 0.06em 0 var(--color-primary),
-    0.075em 0.075em 0 var(--color-primary),
-    0.09em 0.09em 0 var(--color-primary),
+    var(--extrusion),
     0.105em 0.105em 0 var(--color-primary),
     0.12em 0.12em 0 var(--color-primary),
     0.135em 0.135em 0 var(--color-primary),
@@ -82,13 +87,7 @@
 /* White letters on a pink 3D extrusion, for page headings */
 @utility text-extruded {
   color: white;
-  text-shadow:
-    0.015em 0.015em 0 var(--color-primary),
-    0.03em 0.03em 0 var(--color-primary),
-    0.045em 0.045em 0 var(--color-primary),
-    0.06em 0.06em 0 var(--color-primary),
-    0.075em 0.075em 0 var(--color-primary),
-    0.09em 0.09em 0 var(--color-primary);
+  text-shadow: var(--extrusion);
 }
 
 @layer base {
@@ -109,29 +108,25 @@
 }
 
 /* Page slides (app/template.tsx): forward pushes the page left, back pushes it right */
-::view-transition-old(.nav-forward) {
-  --slide-offset: -60px;
+::view-transition-old(.nav-forward),
+::view-transition-old(.nav-back) {
   animation:
     150ms ease-in both fade reverse,
     400ms ease-in-out both slide reverse;
 }
-::view-transition-new(.nav-forward) {
-  --slide-offset: 60px;
+::view-transition-new(.nav-forward),
+::view-transition-new(.nav-back) {
   animation:
     210ms ease-out 150ms both fade,
     400ms ease-in-out both slide;
 }
-::view-transition-old(.nav-back) {
-  --slide-offset: 60px;
-  animation:
-    150ms ease-in both fade reverse,
-    400ms ease-in-out both slide reverse;
-}
+::view-transition-old(.nav-forward),
 ::view-transition-new(.nav-back) {
   --slide-offset: -60px;
-  animation:
-    210ms ease-out 150ms both fade,
-    400ms ease-in-out both slide;
+}
+::view-transition-new(.nav-forward),
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
 }
 
 /* Taps during a slide reach the new page instead of the animation overlay */
