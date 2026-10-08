@@ -1,9 +1,15 @@
-import { ClockIcon, Grid3x3Icon, UsersIcon } from "lucide-react";
+import { ClockIcon, Grid3x3Icon, LockIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
 import BackLink from "@/components/game/BackLink";
 import RefreshButton from "@/components/game/RefreshButton";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
@@ -61,17 +67,25 @@ export default async function GamesPage() {
                     <CardTitle className="text-2xl break-words">
                       {game.title}
                     </CardTitle>
+                    {game.isPrivate && (
+                      <CardAction
+                        aria-label="Private game"
+                        className="row-span-1 self-center"
+                      >
+                        <LockIcon strokeWidth={3} className="size-6" />
+                      </CardAction>
+                    )}
                   </CardHeader>
                   <CardContent className="flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
                       <Grid3x3Icon className="size-4" />
                       {game.size}×{game.size}
                     </span>
-                    <span className="flex items-center gap-1.5">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
                       <UsersIcon className="size-4" />
                       {pluralize(game.playerCount, "player")}
                     </span>
-                    <span className="flex items-center gap-1.5">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
                       <ClockIcon className="size-4" />
                       {formatTimeAgo(game.lastActivityAt)}
                     </span>

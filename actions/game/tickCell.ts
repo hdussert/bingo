@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { findPlayableGame } from "@/lib/game/access";
 import { setCellTicked } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
 
@@ -25,6 +26,10 @@ export async function tickCell(
   }
 
   const tick = result.data;
+  const playable = await findPlayableGame(tick.gameId);
+  if (!playable?.canPlay) {
+    return;
+  }
   await setCellTicked(tick.gameId, tick.name, tick.index, tick.isTicked);
   revalidatePath(`/play/${tick.gameId}`);
 }

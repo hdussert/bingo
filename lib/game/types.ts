@@ -37,4 +37,5 @@ export type RunningGame = {
   size: GridSize;
   playerCount: number;
   lastActivityAt: Date;
+  isPrivate: boolean;
 };

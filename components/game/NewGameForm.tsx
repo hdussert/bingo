@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import {
   Field,
+  FieldContent,
   FieldDescription,
   FieldGroup,
   FieldLabel,
@@ -23,12 +24,15 @@ import {
   FieldSet,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
   DEFAULT_GRID_SIZE,
   GRID_SIZES,
+  MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
+  MIN_PASSWORD_LENGTH,
 } from "@/lib/game/const";
 import { newGameSchema, parseEvents } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
@@ -44,6 +48,8 @@ export default function NewGameForm() {
   const [title, setTitle] = useState("");
   const [size, setSize] = useState<GridSize>(DEFAULT_GRID_SIZE);
   const [eventsText, setEventsText] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [password, setPassword] = useState("");
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">(
     "idle",
   );
@@ -51,16 +57,22 @@ export default function NewGameForm() {
   const isCopied = copyStatus === "copied";
   const events = parseEvents(eventsText);
   const required = size ** 2;
-  const result = newGameSchema.safeParse({ title, size, events });
+  const result = newGameSchema.safeParse({
+    title,
+    size,
+    events,
+    password: isPrivate ? password : null,
+  });
   const href = state.gameId ? `/play/${state.gameId}` : null;
-  // The counter already shows missing events, and an empty title only disables the button
+  // The counter already shows missing events, and an empty title or password only disables the button
   const liveErrors = result.success
     ? []
     : result.error.issues
         .filter(
           (issue) =>
             issue.code !== "custom" &&
-            !(issue.code === "too_small" && issue.path[0] === "title"),
+            !(issue.code === "too_small" && issue.path[0] === "title") &&
+            !(issue.code === "too_small" && password === ""),
         )
         .map((issue) => issue.message);
   const errors = [...new Set([...liveErrors, ...(state.errors ?? [])])];
@@ -174,6 +186,38 @@ export default function NewGameForm() {
             player gets a different selection.
           </FieldDescription>
         </Field>
+
+        <Field orientation="horizontal">
+          <FieldContent>
+            <FieldLabel htmlFor="isPrivate">Private game</FieldLabel>
+            <FieldDescription>
+              Players need a password to join.
+            </FieldDescription>
+          </FieldContent>
+          <Switch
+            id="isPrivate"
+            checked={isPrivate}
+            onCheckedChange={setIsPrivate}
+          />
+        </Field>
+        {isPrivate && (
+          <Field>
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Input
+              id="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              maxLength={MAX_PASSWORD_LENGTH}
+              autoComplete="off"
+              placeholder="party2026"
+            />
+            <FieldDescription>
+              At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
+              will tell it to the players, and case doesn&apos;t matter.
+            </FieldDescription>
+          </Field>
+        )}
 
         {errors.length > 0 && (
           <Alert variant="destructive">

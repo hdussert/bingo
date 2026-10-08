@@ -1,11 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { addPlayer, findGame } from "@/lib/game/games";
+import { findPlayableGame, unlockGame } from "@/lib/game/access";
+import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
 
 export type JoinGameState = {
   message?: string;
+  /** The field the message is about, to highlight it. */
+  invalidField?: "name" | "password";
   values?: { name: string };
 };
 
@@ -18,15 +21,29 @@ export async function joinGame(
   const name = String(formData.get("name") ?? "");
   const result = playerNameSchema.safeParse(name);
   if (!result.success) {
-    return { message: result.error.issues[0].message, values: { name } };
+    return {
+      message: result.error.issues[0].message,
+      invalidField: "name",
+      values: { name },
+    };
   }
 
   try {
-    const game = await findGame(gameId);
-    if (!game) {
+    const playable = await findPlayableGame(gameId);
+    if (!playable) {
       return { message: "This game doesn't exist anymore", values: { name } };
     }
-    await addPlayer(game, result.data);
+    if (!playable.canPlay) {
+      const password = String(formData.get("password") ?? "");
+      if (!(await unlockGame(gameId, password))) {
+        return {
+          message: "Wrong password",
+          invalidField: "password",
+          values: { name },
+        };
+      }
+    }
+    await addPlayer(playable.game, result.data);
   } catch {
     return { message: "Couldn't join the game, try again", values: { name } };
   }

@@ -4,7 +4,9 @@ import {
   MAX_EVENT_LENGTH,
   MAX_EVENTS,
   MAX_NAME_LENGTH,
+  MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
+  MIN_PASSWORD_LENGTH,
 } from "./const";
 
 /** Validates a new game, with messages meant for the organizer. */
@@ -31,6 +33,19 @@ export const newGameSchema = z
           ),
       )
       .max(MAX_EVENTS, `A game is limited to ${MAX_EVENTS} events`),
+    /** The join password of a private game, or `null` for a public one. */
+    password: z
+      .string()
+      .trim()
+      .min(
+        MIN_PASSWORD_LENGTH,
+        `The password needs at least ${MIN_PASSWORD_LENGTH} characters`,
+      )
+      .max(
+        MAX_PASSWORD_LENGTH,
+        `The password is limited to ${MAX_PASSWORD_LENGTH} characters`,
+      )
+      .nullable(),
   })
   .refine((game) => game.events.length >= game.size ** 2, {
     message: "Not enough events for this grid",
