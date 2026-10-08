@@ -12,7 +12,8 @@ export const DEFAULT_GRID_SIZE = 4;
 
 export const MAX_TITLE_LENGTH = 60;
 
-export const MAX_EVENT_LENGTH = 60;
+// Fits 3 lines in a 5×5 cell on a phone
+export const MAX_EVENT_LENGTH = 30;
 
 export const MAX_EVENTS = 50;
 
