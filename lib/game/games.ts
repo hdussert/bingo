@@ -32,7 +32,10 @@ export async function saveGame(
   return id;
 }
 
-export async function findGame(id: string): Promise<Game | null> {
+/** Finds a game and its join password's hash (`null` for a public game). The hash must stay on the server: see `findPlayableGame`. */
+export async function findGameWithPassword(
+  id: string,
+): Promise<{ game: Game; passwordHash: string | null } | null> {
   const [row] = await db
     .select({
       id: games.id,
@@ -44,17 +47,11 @@ export async function findGame(id: string): Promise<Game | null> {
     .from(games)
     .where(eq(games.id, id))
     .limit(1);
-  return row ?? null;
-}
-
-/** The join password's hash of a game, or `null` for a public or unknown game. */
-export async function findPasswordHash(gameId: string): Promise<string | null> {
-  const [row] = await db
-    .select({ passwordHash: games.passwordHash })
-    .from(games)
-    .where(eq(games.id, gameId))
-    .limit(1);
-  return row?.passwordHash ?? null;
+  if (!row) {
+    return null;
+  }
+  const { passwordHash, ...game } = row;
+  return { game, passwordHash };
 }
 
 /** Lists the games with recent activity, most recently active first. */

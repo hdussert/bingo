@@ -1,4 +1,12 @@
-import { createHash, randomBytes, scryptSync, timingSafeEqual } from "crypto";
+import { createHash, randomBytes, scrypt, timingSafeEqual } from "crypto";
+import { promisify } from "util";
+
+// Async, so hashing doesn't block the other requests served by the same instance
+const scryptAsync = promisify(scrypt) as (
+  password: string,
+  salt: string,
+  keyLength: number,
+) => Promise<Buffer>;
 
 // Said out loud and typed on phones: surrounding spaces and case don't count
 function normalize(password: string): string {
@@ -6,16 +14,19 @@ function normalize(password: string): string {
 }
 
 /** Hashes a join password with a random salt, as "salt:hash". */
-export function hashPassword(password: string): string {
+export async function hashPassword(password: string): Promise<string> {
   const salt = randomBytes(16).toString("base64url");
-  const hash = scryptSync(normalize(password), salt, 32).toString("base64url");
-  return `${salt}:${hash}`;
+  const hash = await scryptAsync(normalize(password), salt, 32);
+  return `${salt}:${hash.toString("base64url")}`;
 }
 
 /** Checks a join password against its stored hash. */
-export function verifyPassword(password: string, stored: string): boolean {
+export async function verifyPassword(
+  password: string,
+  stored: string,
+): Promise<boolean> {
   const [salt, hash] = stored.split(":");
-  const candidate = scryptSync(normalize(password), salt, 32);
+  const candidate = await scryptAsync(normalize(password), salt, 32);
   return timingSafeEqual(candidate, Buffer.from(hash, "base64url"));
 }
 

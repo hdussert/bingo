@@ -1,10 +1,25 @@
 import { cookies } from "next/headers";
-import { accessToken } from "./password";
+import { findGameWithPassword } from "./games";
+import { accessToken, verifyPassword } from "./password";
+import type { Game } from "./types";
 
 const ACCESS_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 
 function cookieName(gameId: string): string {
   return `bingo-access-${gameId}`;
+}
+
+async function hasAccess(
+  gameId: string,
+  passwordHash: string | null,
+): Promise<boolean> {
+  if (!passwordHash) {
+    return true;
+  }
+  const cookieStore = await cookies();
+  return (
+    cookieStore.get(cookieName(gameId))?.value === accessToken(passwordHash)
+  );
 }
 
 /** Remembers on this phone that the game's password was entered. Only works in server actions. */
@@ -23,16 +38,32 @@ export async function grantAccess(
   });
 }
 
-/** Whether this phone may see and play the game: always for a public game, with the access cookie for a private one. */
-export async function hasAccess(
+/** Finds a game and whether this phone may play it: always for a public game, only after its password for a private one. */
+export async function findPlayableGame(
   gameId: string,
-  passwordHash: string | null,
-): Promise<boolean> {
-  if (!passwordHash) {
-    return true;
+): Promise<{ game: Game; canPlay: boolean } | null> {
+  const stored = await findGameWithPassword(gameId);
+  if (!stored) {
+    return null;
   }
-  const cookieStore = await cookies();
-  return (
-    cookieStore.get(cookieName(gameId))?.value === accessToken(passwordHash)
-  );
+  return {
+    game: stored.game,
+    canPlay: await hasAccess(gameId, stored.passwordHash),
+  };
+}
+
+/** Checks a private game's password and, if it's right, remembers it on this phone. Only works in server actions. */
+export async function unlockGame(
+  gameId: string,
+  password: string,
+): Promise<boolean> {
+  const stored = await findGameWithPassword(gameId);
+  if (
+    !stored?.passwordHash ||
+    !(await verifyPassword(password, stored.passwordHash))
+  ) {
+    return false;
+  }
+  await grantAccess(gameId, stored.passwordHash);
+  return true;
 }

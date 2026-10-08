@@ -61,8 +61,7 @@ export default function NewGameForm() {
     title,
     size,
     events,
-    isPrivate,
-    password,
+    password: isPrivate ? password : null,
   });
   const href = state.gameId ? `/play/${state.gameId}` : null;
   // The counter already shows missing events, and an empty title only disables the button
@@ -196,7 +195,6 @@ export default function NewGameForm() {
           </FieldContent>
           <Switch
             id="isPrivate"
-            name="isPrivate"
             checked={isPrivate}
             onCheckedChange={setIsPrivate}
           />

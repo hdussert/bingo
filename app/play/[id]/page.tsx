@@ -5,8 +5,8 @@ import BrokenLink from "@/components/game/BrokenLink";
 import JoinForm from "@/components/game/JoinForm";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import Lobby from "@/components/game/Lobby";
-import { hasAccess } from "@/lib/game/access";
-import { findGame, listPlayers } from "@/lib/game/games";
+import { findPlayableGame } from "@/lib/game/access";
+import { listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageTitle from "@/components/game/PageTitle";
@@ -20,15 +20,15 @@ export default async function PlayPage({
   const playerName = typeof name === "string" ? name.trim() : "";
 
   // Visitors who haven't joined only see the join form: no need for the players
-  const [game, players] = await Promise.all([
-    findGame(id),
+  const [playable, players] = await Promise.all([
+    findPlayableGame(id),
     playerName ? listPlayers(id) : [],
   ]);
-  if (!game) {
+  if (!playable) {
     return <BrokenLink />;
   }
   // A private game shows only its join form until this phone enters the password
-  const canPlay = await hasAccess(game.id, game.passwordHash);
+  const { game, canPlay } = playable;
   const player = canPlay
     ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
     : undefined;

@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { hasAccess } from "@/lib/game/access";
-import { findPasswordHash, setCellTicked } from "@/lib/game/games";
+import { findPlayableGame } from "@/lib/game/access";
+import { setCellTicked } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
 
 const tickSchema = z.object({
@@ -26,8 +26,8 @@ export async function tickCell(
   }
 
   const tick = result.data;
-  const passwordHash = await findPasswordHash(tick.gameId);
-  if (!(await hasAccess(tick.gameId, passwordHash))) {
+  const playable = await findPlayableGame(tick.gameId);
+  if (!playable?.canPlay) {
     return;
   }
   await setCellTicked(tick.gameId, tick.name, tick.index, tick.isTicked);

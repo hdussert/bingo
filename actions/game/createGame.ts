@@ -19,8 +19,8 @@ export async function createGame(
     title: formData.get("title"),
     size: Number(formData.get("size")),
     events: parseEvents(String(formData.get("events") ?? "")),
-    isPrivate: formData.get("isPrivate") === "on",
-    password: String(formData.get("password") ?? ""),
+    // The password field only exists while the Private switch is on
+    password: formData.get("password"),
   });
   if (!result.success) {
     return {
@@ -29,7 +29,7 @@ export async function createGame(
   }
 
   const game = result.data;
-  const passwordHash = game.isPrivate ? hashPassword(game.password) : null;
+  const passwordHash = game.password ? await hashPassword(game.password) : null;
   try {
     const gameId = await saveGame(game, passwordHash);
     // The organizer's phone can open the game without typing the password
