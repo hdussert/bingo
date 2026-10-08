@@ -3,7 +3,9 @@
 import { CircleAlertIcon, LockIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import { createGame } from "@/actions/game/createGame";
+import EventSuggestions from "@/components/game/EventSuggestions";
 import EventsProgress from "@/components/game/EventsProgress";
+import EventsTileInput from "@/components/game/EventsTileInput";
 import FormStep from "@/components/game/FormStep";
 import GameReady from "@/components/game/GameReady";
 import GridSizePicker from "@/components/game/GridSizePicker";
@@ -18,14 +20,13 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import {
   DEFAULT_GRID_SIZE,
   MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
   MIN_PASSWORD_LENGTH,
 } from "@/lib/game/const";
-import { newGameSchema, parseEvents } from "@/lib/game/schemas";
+import { newGameSchema } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
 
 /** Lets the organizer set up a game, step by step, and share its link. */
@@ -33,11 +34,10 @@ export default function NewGameForm() {
   const [state, formAction, isPending] = useActionState(createGame, {});
   const [title, setTitle] = useState("");
   const [size, setSize] = useState<GridSize>(DEFAULT_GRID_SIZE);
-  const [eventsText, setEventsText] = useState("");
+  const [events, setEvents] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState("");
 
-  const events = parseEvents(eventsText);
   const result = newGameSchema.safeParse({
     title,
     size,
@@ -81,18 +81,16 @@ export default function NewGameForm() {
       <FormStep
         step={3}
         title="What might happen?"
-        description="One event per line. With more than the grid needs, each player gets a different mix."
+        description="With more events than the grid needs, each player gets a different mix."
       >
         <FieldGroup className="gap-4">
-          <Textarea
-            name="events"
-            aria-label="Events, one per line"
-            value={eventsText}
-            onChange={(e) => setEventsText(e.target.value)}
-            placeholder={"Greg says kudos\nBakari talks about AI\n…"}
-            className="min-h-56"
-          />
+          <input type="hidden" name="events" value={events.join("\n")} />
+          <EventsTileInput events={events} size={size} onChange={setEvents} />
           <EventsProgress count={events.length} required={size ** 2} />
+          <EventSuggestions
+            events={events}
+            onAdd={(event) => setEvents([...events, event])}
+          />
         </FieldGroup>
       </FormStep>
 
