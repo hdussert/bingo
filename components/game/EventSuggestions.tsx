@@ -1,5 +1,10 @@
-import { PlusIcon } from "lucide-react";
+import { ChevronDownIcon, LightbulbIcon, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { EVENT_SUGGESTIONS } from "@/lib/game/const";
 
 type Props = {
@@ -7,7 +12,7 @@ type Props = {
   onAdd: (event: string) => void;
 };
 
-/** Ready-made events to tap, minus the ones already in the game. */
+/** Ready-made events to tap, minus the ones already in the game, folded away until asked for. */
 export default function EventSuggestions({ events, onAdd }: Props) {
   const added = new Set(events.map((event) => event.toLowerCase()));
   const suggestions = EVENT_SUGGESTIONS.filter(
@@ -18,11 +23,18 @@ export default function EventSuggestions({ events, onAdd }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <span className="text-sm text-muted-foreground">
-        Need ideas? Tap to add
-      </span>
-      <div className="flex flex-wrap gap-2">
+    <Collapsible className="flex flex-col gap-3">
+      <CollapsibleTrigger
+        render={<Button type="button" variant="outline" className="group" />}
+      >
+        <LightbulbIcon data-icon="inline-start" />
+        Need ideas?
+        <ChevronDownIcon
+          data-icon="inline-end"
+          className="transition-transform group-data-panel-open:rotate-180"
+        />
+      </CollapsibleTrigger>
+      <CollapsibleContent className="flex flex-wrap gap-2">
         {suggestions.map((suggestion) => (
           <Button
             key={suggestion}
@@ -35,7 +47,7 @@ export default function EventSuggestions({ events, onAdd }: Props) {
             {suggestion}
           </Button>
         ))}
-      </div>
-    </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 }
