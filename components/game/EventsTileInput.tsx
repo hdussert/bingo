@@ -42,6 +42,7 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
     }
     add(draft);
     setDraft("");
+    inputRef.current?.focus();
   }
 
   // Inside a transition, so each tile's <ViewTransition> animates: new tiles pop in, removed ones shrink away, the rest slide into place
@@ -86,6 +87,8 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
             variant="default"
             size="sm"
             className="h-9 px-4"
+            // Keeps focus in the input, so the phone keyboard stays open between events
+            onPointerDown={(e) => e.preventDefault()}
             onClick={addDraft}
             disabled={isFull || !draft.trim()}
           >
