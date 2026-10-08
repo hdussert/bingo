@@ -119,11 +119,13 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
           </ViewTransition>
         ))}
         {Array.from({ length: emptyTileCount }, (_, i) => (
-          <li
-            key={`empty-${i}`}
-            aria-hidden
-            className="aspect-square rounded-[22%] border-2 border-dashed border-border"
-          />
+          // Animated like the tiles, so they slide along as tiles are added instead of jumping
+          <ViewTransition key={`empty-${i}`} enter="tile-in" exit="tile-out">
+            <li
+              aria-hidden
+              className="aspect-square rounded-[22%] border-2 border-dashed border-border"
+            />
+          </ViewTransition>
         ))}
       </ul>
     </div>
