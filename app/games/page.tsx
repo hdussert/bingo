@@ -76,17 +76,17 @@ export default async function GamesPage() {
                       </CardAction>
                     )}
                   </CardHeader>
-                  <CardContent className="grid grid-cols-3 gap-2 text-muted-foreground">
-                    <span className="flex items-center gap-1.5">
-                      <Grid3x3Icon className="size-4 shrink-0" />
+                  <CardContent className="flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                      <Grid3x3Icon className="size-4" />
                       {game.size}×{game.size}
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <UsersIcon className="size-4 shrink-0" />
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                      <UsersIcon className="size-4" />
                       {pluralize(game.playerCount, "player")}
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <ClockIcon className="size-4 shrink-0" />
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                      <ClockIcon className="size-4" />
                       {formatTimeAgo(game.lastActivityAt)}
                     </span>
                   </CardContent>
