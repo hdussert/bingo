@@ -4,7 +4,7 @@ import { startTransition, useOptimistic } from "react";
 import { tickCell } from "@/actions/game/tickCell";
 import { Toggle } from "@/components/ui/toggle";
 import { findBingoLines } from "@/lib/game/bingo";
-import { GRID_COLUMNS, GRID_TEXT_SIZES } from "@/lib/game/const";
+import { GRID_COLUMNS } from "@/lib/game/const";
 import type { GridSize } from "@/lib/game/types";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,12 @@ type Props = {
   playerName: string;
   size: GridSize;
   cells: { text: string; isTicked: boolean }[];
+};
+
+const TEXT_SIZES: Record<GridSize, string> = {
+  3: "text-sm sm:text-base",
+  4: "text-xs sm:text-sm",
+  5: "text-[10px] sm:text-xs",
 };
 
 async function celebrate() {
@@ -59,7 +65,7 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
             className={cn(
               // Raised like a game button, pressed flat once ticked
               "aspect-square h-auto min-w-0 rounded-[22%] border-2 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
-              GRID_TEXT_SIZES[size],
+              TEXT_SIZES[size],
               winningCells.has(i)
                 ? "translate-y-1 font-semibold shadow-none aria-pressed:border-highlight aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
                 : "aria-pressed:translate-y-1 aria-pressed:shadow-none",

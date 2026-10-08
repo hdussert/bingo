@@ -8,13 +8,6 @@ export const GRID_COLUMNS = {
   5: "grid-cols-5",
 } as const;
 
-/** Tailwind text sizes that fit a cell of each grid size on a phone. */
-export const GRID_TEXT_SIZES = {
-  3: "text-sm sm:text-base",
-  4: "text-xs sm:text-sm",
-  5: "text-[10px] sm:text-xs",
-} as const;
-
 export const DEFAULT_GRID_SIZE = 4;
 
 export const MAX_TITLE_LENGTH = 60;

@@ -8,15 +8,9 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import {
-  GRID_COLUMNS,
-  GRID_TEXT_SIZES,
-  MAX_EVENT_LENGTH,
-  MAX_EVENTS,
-} from "@/lib/game/const";
+import { MAX_EVENT_LENGTH, MAX_EVENTS } from "@/lib/game/const";
 import { parseEvents } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
-import { cn } from "@/lib/utils";
 
 type Props = {
   events: string[];
@@ -24,12 +18,18 @@ type Props = {
   onChange: (events: string[]) => void;
 };
 
-/** Adds events one at a time as tiles laid out like the game grid, with empty tiles for the ones still needed. */
+// The progress bar counts the rest: a full 5×5 of empty tiles would only add scrolling
+const MAX_EMPTY_TILES = 6;
+
+/** Adds events one at a time as tiles, with empty tiles for some of the ones still needed. */
 export default function EventsTileInput({ events, size, onChange }: Props) {
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const isFull = events.length >= MAX_EVENTS;
-  const emptyTileCount = Math.max(size ** 2 - events.length, 0);
+  const emptyTileCount = Math.min(
+    Math.max(size ** 2 - events.length, 0),
+    MAX_EMPTY_TILES,
+  );
 
   // Pasted lists add one event per line; parseEvents drops blanks and duplicates
   function add(text: string) {
@@ -88,26 +88,24 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
-      <ul className={cn("grid gap-2", GRID_COLUMNS[size])}>
+      {/* Three columns whatever the grid size: five are too narrow for words on a phone */}
+      <ul className="grid grid-cols-3 gap-2">
         {events.map((event, i) => (
           <li key={event} className="relative">
             <button
               type="button"
               onClick={() => edit(i)}
-              className={cn(
-                "flex aspect-square w-full items-center justify-center rounded-[22%] border-2 border-primary bg-primary p-1 text-center leading-tight font-medium break-words hyphens-auto text-primary-foreground",
-                GRID_TEXT_SIZES[size],
-              )}
+              className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[22%] bg-primary p-2.5 text-center text-sm leading-tight font-medium text-primary-foreground"
             >
-              {event}
+              <span className="line-clamp-5 break-words">{event}</span>
             </button>
             <button
               type="button"
               onClick={() => onChange(events.filter((_, j) => j !== i))}
               aria-label={`Remove “${event}”`}
-              className="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-foreground text-background shadow-sm"
+              className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/30 text-white"
             >
-              <XIcon strokeWidth={3} className="size-3.5" />
+              <XIcon strokeWidth={3} className="size-3" />
             </button>
           </li>
         ))}
