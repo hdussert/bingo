@@ -55,7 +55,7 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className={cn("grid gap-2", GRID_COLUMNS[size])}>
+      <div className={cn("grid", GRID_COLUMNS[size])}>
         {cells.map((cell, i) => (
           <Toggle
             key={i}
