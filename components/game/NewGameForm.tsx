@@ -1,7 +1,12 @@
 "use client";
 
 import { CircleAlertIcon, LockIcon } from "lucide-react";
-import { startTransition, useActionState, useState } from "react";
+import {
+  startTransition,
+  useActionState,
+  useState,
+  ViewTransition,
+} from "react";
 import { createGame } from "@/actions/game/createGame";
 import EventSuggestions from "@/components/game/EventSuggestions";
 import EventsProgress from "@/components/game/EventsProgress";
@@ -88,55 +93,61 @@ export default function NewGameForm() {
           <input type="hidden" name="events" value={events.join("\n")} />
           <EventsProgress count={events.length} required={size ** 2} />
           <EventsTileInput events={events} size={size} onChange={setEvents} />
-          <EventSuggestions
-            events={events}
-            onAdd={(event) =>
-              // A transition, so the new tile pops in like typed ones
-              startTransition(() => setEvents([...events, event]))
-            }
-          />
+          {/* Glides down as the tiles above grow a row */}
+          <ViewTransition>
+            <EventSuggestions
+              events={events}
+              onAdd={(event) =>
+                // A transition, so the new tile pops in like typed ones
+                startTransition(() => setEvents([...events, event]))
+              }
+            />
+          </ViewTransition>
         </FieldGroup>
       </FormStep>
 
-      <FormStep step={4} title="Who can join">
-        <FieldGroup className="gap-4">
-          <Field orientation="horizontal">
-            <FieldContent>
-              <FieldLabel htmlFor="isPrivate">
-                <LockIcon strokeWidth={3} className="size-4" />
-                Private game
-              </FieldLabel>
-              <FieldDescription>
-                Players need a password to join.
-              </FieldDescription>
-            </FieldContent>
-            <Switch
-              id="isPrivate"
-              checked={isPrivate}
-              onCheckedChange={setIsPrivate}
-            />
-          </Field>
-          <Collapsible open={isPrivate}>
-            <CollapsibleContent>
-              <Field>
-                <Input
-                  name="password"
-                  aria-label="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  maxLength={MAX_PASSWORD_LENGTH}
-                  autoComplete="off"
-                  placeholder="party2026"
-                />
+      {/* Glides down when the events grow a row, instead of jumping */}
+      <ViewTransition>
+        <FormStep step={4} title="Who can join">
+          <FieldGroup className="gap-4">
+            <Field orientation="horizontal">
+              <FieldContent>
+                <FieldLabel htmlFor="isPrivate">
+                  <LockIcon strokeWidth={3} className="size-4" />
+                  Private game
+                </FieldLabel>
                 <FieldDescription>
-                  At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
-                  will say it out loud, and case doesn&apos;t matter.
+                  Players need a password to join.
                 </FieldDescription>
-              </Field>
-            </CollapsibleContent>
-          </Collapsible>
-        </FieldGroup>
-      </FormStep>
+              </FieldContent>
+              <Switch
+                id="isPrivate"
+                checked={isPrivate}
+                onCheckedChange={setIsPrivate}
+              />
+            </Field>
+            <Collapsible open={isPrivate}>
+              <CollapsibleContent>
+                <Field>
+                  <Input
+                    name="password"
+                    aria-label="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    maxLength={MAX_PASSWORD_LENGTH}
+                    autoComplete="off"
+                    placeholder="party2026"
+                  />
+                  <FieldDescription>
+                    At least {MIN_PASSWORD_LENGTH} characters. Keep it simple:
+                    you will say it out loud, and case doesn&apos;t matter.
+                  </FieldDescription>
+                </Field>
+              </CollapsibleContent>
+            </Collapsible>
+          </FieldGroup>
+        </FormStep>
+      </ViewTransition>
 
       {errors.length > 0 && (
         <Alert variant="destructive">

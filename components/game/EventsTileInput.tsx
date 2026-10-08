@@ -119,8 +119,12 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
           </ViewTransition>
         ))}
         {Array.from({ length: emptyTileCount }, (_, i) => (
-          // Animated like the tiles, so they slide along as tiles are added instead of jumping
-          <ViewTransition key={`empty-${i}`} enter="tile-in" exit="tile-out">
+          // Keyed by grid slot: the tile added into a slot replaces its placeholder in place, and the rest stay put while a new one grows at the end
+          <ViewTransition
+            key={`empty-${events.length + i}`}
+            enter="tile-in"
+            exit="none"
+          >
             <li
               aria-hidden
               className="aspect-square rounded-[22%] border-2 border-dashed border-border"
