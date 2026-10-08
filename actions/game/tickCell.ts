@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { setCellTicked } from "@/lib/game/games";
+import { hasAccess } from "@/lib/game/access";
+import { findPasswordHash, setCellTicked } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
 
 const tickSchema = z.object({
@@ -25,6 +26,10 @@ export async function tickCell(
   }
 
   const tick = result.data;
+  const passwordHash = await findPasswordHash(tick.gameId);
+  if (!(await hasAccess(tick.gameId, passwordHash))) {
+    return;
+  }
   await setCellTicked(tick.gameId, tick.name, tick.index, tick.isTicked);
   revalidatePath(`/play/${tick.gameId}`);
 }

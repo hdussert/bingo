@@ -1,7 +1,9 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { grantAccess, hasAccess } from "@/lib/game/access";
 import { addPlayer, findGame } from "@/lib/game/games";
+import { verifyPassword } from "@/lib/game/password";
 import { playerNameSchema } from "@/lib/game/schemas";
 
 export type JoinGameState = {
@@ -25,6 +27,13 @@ export async function joinGame(
     const game = await findGame(gameId);
     if (!game) {
       return { message: "This game doesn't exist anymore", values: { name } };
+    }
+    if (game.passwordHash && !(await hasAccess(game.id, game.passwordHash))) {
+      const password = String(formData.get("password") ?? "");
+      if (!verifyPassword(password, game.passwordHash)) {
+        return { message: "Wrong password", values: { name } };
+      }
+      await grantAccess(game.id, game.passwordHash);
     }
     await addPlayer(game, result.data);
   } catch {

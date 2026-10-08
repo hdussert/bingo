@@ -1,4 +1,4 @@
-import { ClockIcon, Grid3x3Icon, UsersIcon } from "lucide-react";
+import { ClockIcon, Grid3x3Icon, LockIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
 import BackLink from "@/components/game/BackLink";
@@ -63,6 +63,12 @@ export default async function GamesPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
+                    {game.isPrivate && (
+                      <span className="flex items-center gap-1.5 text-foreground">
+                        <LockIcon className="size-4" />
+                        Private
+                      </span>
+                    )}
                     <span className="flex items-center gap-1.5">
                       <Grid3x3Icon className="size-4" />
                       {game.size}×{game.size}
