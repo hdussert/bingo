@@ -91,7 +91,10 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
       {/* Three columns whatever the grid size: five are too narrow for words on a phone */}
       <ul className="grid grid-cols-3 gap-2">
         {events.map((event, i) => (
-          <li key={event} className="relative">
+          <li
+            key={event}
+            className="relative animate-in duration-200 fade-in zoom-in-50 motion-reduce:animate-none"
+          >
             <button
               type="button"
               onClick={() => edit(i)}
