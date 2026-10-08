@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Fredoka, Luckiest_Guy } from "next/font/google";
+import { Fredoka } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -8,10 +9,15 @@ const fredoka = Fredoka({
   subsets: ["latin"],
 });
 
-const luckiestGuy = Luckiest_Guy({
+const luckiestGuy = localFont({
+  src: "./fonts/LuckiestGuy-Regular.ttf",
   variable: "--font-heading",
-  subsets: ["latin"],
-  weight: "400",
+  // The font reserves 30% of its height below the baseline for descenders, but its letters are
+  // all capitals 71% tall: moving that space above centers them in any box
+  declarations: [
+    { prop: "ascent-override", value: "85.5%" },
+    { prop: "descent-override", value: "14.5%" },
+  ],
 });
 
 export const metadata: Metadata = {
