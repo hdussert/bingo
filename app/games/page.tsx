@@ -16,17 +16,7 @@ import { listRunningGames } from "@/lib/game/games";
 import { NAV_FORWARD } from "@/lib/transitions";
 import ButtonLink from "@/components/game/ButtonLink";
 import PageTitle from "@/components/game/PageTitle";
-import { pluralize } from "@/lib/game/format";
-
-const timeAgo = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
-
-function formatTimeAgo(date: Date): string {
-  const minutes = Math.round((date.getTime() - Date.now()) / 60_000);
-  if (minutes > -60) {
-    return timeAgo.format(minutes, "minute");
-  }
-  return timeAgo.format(Math.round(minutes / 60), "hour");
-}
+import { formatTimeAgo, pluralize } from "@/lib/game/format";
 
 export default async function GamesPage() {
   // Read the games on every visit, not once at build time

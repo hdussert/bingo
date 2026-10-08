@@ -16,7 +16,7 @@ export default function RefreshButton() {
       variant="ghost"
       size="icon-xl"
       className="-mr-3"
-      aria-label="Refresh games"
+      aria-label="Refresh"
       disabled={isRefreshing}
       onClick={() => startTransition(() => router.refresh())}
     >
