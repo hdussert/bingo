@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlertIcon, LockIcon } from "lucide-react";
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { createGame } from "@/actions/game/createGame";
 import EventSuggestions from "@/components/game/EventSuggestions";
 import EventsProgress from "@/components/game/EventsProgress";
@@ -90,7 +90,10 @@ export default function NewGameForm() {
           <EventsTileInput events={events} size={size} onChange={setEvents} />
           <EventSuggestions
             events={events}
-            onAdd={(event) => setEvents([...events, event])}
+            onAdd={(event) =>
+              // A transition, so the new tile pops in like typed ones
+              startTransition(() => setEvents([...events, event]))
+            }
           />
         </FieldGroup>
       </FormStep>

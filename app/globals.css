@@ -162,3 +162,18 @@
     translate: 0;
   }
 }
+
+/* Event tiles (EventsTileInput): new ones pop in, removed ones shrink away */
+::view-transition-new(.tile-in) {
+  animation: 200ms ease-out both tile-pop;
+}
+::view-transition-old(.tile-out) {
+  animation: 150ms ease-in both tile-pop reverse;
+}
+
+@keyframes tile-pop {
+  from {
+    opacity: 0;
+    scale: 0.5;
+  }
+}

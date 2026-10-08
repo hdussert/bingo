@@ -1,7 +1,7 @@
 "use client";
 
 import { XIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { startTransition, useRef, useState, ViewTransition } from "react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/input-group";
 import { MAX_EVENT_LENGTH, MAX_EVENTS } from "@/lib/game/const";
 import { parseEvents } from "@/lib/game/schemas";
-import { cn } from "@/lib/utils";
 import type { GridSize } from "@/lib/game/types";
 
 type Props = {
@@ -25,8 +24,6 @@ const MAX_EMPTY_TILES = 6;
 /** Adds events one at a time as tiles, with empty tiles for some of the ones still needed. */
 export default function EventsTileInput({ events, size, onChange }: Props) {
   const [draft, setDraft] = useState("");
-  // Tiles playing their exit animation, removed from the events once it ends
-  const [leaving, setLeaving] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
   const isFull = events.length >= MAX_EVENTS;
   const emptyTileCount = Math.min(
@@ -36,7 +33,7 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
 
   // Pasted lists add one event per line; parseEvents drops blanks and duplicates
   function add(text: string) {
-    onChange(parseEvents([...events, text].join("\n")));
+    update(parseEvents([...events, text].join("\n")));
   }
 
   function addDraft() {
@@ -47,27 +44,14 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
     setDraft("");
   }
 
-  function remove(event: string) {
-    onChange(events.filter((other) => other !== event));
-    setLeaving((current) => {
-      const next = new Set(current);
-      next.delete(event);
-      return next;
-    });
-  }
-
-  function startRemoving(event: string) {
-    // No exit animation to wait for: remove right away
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      remove(event);
-      return;
-    }
-    setLeaving((current) => new Set(current).add(event));
+  // Inside a transition, so each tile's <ViewTransition> animates: new tiles pop in, removed ones shrink away, the rest slide into place
+  function update(next: string[]) {
+    startTransition(() => onChange(next));
   }
 
   function edit(index: number) {
     setDraft(events[index]);
-    onChange(events.filter((_, i) => i !== index));
+    update(events.filter((_, i) => i !== index));
     inputRef.current?.focus();
   }
 
@@ -112,37 +96,27 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
       {/* Three columns whatever the grid size: five are too narrow for words on a phone */}
       <ul className="grid grid-cols-3 gap-2">
         {events.map((event, i) => (
-          <li
-            key={event}
-            className={cn(
-              "relative motion-reduce:animate-none",
-              leaving.has(event)
-                ? "animate-out duration-150 fill-mode-forwards fade-out zoom-out-50"
-                : "animate-in duration-200 fade-in zoom-in-50",
-            )}
-            onAnimationEnd={(e) => {
-              if (e.target === e.currentTarget && leaving.has(event)) {
-                remove(event);
-              }
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => edit(i)}
-              className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[22%] bg-primary p-2.5 text-center text-sm leading-tight font-medium text-primary-foreground"
-            >
-              <span className="line-clamp-5 break-words">{event}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => startRemoving(event)}
-              disabled={leaving.has(event)}
-              aria-label={`Remove “${event}”`}
-              className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/30 text-white"
-            >
-              <XIcon strokeWidth={3} className="size-3" />
-            </button>
-          </li>
+          <ViewTransition key={event} enter="tile-in" exit="tile-out">
+            <li className="relative">
+              <button
+                type="button"
+                onClick={() => edit(i)}
+                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[22%] bg-primary p-2.5 text-center text-sm leading-tight font-medium text-primary-foreground"
+              >
+                <span className="line-clamp-5 break-words">{event}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  update(events.filter((other) => other !== event))
+                }
+                aria-label={`Remove “${event}”`}
+                className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/30 text-white"
+              >
+                <XIcon strokeWidth={3} className="size-3" />
+              </button>
+            </li>
+          </ViewTransition>
         ))}
         {Array.from({ length: emptyTileCount }, (_, i) => (
           <li
