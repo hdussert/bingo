@@ -13,6 +13,8 @@ export type Game = {
   title: string;
   size: GridSize;
   events: GameEvent[];
+  /** The join password's hash, or `null` for a public game. Server only: never pass it to a client component. */
+  passwordHash: string | null;
 };
 
 /** A cell of a player's grid, row by row. */
@@ -37,4 +39,5 @@ export type RunningGame = {
   size: GridSize;
   playerCount: number;
   lastActivityAt: Date;
+  isPrivate: boolean;
 };

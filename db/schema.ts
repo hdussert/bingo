@@ -15,6 +15,8 @@ export const games = snakeCase.table("games", {
   title: text().notNull(),
   size: integer().$type<GridSize>().notNull(),
   events: jsonb().$type<GameEvent[]>().notNull(),
+  // Salted scrypt hash of the join password ("salt:hash"), or null for a public game
+  passwordHash: text(),
 });
 
 export const players = snakeCase.table(

@@ -4,7 +4,9 @@ import {
   MAX_EVENT_LENGTH,
   MAX_EVENTS,
   MAX_NAME_LENGTH,
+  MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
+  MIN_PASSWORD_LENGTH,
 } from "./const";
 
 /** Validates a new game, with messages meant for the organizer. */
@@ -31,11 +33,26 @@ export const newGameSchema = z
           ),
       )
       .max(MAX_EVENTS, `A game is limited to ${MAX_EVENTS} events`),
+    isPrivate: z.boolean(),
+    password: z
+      .string()
+      .trim()
+      .max(
+        MAX_PASSWORD_LENGTH,
+        `The password is limited to ${MAX_PASSWORD_LENGTH} characters`,
+      ),
   })
   .refine((game) => game.events.length >= game.size ** 2, {
     message: "Not enough events for this grid",
     path: ["events"],
-  });
+  })
+  .refine(
+    (game) => !game.isPrivate || game.password.length >= MIN_PASSWORD_LENGTH,
+    {
+      message: `The password needs at least ${MIN_PASSWORD_LENGTH} characters`,
+      path: ["password"],
+    },
+  );
 
 export type NewGame = z.infer<typeof newGameSchema>;
 

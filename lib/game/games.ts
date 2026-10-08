@@ -17,13 +17,17 @@ function isPlayer(gameId: string, name: string) {
 }
 
 /** Saves a new game and returns its id, used in its link. */
-export async function saveGame(game: NewGame): Promise<string> {
+export async function saveGame(
+  game: NewGame,
+  passwordHash: string | null,
+): Promise<string> {
   const id = newId(6);
   await db.insert(games).values({
     id,
     title: game.title,
     size: game.size,
     events: game.events.map((text) => ({ id: newId(4), text })),
+    passwordHash,
   });
   return id;
 }
@@ -35,11 +39,22 @@ export async function findGame(id: string): Promise<Game | null> {
       title: games.title,
       size: games.size,
       events: games.events,
+      passwordHash: games.passwordHash,
     })
     .from(games)
     .where(eq(games.id, id))
     .limit(1);
   return row ?? null;
+}
+
+/** The join password's hash of a game, or `null` for a public or unknown game. */
+export async function findPasswordHash(gameId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ passwordHash: games.passwordHash })
+    .from(games)
+    .where(eq(games.id, gameId))
+    .limit(1);
+  return row?.passwordHash ?? null;
 }
 
 /** Lists the games with recent activity, most recently active first. */
@@ -53,6 +68,7 @@ export async function listRunningGames(): Promise<RunningGame[]> {
       size: games.size,
       playerCount: count(players.gameId),
       lastActivityAt: lastActivityAt.mapWith(games.createdAt),
+      isPrivate: sql<boolean>`${games.passwordHash} is not null`,
     })
     .from(games)
     .leftJoin(players, eq(players.gameId, games.id))
