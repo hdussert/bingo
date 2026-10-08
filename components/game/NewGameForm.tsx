@@ -162,8 +162,11 @@ export default function NewGameForm() {
         </Alert>
       )}
 
-      {/* Stays reachable at the bottom of the screen while scrolling through the steps */}
-      <div className="sticky bottom-0 -mx-4 bg-linear-to-t from-background from-60% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      {/* Stays reachable at the bottom of the screen while scrolling through the steps. Its own view transition name keeps it above tiles and cards animating under it */}
+      <div
+        style={{ viewTransitionName: "create-game" }}
+        className="sticky bottom-0 -mx-4 bg-linear-to-t from-background from-60% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]"
+      >
         <Button
           type="submit"
           size="xl"

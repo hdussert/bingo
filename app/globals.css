@@ -177,3 +177,14 @@
     scale: 0.5;
   }
 }
+
+/* The new game form's sticky Create button (NewGameForm): a layer of its own, so animating tiles and cards pass under it, but never animated itself */
+::view-transition-group(create-game) {
+  animation: none;
+}
+::view-transition-old(create-game) {
+  display: none;
+}
+::view-transition-new(create-game) {
+  animation: none;
+}
