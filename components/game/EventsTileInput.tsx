@@ -1,7 +1,8 @@
 "use client";
 
-import { XIcon } from "lucide-react";
+import { WandSparklesIcon, XIcon } from "lucide-react";
 import { startTransition, useRef, useState, ViewTransition } from "react";
+import { Button } from "@/components/ui/button";
 import {
   InputGroup,
   InputGroupAddon,
@@ -48,6 +49,16 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
   // Inside a transition, so each tile's <ViewTransition> animates: new tiles pop in, removed ones shrink away, the rest slide into place
   function update(next: string[]) {
     startTransition(() => onChange(next));
+  }
+
+  // Development shortcut: test events until the grid is full, like pasting a list
+  function fillGrid() {
+    const missing = Math.max(size ** 2 - events.length, 0);
+    const fillers = Array.from(
+      { length: missing },
+      (_, i) => `Test event ${events.length + i + 1}`,
+    );
+    add(fillers.join("\n"));
   }
 
   function edit(index: number) {
@@ -135,6 +146,19 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
           </ViewTransition>
         ))}
       </ul>
+      {/* Replaced at build time: production builds drop the button entirely */}
+      {process.env.NODE_ENV === "development" && (
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={fillGrid}
+          className="self-start border-dashed"
+        >
+          <WandSparklesIcon data-icon="inline-start" />
+          Fill grid (dev)
+        </Button>
+      )}
     </div>
   );
 }
