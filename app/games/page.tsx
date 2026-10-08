@@ -72,7 +72,7 @@ export default async function GamesPage() {
                         aria-label="Private game"
                         className="row-span-1 self-center"
                       >
-                        <LockIcon className="size-6" />
+                        <LockIcon strokeWidth={3} className="size-6" />
                       </CardAction>
                     )}
                   </CardHeader>
