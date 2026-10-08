@@ -60,19 +60,34 @@
   --radius: 1.5rem;
 }
 
-/* White letters with a thick outline and a stepped rainbow shadow, like a cartoon or game title */
+/* A pink 3D extrusion, one shadow every 0.015em so it reads as a solid block */
+:root {
+  --extrusion:
+    0.015em 0.015em 0 var(--color-primary),
+    0.03em 0.03em 0 var(--color-primary),
+    0.045em 0.045em 0 var(--color-primary),
+    0.06em 0.06em 0 var(--color-primary),
+    0.075em 0.075em 0 var(--color-primary), 0.09em 0.09em 0 var(--color-primary);
+}
+
+/* White letters with a thick pink outline on a deep pink extrusion, like a cartoon or game logo */
 @utility text-cartoon {
   color: white;
   -webkit-text-stroke: 0.12em var(--color-primary);
   /* Draws the stroke under the fill, so it only thickens the outside of the letters */
   paint-order: stroke fill;
   text-shadow:
-    0.06em 0.06em 0 oklch(0.65 0.24 25),
-    0.12em 0.12em 0 oklch(0.78 0.17 60),
-    0.18em 0.18em 0 oklch(0.88 0.18 95),
-    0.24em 0.24em 0 oklch(0.72 0.19 145),
-    0.3em 0.3em 0 oklch(0.62 0.19 250),
-    0.36em 0.36em 0 oklch(0.55 0.24 300);
+    var(--extrusion),
+    0.105em 0.105em 0 var(--color-primary),
+    0.12em 0.12em 0 var(--color-primary),
+    0.135em 0.135em 0 var(--color-primary),
+    0.15em 0.15em 0 var(--color-primary);
+}
+
+/* White letters on a pink 3D extrusion, for page headings */
+@utility text-extruded {
+  color: white;
+  text-shadow: var(--extrusion);
 }
 
 @layer base {
@@ -89,5 +104,61 @@
   /* Every heading uses the heading font. Also sets --tw-leading, which text-* size utilities read, so the line height survives them */
   .font-heading {
     @apply leading-[1.1] tracking-[0.04em] uppercase;
+  }
+}
+
+/* Page slides (app/template.tsx): forward pushes the page left, back pushes it right */
+::view-transition-old(.nav-forward),
+::view-transition-old(.nav-back) {
+  animation:
+    150ms ease-in both fade reverse,
+    400ms ease-in-out both slide reverse;
+}
+::view-transition-new(.nav-forward),
+::view-transition-new(.nav-back) {
+  animation:
+    210ms ease-out 150ms both fade,
+    400ms ease-in-out both slide;
+}
+::view-transition-old(.nav-forward),
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+}
+::view-transition-new(.nav-forward),
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+}
+
+/* Taps during a slide reach the new page instead of the animation overlay */
+::view-transition {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
+@keyframes fade {
+  from {
+    filter: blur(3px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide {
+  from {
+    translate: var(--slide-offset);
+  }
+  to {
+    translate: 0;
   }
 }

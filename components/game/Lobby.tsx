@@ -14,6 +14,7 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import type { LobbyRow } from "@/lib/game/lobby";
+import { pluralize } from "@/lib/game/format";
 
 const MEDALS = ["🥇", "🥈", "🥉"];
 
@@ -37,8 +38,7 @@ export default function Lobby({ rows, playerKey }: Props) {
       <CardHeader>
         <CardTitle>Players</CardTitle>
         <CardDescription>
-          {rows.length} {rows.length === 1 ? "player" : "players"} · updates
-          live
+          {pluralize(rows.length, "player")} · updates live
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -59,7 +59,7 @@ export default function Lobby({ rows, playerKey }: Props) {
                   </ItemTitle>
                   <ItemDescription>
                     {row.tickCount}/{row.cellCount} ticked ·{" "}
-                    {row.lineCount === 1 ? "1 line" : `${row.lineCount} lines`}
+                    {pluralize(row.lineCount, "line")}
                   </ItemDescription>
                 </ItemContent>
               </Item>

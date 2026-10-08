@@ -1,6 +1,5 @@
 import { Link2OffIcon } from "lucide-react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import ButtonLink from "@/components/game/ButtonLink";
 import {
   Empty,
   EmptyContent,
@@ -25,9 +24,7 @@ export default function BrokenLink() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <Button nativeButton={false} render={<Link href="/" />}>
-            Create a game
-          </Button>
+          <ButtonLink href="/new">Create a game</ButtonLink>
         </EmptyContent>
       </Empty>
     </main>

@@ -10,3 +10,6 @@ export const MAX_EVENT_LENGTH = 60;
 export const MAX_EVENTS = 50;
 
 export const MAX_NAME_LENGTH = 30;
+
+/** A game with no activity (created, joined or ticked) for this long is no longer listed as running. */
+export const RUNNING_GAME_HOURS = 24;
