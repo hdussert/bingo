@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/input-group";
 import { MAX_EVENT_LENGTH, MAX_EVENTS } from "@/lib/game/const";
 import { parseEvents } from "@/lib/game/schemas";
+import { cn } from "@/lib/utils";
 import type { GridSize } from "@/lib/game/types";
 
 type Props = {
@@ -24,6 +25,8 @@ const MAX_EMPTY_TILES = 6;
 /** Adds events one at a time as tiles, with empty tiles for some of the ones still needed. */
 export default function EventsTileInput({ events, size, onChange }: Props) {
   const [draft, setDraft] = useState("");
+  // Tiles playing their exit animation, removed from the events once it ends
+  const [leaving, setLeaving] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
   const isFull = events.length >= MAX_EVENTS;
   const emptyTileCount = Math.min(
@@ -42,6 +45,24 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
     }
     add(draft);
     setDraft("");
+  }
+
+  function remove(event: string) {
+    onChange(events.filter((other) => other !== event));
+    setLeaving((current) => {
+      const next = new Set(current);
+      next.delete(event);
+      return next;
+    });
+  }
+
+  function startRemoving(event: string) {
+    // No exit animation to wait for: remove right away
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      remove(event);
+      return;
+    }
+    setLeaving((current) => new Set(current).add(event));
   }
 
   function edit(index: number) {
@@ -93,7 +114,17 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
         {events.map((event, i) => (
           <li
             key={event}
-            className="relative animate-in duration-200 fade-in zoom-in-50 motion-reduce:animate-none"
+            className={cn(
+              "relative motion-reduce:animate-none",
+              leaving.has(event)
+                ? "animate-out duration-150 fill-mode-forwards fade-out zoom-out-50"
+                : "animate-in duration-200 fade-in zoom-in-50",
+            )}
+            onAnimationEnd={(e) => {
+              if (e.target === e.currentTarget && leaving.has(event)) {
+                remove(event);
+              }
+            }}
           >
             <button
               type="button"
@@ -104,7 +135,8 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
             </button>
             <button
               type="button"
-              onClick={() => onChange(events.filter((_, j) => j !== i))}
+              onClick={() => startRemoving(event)}
+              disabled={leaving.has(event)}
               aria-label={`Remove “${event}”`}
               className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/30 text-white"
             >
