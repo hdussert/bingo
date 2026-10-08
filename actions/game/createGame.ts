@@ -29,8 +29,10 @@ export async function createGame(
   }
 
   const game = result.data;
-  const passwordHash = game.password ? await hashPassword(game.password) : null;
   try {
+    const passwordHash = game.password
+      ? await hashPassword(game.password)
+      : null;
     const gameId = await saveGame(game, passwordHash);
     // The organizer's phone can open the game without typing the password
     if (passwordHash) {

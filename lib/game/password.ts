@@ -26,8 +26,13 @@ export async function verifyPassword(
   stored: string,
 ): Promise<boolean> {
   const [salt, hash] = stored.split(":");
+  const expected = Buffer.from(hash ?? "", "base64url");
+  // A malformed stored value can't match: timingSafeEqual would throw on it
+  if (!salt || expected.length !== 32) {
+    return false;
+  }
   const candidate = await scryptAsync(normalize(password), salt, 32);
-  return timingSafeEqual(candidate, Buffer.from(hash, "base64url"));
+  return timingSafeEqual(candidate, expected);
 }
 
 /** The proof of access a phone keeps after entering the password: only the server can derive it from the stored hash. */

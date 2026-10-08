@@ -64,14 +64,15 @@ export default function NewGameForm() {
     password: isPrivate ? password : null,
   });
   const href = state.gameId ? `/play/${state.gameId}` : null;
-  // The counter already shows missing events, and an empty title only disables the button
+  // The counter already shows missing events, and an empty title or password only disables the button
   const liveErrors = result.success
     ? []
     : result.error.issues
         .filter(
           (issue) =>
             issue.code !== "custom" &&
-            !(issue.code === "too_small" && issue.path[0] === "title"),
+            !(issue.code === "too_small" && issue.path[0] === "title") &&
+            !(issue.code === "too_small" && password === ""),
         )
         .map((issue) => issue.message);
   const errors = [...new Set([...liveErrors, ...(state.errors ?? [])])];

@@ -7,6 +7,8 @@ import { playerNameSchema } from "@/lib/game/schemas";
 
 export type JoinGameState = {
   message?: string;
+  /** The field the message is about, to highlight it. */
+  invalidField?: "name" | "password";
   values?: { name: string };
 };
 
@@ -19,7 +21,11 @@ export async function joinGame(
   const name = String(formData.get("name") ?? "");
   const result = playerNameSchema.safeParse(name);
   if (!result.success) {
-    return { message: result.error.issues[0].message, values: { name } };
+    return {
+      message: result.error.issues[0].message,
+      invalidField: "name",
+      values: { name },
+    };
   }
 
   try {
@@ -30,7 +36,11 @@ export async function joinGame(
     if (!playable.canPlay) {
       const password = String(formData.get("password") ?? "");
       if (!(await unlockGame(gameId, password))) {
-        return { message: "Wrong password", values: { name } };
+        return {
+          message: "Wrong password",
+          invalidField: "password",
+          values: { name },
+        };
       }
     }
     await addPlayer(playable.game, result.data);

@@ -50,7 +50,7 @@ export default function JoinForm({
       <CardContent>
         <form action={formAction}>
           <FieldGroup>
-            <Field data-invalid={!!state.message}>
+            <Field data-invalid={state.invalidField === "name"}>
               <FieldLabel htmlFor="name">Your name</FieldLabel>
               <Input
                 id="name"
@@ -59,11 +59,11 @@ export default function JoinForm({
                 maxLength={MAX_NAME_LENGTH}
                 autoComplete="given-name"
                 defaultValue={state.values?.name}
-                aria-invalid={!!state.message}
+                aria-invalid={state.invalidField === "name"}
               />
             </Field>
             {needsPassword && (
-              <Field data-invalid={!!state.message}>
+              <Field data-invalid={state.invalidField === "password"}>
                 <FieldLabel htmlFor="password">Password</FieldLabel>
                 <Input
                   id="password"
@@ -72,7 +72,7 @@ export default function JoinForm({
                   required
                   maxLength={MAX_PASSWORD_LENGTH}
                   autoComplete="off"
-                  aria-invalid={!!state.message}
+                  aria-invalid={state.invalidField === "password"}
                 />
                 <FieldDescription>
                   This game is private: ask the organizer for its password.
