@@ -85,8 +85,8 @@ export default function NewGameForm() {
       >
         <FieldGroup className="gap-4">
           <input type="hidden" name="events" value={events.join("\n")} />
-          <EventsTileInput events={events} size={size} onChange={setEvents} />
           <EventsProgress count={events.length} required={size ** 2} />
+          <EventsTileInput events={events} size={size} onChange={setEvents} />
           <EventSuggestions
             events={events}
             onAdd={(event) => setEvents([...events, event])}
