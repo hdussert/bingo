@@ -11,6 +11,7 @@ import GameReady from "@/components/game/GameReady";
 import GridSizePicker from "@/components/game/GridSizePicker";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   Field,
   FieldContent,
@@ -112,23 +113,25 @@ export default function NewGameForm() {
               onCheckedChange={setIsPrivate}
             />
           </Field>
-          {isPrivate && (
-            <Field>
-              <Input
-                name="password"
-                aria-label="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                maxLength={MAX_PASSWORD_LENGTH}
-                autoComplete="off"
-                placeholder="party2026"
-              />
-              <FieldDescription>
-                At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
-                will say it out loud, and case doesn&apos;t matter.
-              </FieldDescription>
-            </Field>
-          )}
+          <Collapsible open={isPrivate}>
+            <CollapsibleContent>
+              <Field>
+                <Input
+                  name="password"
+                  aria-label="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  maxLength={MAX_PASSWORD_LENGTH}
+                  autoComplete="off"
+                  placeholder="party2026"
+                />
+                <FieldDescription>
+                  At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
+                  will say it out loud, and case doesn&apos;t matter.
+                </FieldDescription>
+              </Field>
+            </CollapsibleContent>
+          </Collapsible>
         </FieldGroup>
       </FormStep>
 
