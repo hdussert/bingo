@@ -83,6 +83,10 @@ export default function JoinForm({
                     id="password"
                     name="password"
                     type={isPasswordShown ? "text" : "password"}
+                    // Fredoka's dots are small and tight: spread them out while hidden
+                    className={
+                      isPasswordShown ? undefined : "text-2xl tracking-[0.2em]"
+                    }
                     required
                     maxLength={MAX_PASSWORD_LENGTH}
                     autoComplete="off"
