@@ -1,22 +1,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import type { LobbyRow } from "@/lib/game/lobby";
+import { type LobbyRow, rankLabel } from "@/lib/game/lobby";
 import { pluralize } from "@/lib/game/format";
 import { cn } from "@/lib/utils";
-
-const MEDALS = ["🥇", "🥈", "🥉"];
 
 type Props = {
   rows: LobbyRow[];
   /** The current player's name key, to highlight their row. */
   playerKey: string;
 };
-
-// Medals for the first three bingos, the position for everyone else
-function rankLabel(row: LobbyRow, position: number): string | number {
-  const medal = row.bingoRank === null ? undefined : MEDALS[row.bingoRank - 1];
-  return medal ?? position;
-}
 
 /** Every player of the game ranked, with their progress, bingos first. */
 export default function Lobby({ rows, playerKey }: Props) {

@@ -23,13 +23,7 @@ export default function LeaderboardDrawer({ playerCount, children }: Props) {
     <Drawer showSwipeHandle>
       <DrawerTrigger
         render={
-          <Button
-            variant="ghost"
-            size="icon-xl"
-            // Lines the trophy up with the content edge, like the back arrow
-            className="-mr-3"
-            aria-label="Leaderboard"
-          />
+          <Button variant="ghost" size="icon-xl" aria-label="Leaderboard" />
         }
       >
         <TrophyIcon strokeWidth={2.5} />

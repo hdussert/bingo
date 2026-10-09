@@ -3,11 +3,12 @@ import Link from "next/link";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
-import CopyLinkButton from "@/components/game/CopyLinkButton";
+import CopyLinkIconButton from "@/components/game/CopyLinkIconButton";
 import JoinForm from "@/components/game/JoinForm";
 import LeaderboardDrawer from "@/components/game/LeaderboardDrawer";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import Lobby from "@/components/game/Lobby";
+import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
@@ -38,6 +39,8 @@ export default async function PlayPage({
   const player = canPlay
     ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
     : undefined;
+  const rows = rankPlayers(players);
+  const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
@@ -47,9 +50,13 @@ export default async function PlayPage({
       <div className="flex items-center justify-between">
         <BackLink href="/games" />
         {player && (
-          <LeaderboardDrawer playerCount={players.length}>
-            <Lobby rows={rankPlayers(players)} playerKey={player.nameKey} />
-          </LeaderboardDrawer>
+          // Lines the trophy up with the content edge, like the back arrow
+          <div className="-mr-3 flex items-center">
+            <CopyLinkIconButton url={url} />
+            <LeaderboardDrawer playerCount={players.length}>
+              <Lobby rows={rows} playerKey={player.nameKey} />
+            </LeaderboardDrawer>
+          </div>
         )}
       </div>
       <div className="flex flex-col items-center gap-2 text-center">
@@ -93,11 +100,10 @@ export default async function PlayPage({
               isTicked: cell.isTicked,
             }))}
           />
-          <CopyLinkButton
-            url={url}
-            failedLabel="Couldn't copy the link"
-            variant="outline"
-            size="xl"
+          <PlayerRank
+            row={rows[position]}
+            position={position + 1}
+            playerCount={players.length}
           />
           <AutoRefresh />
         </>
