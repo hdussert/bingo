@@ -171,7 +171,7 @@
   animation: 150ms ease-in both tile-pop reverse;
 }
 
-/* Each letter of "Bingo!" (BingoGrid): jumps in, overshoots, settles */
+/* Each letter of "Bingo!" (BingoBanner): jumps in, overshoots, settles */
 @keyframes letter-pop {
   from {
     opacity: 0;
@@ -190,6 +190,14 @@
   to {
     scale: 1;
     translate: 0;
+  }
+}
+
+/* The "Bingo!" banner leaving (BingoBanner) */
+@keyframes banner-out {
+  to {
+    opacity: 0;
+    scale: 0.8;
   }
 }
 

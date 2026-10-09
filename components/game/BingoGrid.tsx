@@ -1,7 +1,8 @@
 "use client";
 
-import { startTransition, useOptimistic } from "react";
+import { startTransition, useEffect, useOptimistic, useState } from "react";
 import { tickCell } from "@/actions/game/tickCell";
+import BingoBanner from "@/components/game/BingoBanner";
 import { Toggle } from "@/components/ui/toggle";
 import { findBingoLines } from "@/lib/game/bingo";
 import { GRID_COLUMNS } from "@/lib/game/const";
@@ -21,6 +22,9 @@ const TEXT_SIZES: Record<GridSize, string> = {
   5: "text-xs sm:text-sm",
 };
 
+// Long enough for the letters to bounce in and be read
+const BANNER_MS = 2000;
+
 async function celebrate() {
   const { default: confetti } = await import("canvas-confetti");
   confetti({
@@ -39,12 +43,23 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
   );
   const lines = findBingoLines(ticked, size);
   const winningCells = new Set(lines.flat());
+  // Set when a tick completes a line, to show the banner for a moment
+  const [celebrationId, setCelebrationId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (celebrationId === null) {
+      return;
+    }
+    const timeout = setTimeout(() => setCelebrationId(null), BANNER_MS);
+    return () => clearTimeout(timeout);
+  }, [celebrationId]);
 
   function handleToggle(index: number) {
     const isTicked = !ticked[index];
     const next = ticked.map((value, i) => (i === index ? isTicked : value));
     if (findBingoLines(next, size).length > lines.length) {
       void celebrate();
+      setCelebrationId((id) => (id ?? 0) + 1);
     }
     startTransition(async () => {
       setOptimisticTicks(next);
@@ -54,7 +69,7 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="relative">
       <div className={cn("grid", GRID_COLUMNS[size])}>
         {cells.map((cell, i) => (
           <Toggle
@@ -77,26 +92,9 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
           </Toggle>
         ))}
       </div>
-      {lines.length > 0 && (
-        <p
-          // Keyed by the line count, so each new line replays the bounce
-          key={lines.length}
-          role="status"
-          className="pb-6 text-center font-heading text-7xl text-cartoon"
-        >
-          <span className="sr-only">Bingo!</span>
-          {/* One letter after the other: each bounces in a little after the previous one */}
-          {[..."Bingo!"].map((letter, i) => (
-            <span
-              key={i}
-              aria-hidden
-              className="inline-block animate-[letter-pop_600ms_ease-out_both] motion-reduce:animate-none"
-              style={{ animationDelay: `${i * 70}ms` }}
-            >
-              {letter}
-            </span>
-          ))}
-        </p>
+      {celebrationId !== null && (
+        // Keyed, so a new line while it's showing replays it
+        <BingoBanner key={celebrationId} />
       )}
     </div>
   );
