@@ -67,6 +67,10 @@ export default function BingoGrid({
   }, [celebrationId]);
 
   function handleToggle(index: number) {
+    // The ticks would go to the current player's grid, not the one on screen
+    if (isReadOnly) {
+      return;
+    }
     const isTicked = !ticked[index];
     setTappedIndex(index);
     const next = ticked.map((value, i) => (i === index ? isTicked : value));

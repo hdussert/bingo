@@ -14,10 +14,18 @@ type Props = {
   rows: LobbyRow[];
   /** The current player's name key, to highlight their row. */
   playerKey: string;
+  /** The name key of the player whose grid is on screen, if not the current player's. */
+  peekKey?: string;
 };
 
 /** Every player of the game ranked, with their progress, bingos first: tapping one shows their grid. */
-export default function Lobby({ gameId, playerName, rows, playerKey }: Props) {
+export default function Lobby({
+  gameId,
+  playerName,
+  rows,
+  playerKey,
+  peekKey,
+}: Props) {
   return (
     <ol className="flex flex-col gap-2">
       {rows.map((row, i) => {
@@ -30,6 +38,8 @@ export default function Lobby({ gameId, playerName, rows, playerKey }: Props) {
               nativeButton={false}
               render={
                 <Link
+                  // Every row would otherwise prefetch a full render of the game page
+                  prefetch={false}
                   href={playHref(
                     gameId,
                     playerName,
@@ -40,6 +50,8 @@ export default function Lobby({ gameId, playerName, rows, playerKey }: Props) {
               className={cn(
                 "flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5 transition-transform active:scale-[0.98]",
                 isMe ? "border-primary bg-primary/10" : "border-border",
+                // The grid on screen
+                row.nameKey === peekKey && "border-highlight",
               )}
             >
               <RankNumber
@@ -53,6 +65,9 @@ export default function Lobby({ gameId, playerName, rows, playerKey }: Props) {
                     {row.name}
                     {isMe && (
                       <span className="text-muted-foreground"> (you)</span>
+                    )}
+                    {row.nameKey === peekKey && (
+                      <span className="text-muted-foreground"> (viewing)</span>
                     )}
                   </span>
                   <LinesBadge lineCount={row.lineCount} hasBingo={hasBingo} />

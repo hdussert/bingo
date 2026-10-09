@@ -24,6 +24,7 @@ export default async function PlayPage({
   const { id } = await params;
   const { name, peek } = await searchParams;
   const playerName = typeof name === "string" ? name.trim() : "";
+  const peekKey = typeof peek === "string" ? toNameKey(peek) : undefined;
 
   // Visitors who haven't joined only see the join form: no need for the players
   const [playable, players, url] = await Promise.all([
@@ -44,7 +45,7 @@ export default async function PlayPage({
   const peeked = player
     ? players.find(
         (candidate) =>
-          candidate.nameKey === peek && candidate.nameKey !== player.nameKey,
+          candidate.nameKey === peekKey && candidate.nameKey !== player.nameKey,
       )
     : undefined;
   const rows = rankPlayers(players);
@@ -67,6 +68,7 @@ export default async function PlayPage({
                 playerName={player.name}
                 rows={rows}
                 playerKey={player.nameKey}
+                peekKey={peeked?.nameKey}
               />
             </LeaderboardDrawer>
           </div>
