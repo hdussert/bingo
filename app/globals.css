@@ -4,6 +4,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --metal-gold: linear-gradient(
+    to bottom,
+    #fff7c4 0%,
+    #ffd84a 42%,
+    #b87d0a 50%,
+    #f5c537 70%,
+    #fff1a6 100%
+  );
+  --metal-silver: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    #d9dde6 42%,
+    #7d8494 50%,
+    #c7ccd6 70%,
+    #f4f6fa 100%
+  );
+  --metal-bronze: linear-gradient(
+    to bottom,
+    #ffd9b0 0%,
+    #e59a5a 42%,
+    #8a4a1c 50%,
+    #d0834a 70%,
+    #f6c193 100%
+  );
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -68,6 +95,14 @@
     0.045em 0.045em 0 var(--color-primary),
     0.06em 0.06em 0 var(--color-primary),
     0.075em 0.075em 0 var(--color-primary), 0.09em 0.09em 0 var(--color-primary);
+}
+
+/* Polished metal letters: a light top, a sharp reflection line through the middle and a darker edge */
+@utility text-metal-* {
+  background-image: --value(--metal-*);
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0.04em 0 rgb(0 0 0 / 0.35));
 }
 
 /* White letters with a thick pink outline on a deep pink extrusion, like a cartoon or game logo */
@@ -169,6 +204,46 @@
 }
 ::view-transition-old(.tile-out) {
   animation: 150ms ease-in both tile-pop reverse;
+}
+
+/* Each letter of "Bingo!" (BingoBanner): jumps in, overshoots, settles */
+@keyframes letter-pop {
+  from {
+    opacity: 0;
+    scale: 0.3;
+    translate: 0 0.5em;
+  }
+  45% {
+    opacity: 1;
+    scale: 1.25;
+    translate: 0 -0.2em;
+  }
+  70% {
+    scale: 0.92;
+    translate: 0 0.05em;
+  }
+  to {
+    scale: 1;
+    translate: 0;
+  }
+}
+
+/* The "Bingo!" banner leaving (BingoBanner) */
+@keyframes banner-out {
+  to {
+    opacity: 0;
+    scale: 0.8;
+  }
+}
+
+/* A grid cell when ticked (BingoGrid) */
+@keyframes tick-pop {
+  40% {
+    scale: 0.88;
+  }
+  70% {
+    scale: 1.05;
+  }
 }
 
 @keyframes tile-pop {

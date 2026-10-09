@@ -3,14 +3,18 @@ import Link from "next/link";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
+import CopyLinkIconButton from "@/components/game/CopyLinkIconButton";
 import JoinForm from "@/components/game/JoinForm";
+import LeaderboardDrawer from "@/components/game/LeaderboardDrawer";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import Lobby from "@/components/game/Lobby";
+import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageTitle from "@/components/game/PageTitle";
+import { absoluteUrl } from "@/lib/url";
 
 export default async function PlayPage({
   params,
@@ -21,9 +25,11 @@ export default async function PlayPage({
   const playerName = typeof name === "string" ? name.trim() : "";
 
   // Visitors who haven't joined only see the join form: no need for the players
-  const [playable, players] = await Promise.all([
+  const [playable, players, url] = await Promise.all([
     findPlayableGame(id),
     playerName ? listPlayers(id) : [],
+    // The game's link without ?name=, for inviting others
+    absoluteUrl(`/play/${id}`),
   ]);
   if (!playable) {
     return <BrokenLink />;
@@ -33,13 +39,26 @@ export default async function PlayPage({
   const player = canPlay
     ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
     : undefined;
+  const rows = rankPlayers(players);
+  const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      {!player && <BackLink href="/games" />}
+      <div className="flex items-center justify-between">
+        <BackLink href="/games" />
+        {player && (
+          // Lines the trophy up with the content edge, like the back arrow
+          <div className="-mr-3 flex items-center">
+            <CopyLinkIconButton url={url} />
+            <LeaderboardDrawer playerCount={players.length}>
+              <Lobby rows={rows} playerKey={player.nameKey} />
+            </LeaderboardDrawer>
+          </div>
+        )}
+      </div>
       <div className="flex flex-col items-center gap-2 text-center">
         <PageTitle>{game.title}</PageTitle>
         {!player && (
@@ -81,7 +100,11 @@ export default async function PlayPage({
               isTicked: cell.isTicked,
             }))}
           />
-          <Lobby rows={rankPlayers(players)} playerKey={player.nameKey} />
+          <PlayerRank
+            row={rows[position]}
+            position={position + 1}
+            playerCount={players.length}
+          />
           <AutoRefresh />
         </>
       ) : (
