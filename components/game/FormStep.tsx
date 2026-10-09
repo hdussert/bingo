@@ -13,7 +13,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-/** A numbered section of a form. */
+/** A numbered section of the new game form. */
 export default function FormStep({
   step,
   title,
