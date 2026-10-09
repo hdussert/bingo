@@ -61,10 +61,14 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
     add(fillers.join("\n"));
   }
 
-  function edit(index: number) {
-    setDraft(events[index]);
-    update(events.filter((_, i) => i !== index));
+  function edit(event: string) {
+    setDraft(event);
+    remove(event);
     inputRef.current?.focus();
+  }
+
+  function remove(event: string) {
+    update(events.filter((other) => other !== event));
   }
 
   return (
@@ -109,21 +113,20 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
       </InputGroup>
       {/* Three columns whatever the grid size: five are too narrow for words on a phone */}
       <ul className="grid grid-cols-3 gap-2">
-        {events.map((event, i) => (
+        {/* Newest first, so the event just added shows next to the input */}
+        {events.toReversed().map((event) => (
           <ViewTransition key={event} enter="tile-in" exit="tile-out">
             <li className="relative">
               <button
                 type="button"
-                onClick={() => edit(i)}
+                onClick={() => edit(event)}
                 className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[22%] bg-primary p-2.5 text-center text-sm leading-tight font-medium text-primary-foreground"
               >
                 <span className="line-clamp-5 break-words">{event}</span>
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  update(events.filter((other) => other !== event))
-                }
+                onClick={() => remove(event)}
                 aria-label={`Remove “${event}”`}
                 className="absolute top-1 right-1 flex size-5 items-center justify-center rounded-full bg-black/30 text-white"
               >
