@@ -5,6 +5,7 @@ import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import CopyLinkButton from "@/components/game/CopyLinkButton";
 import JoinForm from "@/components/game/JoinForm";
+import LeaderboardDrawer from "@/components/game/LeaderboardDrawer";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import Lobby from "@/components/game/Lobby";
 import { findPlayableGame } from "@/lib/game/access";
@@ -43,7 +44,14 @@ export default async function PlayPage({
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      <BackLink href="/games" />
+      <div className="flex items-center justify-between">
+        <BackLink href="/games" />
+        {player && (
+          <LeaderboardDrawer playerCount={players.length}>
+            <Lobby rows={rankPlayers(players)} playerKey={player.nameKey} />
+          </LeaderboardDrawer>
+        )}
+      </div>
       <div className="flex flex-col items-center gap-2 text-center">
         <PageTitle>{game.title}</PageTitle>
         {!player && (
@@ -85,7 +93,6 @@ export default async function PlayPage({
               isTicked: cell.isTicked,
             }))}
           />
-          <Lobby rows={rankPlayers(players)} playerKey={player.nameKey} />
           <CopyLinkButton
             url={url}
             failedLabel="Couldn't copy the link"
