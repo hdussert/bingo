@@ -6,7 +6,7 @@ import { findPlayableGame } from "@/lib/game/access";
 
 export default async function SharePage({
   params,
-}: PageProps<"/play/[id]/share">) {
+}: PageProps<"/share/[id]">) {
   const { id } = await params;
   const [playable, requestHeaders] = await Promise.all([
     findPlayableGame(id),

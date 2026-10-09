@@ -69,7 +69,7 @@ export default function NewGameForm() {
   // Replaces the form in the history: going back from the link lands on the home page, not on a second copy of the game
   useEffect(() => {
     if (state.gameId) {
-      router.replace(`/play/${state.gameId}/share`, {
+      router.replace(`/share/${state.gameId}`, {
         transitionTypes: NAV_FORWARD,
       });
     }
