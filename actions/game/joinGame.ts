@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { findPlayableGame, unlockGame } from "@/lib/game/access";
 import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
+import { playHref } from "@/lib/game/links";
 
 export type JoinGameState = {
   message?: string;
@@ -49,5 +50,5 @@ export async function joinGame(
   }
 
   // Outside the try: redirect works by throwing
-  redirect(`/play/${gameId}?name=${encodeURIComponent(result.data)}`);
+  redirect(playHref(gameId, result.data));
 }
