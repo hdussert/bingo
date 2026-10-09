@@ -59,9 +59,11 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
     add(fillers.join("\n"));
   }
 
+  // A half-typed event becomes a tile instead of being overwritten
   function edit(event: string) {
+    const others = events.filter((other) => other !== event);
+    update(parseEvents([...others, draft].join("\n")));
     setDraft(event);
-    remove(event);
     inputRef.current?.focus();
   }
 
@@ -112,8 +114,12 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
       {/* Three columns whatever the grid size: five are too narrow for words on a phone */}
       <ul className="grid grid-cols-3 gap-2">
         {/* Newest first, so the event just added shows next to the input */}
-        {events.toReversed().map((event) => (
-          <ViewTransition key={event} enter="tile-in" exit="tile-out">
+        {[...events].reverse().map((event) => (
+          <ViewTransition
+            key={`event-${event}`}
+            enter="tile-in"
+            exit="tile-out"
+          >
             <li className="relative">
               <button
                 type="button"
