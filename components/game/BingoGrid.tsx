@@ -32,6 +32,8 @@ async function celebrate() {
     spread: 90,
     origin: { y: 0.7 },
     disableForReducedMotion: true,
+    // Above the grid but under the Bingo! banner (and the leaderboard drawer)
+    zIndex: 10,
   });
 }
 
