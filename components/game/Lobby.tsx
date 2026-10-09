@@ -1,6 +1,6 @@
+import Link from "next/link";
 import LinesBadge from "@/components/game/LinesBadge";
 import RankNumber from "@/components/game/RankNumber";
-import Link from "next/link";
 import { DrawerClose } from "@/components/ui/drawer";
 import { Progress } from "@/components/ui/progress";
 import { playHref } from "@/lib/game/links";
