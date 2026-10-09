@@ -162,3 +162,31 @@
     translate: 0;
   }
 }
+
+/* Event tiles (EventsTileInput): new ones pop in, removed ones shrink away */
+::view-transition-new(.tile-in) {
+  animation: 200ms ease-out both tile-pop;
+}
+::view-transition-old(.tile-out) {
+  animation: 150ms ease-in both tile-pop reverse;
+}
+
+@keyframes tile-pop {
+  from {
+    opacity: 0;
+    scale: 0.5;
+  }
+}
+
+/* The new game form's sticky Create button (NewGameForm): a layer of its own, so animating tiles and cards pass under it, but never animated itself */
+::view-transition-group(create-game) {
+  animation: none;
+  /* Above every tile and card snapshot, including newly spawned ones */
+  z-index: 100;
+}
+::view-transition-old(create-game) {
+  display: none;
+}
+::view-transition-new(create-game) {
+  animation: none;
+}
