@@ -1,3 +1,4 @@
+import { Grid3x3Icon, LockIcon } from "lucide-react";
 import Link from "next/link";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
@@ -41,6 +42,20 @@ export default async function PlayPage({
       {!player && <BackLink href="/games" />}
       <div className="flex flex-col items-center gap-2 text-center">
         <PageTitle>{game.title}</PageTitle>
+        {!player && (
+          <p className="flex items-center gap-5 text-muted-foreground">
+            <span className="flex items-center gap-1.5">
+              <Grid3x3Icon className="size-4" />
+              {game.size}×{game.size}
+            </span>
+            {!canPlay && (
+              <span className="flex items-center gap-1.5">
+                <LockIcon strokeWidth={3} className="size-4" />
+                Private
+              </span>
+            )}
+          </p>
+        )}
         {player && (
           <p className="text-muted-foreground">
             Playing as{" "}

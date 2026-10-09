@@ -1,23 +1,19 @@
 "use client";
 
-import { useActionState } from "react";
+import { CircleAlertIcon, EyeIcon, EyeOffIcon } from "lucide-react";
+import { useActionState, useState } from "react";
 import { joinGame } from "@/actions/game/joinGame";
+import FormStep from "@/components/game/FormStep";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/game/const";
 
 type Props = {
@@ -37,55 +33,79 @@ export default function JoinForm({
     joinGame.bind(null, gameId),
     { values: { name: defaultName } },
   );
+  const [isPasswordShown, setIsPasswordShown] = useState(false);
+  const isNameInvalid = state.invalidField === "name";
+  const isPasswordInvalid = state.invalidField === "password";
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Join the game</CardTitle>
-        <CardDescription>
-          Your name picks your grid: enter the same name to get it back, on any
-          phone.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form action={formAction}>
-          <FieldGroup>
-            <Field data-invalid={state.invalidField === "name"}>
-              <FieldLabel htmlFor="name">Your name</FieldLabel>
-              <Input
-                id="name"
-                name="name"
+    <form action={formAction} className="flex flex-col gap-4">
+      <FormStep
+        step={1}
+        title="Your name"
+        description="Same name, same grid, on any phone."
+      >
+        <Field data-invalid={isNameInvalid}>
+          <Input
+            name="name"
+            aria-label="Your name"
+            required
+            // The one thing to do on this page: open the keyboard right away
+            autoFocus
+            maxLength={MAX_NAME_LENGTH}
+            autoComplete="given-name"
+            placeholder="Greg"
+            defaultValue={state.values?.name}
+            aria-invalid={isNameInvalid}
+          />
+          {isNameInvalid && <FieldError>{state.message}</FieldError>}
+        </Field>
+      </FormStep>
+
+      {needsPassword && (
+        <FormStep
+          step={2}
+          title="Password"
+          description="This game is private: ask the organizer for its password."
+        >
+          <Field data-invalid={isPasswordInvalid}>
+            <InputGroup>
+              <InputGroupInput
+                name="password"
+                aria-label="Password"
+                type={isPasswordShown ? "text" : "password"}
                 required
-                maxLength={MAX_NAME_LENGTH}
-                autoComplete="given-name"
-                defaultValue={state.values?.name}
-                aria-invalid={state.invalidField === "name"}
+                maxLength={MAX_PASSWORD_LENGTH}
+                autoComplete="off"
+                aria-invalid={isPasswordInvalid}
               />
-            </Field>
-            {needsPassword && (
-              <Field data-invalid={state.invalidField === "password"}>
-                <FieldLabel htmlFor="password">Password</FieldLabel>
-                <Input
-                  id="password"
-                  name="password"
-                  type="password"
-                  required
-                  maxLength={MAX_PASSWORD_LENGTH}
-                  autoComplete="off"
-                  aria-invalid={state.invalidField === "password"}
-                />
-                <FieldDescription>
-                  This game is private: ask the organizer for its password.
-                </FieldDescription>
-              </Field>
-            )}
-            {state.message && <FieldError>{state.message}</FieldError>}
-            <Button type="submit" disabled={isPending}>
-              {isPending ? "Joining…" : "Get my grid"}
-            </Button>
-          </FieldGroup>
-        </form>
-      </CardContent>
-    </Card>
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
+                  size="icon-sm"
+                  onClick={() => setIsPasswordShown(!isPasswordShown)}
+                  aria-label={
+                    isPasswordShown ? "Hide password" : "Show password"
+                  }
+                >
+                  {isPasswordShown ? <EyeOffIcon /> : <EyeIcon />}
+                </InputGroupButton>
+              </InputGroupAddon>
+            </InputGroup>
+            {isPasswordInvalid && <FieldError>{state.message}</FieldError>}
+          </Field>
+        </FormStep>
+      )}
+
+      {/* Errors about the game itself, not about a field */}
+      {state.message && !state.invalidField && (
+        <Alert variant="destructive">
+          <CircleAlertIcon />
+          <AlertDescription>{state.message}</AlertDescription>
+        </Alert>
+      )}
+
+      <Button type="submit" size="xl" disabled={isPending}>
+        {isPending ? "Joining…" : "Get my grid"}
+      </Button>
+    </form>
   );
 }
