@@ -12,6 +12,7 @@ import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
+import { playHref } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageTitle from "@/components/game/PageTitle";
 import { absoluteUrl } from "@/lib/url";
@@ -21,8 +22,9 @@ export default async function PlayPage({
   searchParams,
 }: PageProps<"/play/[id]">) {
   const { id } = await params;
-  const { name } = await searchParams;
+  const { name, peek } = await searchParams;
   const playerName = typeof name === "string" ? name.trim() : "";
+  const peekKey = typeof peek === "string" ? toNameKey(peek) : undefined;
 
   // Visitors who haven't joined only see the join form: no need for the players
   const [playable, players, url] = await Promise.all([
@@ -39,6 +41,13 @@ export default async function PlayPage({
   const player = canPlay
     ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
     : undefined;
+  // Another player's grid, shown read-only in place of the player's own
+  const peeked = player
+    ? players.find(
+        (candidate) =>
+          candidate.nameKey === peekKey && candidate.nameKey !== player.nameKey,
+      )
+    : undefined;
   const rows = rankPlayers(players);
   const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
   const eventTexts = new Map(
@@ -54,7 +63,13 @@ export default async function PlayPage({
           <div className="-mr-3 flex items-center">
             <CopyLinkIconButton url={url} />
             <LeaderboardDrawer playerCount={players.length}>
-              <Lobby rows={rows} playerKey={player.nameKey} />
+              <Lobby
+                gameId={game.id}
+                playerName={player.name}
+                rows={rows}
+                playerKey={player.nameKey}
+                peekKey={peeked?.nameKey}
+              />
             </LeaderboardDrawer>
           </div>
         )}
@@ -75,7 +90,20 @@ export default async function PlayPage({
             )}
           </p>
         )}
-        {player && (
+        {player && peeked && (
+          <p className="text-muted-foreground">
+            Peeking at{" "}
+            <span className="font-semibold text-foreground">{peeked.name}</span>
+            &apos;s grid ·{" "}
+            <Link
+              href={playHref(game.id, player.name)}
+              className="text-primary underline-offset-4 hover:underline"
+            >
+              Back to my grid
+            </Link>
+          </p>
+        )}
+        {player && !peeked && (
           <p className="text-muted-foreground">
             Playing as{" "}
             <span className="font-semibold text-foreground">{player.name}</span>{" "}
@@ -92,10 +120,13 @@ export default async function PlayPage({
       {player ? (
         <>
           <BingoGrid
+            // A fresh grid when switching between players, without their optimistic ticks or banner
+            key={(peeked ?? player).nameKey}
             gameId={game.id}
             playerName={player.name}
             size={game.size}
-            cells={player.grid.map((cell) => ({
+            isReadOnly={Boolean(peeked)}
+            cells={(peeked ?? player).grid.map((cell) => ({
               text: eventTexts.get(cell.eventId) ?? "",
               isTicked: cell.isTicked,
             }))}

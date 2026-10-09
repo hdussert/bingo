@@ -14,6 +14,8 @@ type Props = {
   playerName: string;
   size: GridSize;
   cells: { text: string; isTicked: boolean }[];
+  /** Another player's grid, to look at but not tick. */
+  isReadOnly?: boolean;
 };
 
 const TEXT_SIZES: Record<GridSize, string> = {
@@ -38,7 +40,13 @@ async function celebrate() {
 }
 
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
-export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
+export default function BingoGrid({
+  gameId,
+  playerName,
+  size,
+  cells,
+  isReadOnly = false,
+}: Props) {
   const [ticked, setOptimisticTicks] = useOptimistic(
     cells.map((cell) => cell.isTicked),
     (_, next: boolean[]) => next,
@@ -59,6 +67,10 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
   }, [celebrationId]);
 
   function handleToggle(index: number) {
+    // The ticks would go to the current player's grid, not the one on screen
+    if (isReadOnly) {
+      return;
+    }
     const isTicked = !ticked[index];
     setTappedIndex(index);
     const next = ticked.map((value, i) => (i === index ? isTicked : value));
@@ -81,6 +93,7 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
             key={i}
             variant="primary"
             pressed={ticked[i]}
+            disabled={isReadOnly}
             onPressedChange={() => handleToggle(i)}
             className={cn(
               // Raised like a game button, pressed flat once ticked; the gap leaves room for the raised edge
@@ -92,6 +105,9 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
               winningCells.has(i)
                 ? "translate-y-1 font-semibold shadow-none aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
                 : "aria-pressed:translate-y-1 aria-pressed:shadow-none",
+              // Flat and at full color: nothing to press, but nothing grayed out either
+              isReadOnly &&
+                "translate-y-0 shadow-none disabled:opacity-100 aria-pressed:translate-y-0",
             )}
           >
             {cell.text}
