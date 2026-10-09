@@ -79,10 +79,23 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
       </div>
       {lines.length > 0 && (
         <p
+          // Keyed by the line count, so each new line replays the bounce
+          key={lines.length}
           role="status"
-          className="pb-6 text-center font-heading text-7xl text-cartoon animate-in duration-500 zoom-in-50"
+          className="pb-6 text-center font-heading text-7xl text-cartoon"
         >
-          Bingo!
+          <span className="sr-only">Bingo!</span>
+          {/* One letter after the other: each bounces in a little after the previous one */}
+          {[..."Bingo!"].map((letter, i) => (
+            <span
+              key={i}
+              aria-hidden
+              className="inline-block animate-[letter-pop_600ms_ease-out_both] motion-reduce:animate-none"
+              style={{ animationDelay: `${i * 70}ms` }}
+            >
+              {letter}
+            </span>
+          ))}
         </p>
       )}
     </div>

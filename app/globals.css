@@ -171,6 +171,28 @@
   animation: 150ms ease-in both tile-pop reverse;
 }
 
+/* Each letter of "Bingo!" (BingoGrid): jumps in, overshoots, settles */
+@keyframes letter-pop {
+  from {
+    opacity: 0;
+    scale: 0.3;
+    translate: 0 0.5em;
+  }
+  45% {
+    opacity: 1;
+    scale: 1.25;
+    translate: 0 -0.2em;
+  }
+  70% {
+    scale: 0.92;
+    translate: 0 0.05em;
+  }
+  to {
+    scale: 1;
+    translate: 0;
+  }
+}
+
 /* A grid cell when ticked (BingoGrid) */
 @keyframes tick-pop {
   40% {
