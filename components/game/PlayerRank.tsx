@@ -1,10 +1,9 @@
 import LeaderboardTrigger from "@/components/game/LeaderboardTrigger";
-import { Badge } from "@/components/ui/badge";
+import LinesBadge from "@/components/game/LinesBadge";
+import RankNumber from "@/components/game/RankNumber";
 import { Progress } from "@/components/ui/progress";
 import { pluralize } from "@/lib/game/format";
-import RankNumber from "@/components/game/RankNumber";
 import type { LobbyRow } from "@/lib/game/lobby";
-import { cn } from "@/lib/utils";
 
 type Props = {
   /** The player's leaderboard row. */
@@ -32,12 +31,7 @@ export default function PlayerRank({ row, position, playerCount }: Props) {
           <span className="text-muted-foreground">
             of {pluralize(playerCount, "player")}
           </span>
-          <Badge
-            className={cn(hasBingo && "bg-highlight text-highlight-foreground")}
-            variant={hasBingo ? "default" : "outline"}
-          >
-            {pluralize(row.lineCount, "line")}
-          </Badge>
+          <LinesBadge lineCount={row.lineCount} hasBingo={hasBingo} />
         </div>
         <Progress
           value={row.tickCount}

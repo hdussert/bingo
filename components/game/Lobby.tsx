@@ -1,8 +1,7 @@
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import LinesBadge from "@/components/game/LinesBadge";
 import RankNumber from "@/components/game/RankNumber";
+import { Progress } from "@/components/ui/progress";
 import type { LobbyRow } from "@/lib/game/lobby";
-import { pluralize } from "@/lib/game/format";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -39,14 +38,7 @@ export default function Lobby({ rows, playerKey }: Props) {
                     <span className="text-muted-foreground"> (you)</span>
                   )}
                 </span>
-                <Badge
-                  className={cn(
-                    hasBingo && "bg-highlight text-highlight-foreground",
-                  )}
-                  variant={hasBingo ? "default" : "outline"}
-                >
-                  {pluralize(row.lineCount, "line")}
-                </Badge>
+                <LinesBadge lineCount={row.lineCount} hasBingo={hasBingo} />
               </div>
               <Progress
                 value={row.tickCount}

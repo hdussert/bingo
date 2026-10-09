@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export type CopyStatus = "idle" | "copied" | "failed";
+type CopyStatus = "idle" | "copied" | "failed";
 
 /** Copies `url` to the clipboard, with a status that says "copied" for a moment. */
 export function useCopyLink(url: string) {
