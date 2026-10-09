@@ -1,6 +1,7 @@
 "use client";
 
 import { TrophyIcon } from "lucide-react";
+import { leaderboardHandle } from "@/components/game/leaderboardHandle";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -20,7 +21,7 @@ type Props = {
 /** A trophy button that slides the leaderboard up from the bottom. */
 export default function LeaderboardDrawer({ playerCount, children }: Props) {
   return (
-    <Drawer showSwipeHandle>
+    <Drawer showSwipeHandle handle={leaderboardHandle}>
       <DrawerTrigger
         render={
           <Button variant="ghost" size="icon-xl" aria-label="Leaderboard" />
