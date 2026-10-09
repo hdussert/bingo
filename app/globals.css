@@ -171,6 +171,16 @@
   animation: 150ms ease-in both tile-pop reverse;
 }
 
+/* A grid cell when ticked (BingoGrid) */
+@keyframes tick-pop {
+  40% {
+    scale: 0.88;
+  }
+  70% {
+    scale: 1.05;
+  }
+}
+
 @keyframes tile-pop {
   from {
     opacity: 0;

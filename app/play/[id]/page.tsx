@@ -3,6 +3,7 @@ import Link from "next/link";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
+import CopyLinkButton from "@/components/game/CopyLinkButton";
 import JoinForm from "@/components/game/JoinForm";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import Lobby from "@/components/game/Lobby";
@@ -11,6 +12,7 @@ import { listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageTitle from "@/components/game/PageTitle";
+import { absoluteUrl } from "@/lib/url";
 
 export default async function PlayPage({
   params,
@@ -21,9 +23,11 @@ export default async function PlayPage({
   const playerName = typeof name === "string" ? name.trim() : "";
 
   // Visitors who haven't joined only see the join form: no need for the players
-  const [playable, players] = await Promise.all([
+  const [playable, players, url] = await Promise.all([
     findPlayableGame(id),
     playerName ? listPlayers(id) : [],
+    // The game's link without ?name=, for inviting others
+    absoluteUrl(`/play/${id}`),
   ]);
   if (!playable) {
     return <BrokenLink />;
@@ -39,7 +43,7 @@ export default async function PlayPage({
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      {!player && <BackLink href="/games" />}
+      <BackLink href="/games" />
       <div className="flex flex-col items-center gap-2 text-center">
         <PageTitle>{game.title}</PageTitle>
         {!player && (
@@ -82,6 +86,12 @@ export default async function PlayPage({
             }))}
           />
           <Lobby rows={rankPlayers(players)} playerKey={player.nameKey} />
+          <CopyLinkButton
+            url={url}
+            failedLabel="Couldn't copy the link"
+            variant="outline"
+            size="xl"
+          />
           <AutoRefresh />
         </>
       ) : (

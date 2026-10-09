@@ -16,9 +16,9 @@ type Props = {
 };
 
 const TEXT_SIZES: Record<GridSize, string> = {
-  3: "text-sm sm:text-base",
-  4: "text-xs sm:text-sm",
-  5: "text-[10px] sm:text-xs",
+  3: "text-base sm:text-lg",
+  4: "text-sm sm:text-base",
+  5: "text-xs sm:text-sm",
 };
 
 async function celebrate() {
@@ -65,6 +65,8 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
             className={cn(
               // Raised like a game button, pressed flat once ticked (keeping a lighter border). relative: the next row paints over a pressed cell, so it sinks under it
               "relative aspect-square h-auto min-w-0 rounded-[22%] border-2 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
+              // Squashes and bounces back when ticked (the scale property, so it adds to the pressed translate)
+              "aria-pressed:animate-[tick-pop_300ms_ease-out] motion-reduce:animate-none",
               TEXT_SIZES[size],
               winningCells.has(i)
                 ? "translate-y-1 font-semibold shadow-none aria-pressed:border-[color-mix(in_oklch,var(--color-highlight),white_45%)] aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
