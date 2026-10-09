@@ -15,14 +15,15 @@ const COPY_LABELS: Record<CopyStatus, string> = {
 };
 
 type Props = {
-  gameId: string;
+  /** The game's path, for the Open game button. */
+  href: string;
+  /** The game's full link, to share. */
+  url: string;
 };
 
-/** Shown once a game is created: its link, ready to share. */
-export default function GameReady({ gameId }: Props) {
+/** A new game's link, ready to share. */
+export default function GameReady({ href, url }: Props) {
   const [copyStatus, setCopyStatus] = useState<CopyStatus>("idle");
-  const href = `/play/${gameId}`;
-  const url = new URL(href, location.origin).toString();
 
   async function copyLink() {
     try {
@@ -37,7 +38,7 @@ export default function GameReady({ gameId }: Props) {
 
   return (
     <div className="flex flex-col items-center gap-6 text-center">
-      <h2 className="font-heading text-5xl text-cartoon">Game ready!</h2>
+      <h1 className="font-heading text-5xl text-cartoon">Game ready!</h1>
       <p className="text-muted-foreground">Share this link with the players.</p>
       <Input
         readOnly
