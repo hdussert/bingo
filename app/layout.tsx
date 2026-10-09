@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Fredoka } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const fredoka = Fredoka({
+const fredoka = localFont({
+  src: [
+    { path: "./fonts/Fredoka-400-Latin.woff2", weight: "400" },
+    { path: "./fonts/Fredoka-500-Latin.woff2", weight: "500" },
+    { path: "./fonts/Fredoka-600-Latin.woff2", weight: "600" },
+  ],
   variable: "--font-sans",
-  subsets: ["latin"],
+  // Its letters sit low in the line box (lowercase 0.13em below center): moving descent space
+  // above centers the middle of the lowercase and capital heights in inputs and buttons
+  declarations: [
+    { prop: "ascent-override", value: "90%" },
+    { prop: "descent-override", value: "31%" },
+  ],
 });
 
 const luckiestGuy = localFont({
