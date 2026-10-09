@@ -45,6 +45,8 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
   );
   const lines = findBingoLines(ticked, size);
   const winningCells = new Set(lines.flat());
+  // The last cell tapped, so only it bounces: cells already ticked on page load stay still
+  const [tappedIndex, setTappedIndex] = useState<number | null>(null);
   // Set when a tick completes a line, to show the banner for a moment
   const [celebrationId, setCelebrationId] = useState<number | null>(null);
 
@@ -58,6 +60,7 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
 
   function handleToggle(index: number) {
     const isTicked = !ticked[index];
+    setTappedIndex(index);
     const next = ticked.map((value, i) => (i === index ? isTicked : value));
     if (findBingoLines(next, size).length > lines.length) {
       void celebrate();
@@ -83,7 +86,8 @@ export default function BingoGrid({ gameId, playerName, size, cells }: Props) {
               // Raised like a game button, pressed flat once ticked; the gap leaves room for the raised edge
               "aspect-square h-auto min-w-0 rounded-[22%] border-0 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
               // Squashes and bounces back when ticked (the scale property, so it adds to the pressed translate)
-              "aria-pressed:animate-[tick-pop_300ms_ease-out] motion-reduce:animate-none",
+              i === tappedIndex &&
+                "aria-pressed:animate-[tick-pop_300ms_ease-out] motion-reduce:animate-none",
               TEXT_SIZES[size],
               winningCells.has(i)
                 ? "translate-y-1 font-semibold shadow-none aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
