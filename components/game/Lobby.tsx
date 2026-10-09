@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { type LobbyRow, rankLabel } from "@/lib/game/lobby";
+import RankNumber from "@/components/game/RankNumber";
+import type { LobbyRow } from "@/lib/game/lobby";
 import { pluralize } from "@/lib/game/format";
 import { cn } from "@/lib/utils";
 
@@ -25,9 +26,11 @@ export default function Lobby({ rows, playerKey }: Props) {
               isMe ? "border-primary bg-primary/10" : "border-border",
             )}
           >
-            <span className="flex w-8 shrink-0 justify-center font-heading text-2xl">
-              {rankLabel(row, i + 1)}
-            </span>
+            <RankNumber
+              position={i + 1}
+              bingoRank={row.bingoRank}
+              className="w-8 shrink-0 text-center text-2xl"
+            />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
                 <span className="truncate font-medium">

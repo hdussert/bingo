@@ -1,8 +1,6 @@
 import { findGridLines } from "./bingo";
 import type { Player } from "./types";
 
-const MEDALS = ["🥇", "🥈", "🥉"];
-
 /** A player's progress, as shown in the lobby. */
 export type LobbyRow = {
   name: string;
@@ -34,10 +32,4 @@ export function rankPlayers(players: Player[]): LobbyRow[] {
     ...row,
     bingoRank: bingoTime === Infinity ? null : i + 1,
   }));
-}
-
-/** A medal for the first three bingos, the position (from 1) for everyone else. */
-export function rankLabel(row: LobbyRow, position: number): string | number {
-  const medal = row.bingoRank === null ? undefined : MEDALS[row.bingoRank - 1];
-  return medal ?? position;
 }
