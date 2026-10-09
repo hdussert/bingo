@@ -30,7 +30,7 @@ export default function LeaderboardDrawer({ playerCount, children }: Props) {
       </DrawerTrigger>
       {/* A sheet attached to the bottom of the screen, not floating above it */}
       <DrawerContent className="rounded-b-none [--drawer-inset:0px]">
-        <DrawerHeader className="flex-row items-center justify-between gap-4 px-6 pt-6 pb-2">
+        <DrawerHeader className="flex-row items-center justify-between gap-4 px-8 pt-6 pb-2">
           <DrawerTitle className="flex items-center gap-2 text-2xl">
             <TrophyIcon strokeWidth={3} className="size-6" />
             Leaderboard
