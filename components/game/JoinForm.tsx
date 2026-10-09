@@ -44,7 +44,8 @@ export default function JoinForm({
   );
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const isNameInvalid = state.invalidField === "name";
-  const isPasswordInvalid = state.invalidField === "password";
+  // Without a password field (the phone's unlock expired since the page loaded), its error goes in the alert
+  const isPasswordInvalid = needsPassword && state.invalidField === "password";
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -59,7 +60,7 @@ export default function JoinForm({
                 id="name"
                 name="name"
                 required
-                // The one thing to do on this page: open the keyboard right away
+                // The one thing to do on this page (iOS still waits for a tap to open the keyboard)
                 autoFocus
                 maxLength={MAX_NAME_LENGTH}
                 autoComplete="given-name"
@@ -95,7 +96,7 @@ export default function JoinForm({
                   <InputGroupAddon align="inline-end">
                     <InputGroupButton
                       size="icon-sm"
-                      onClick={() => setIsPasswordShown(!isPasswordShown)}
+                      onClick={() => setIsPasswordShown((isShown) => !isShown)}
                       aria-label={
                         isPasswordShown ? "Hide password" : "Show password"
                       }
@@ -114,8 +115,8 @@ export default function JoinForm({
         </CardContent>
       </Card>
 
-      {/* Errors about the game itself, not about a field */}
-      {state.message && !state.invalidField && (
+      {/* Errors about the game itself, not about a field on screen */}
+      {state.message && !isNameInvalid && !isPasswordInvalid && (
         <Alert variant="destructive">
           <CircleAlertIcon />
           <AlertDescription>{state.message}</AlertDescription>

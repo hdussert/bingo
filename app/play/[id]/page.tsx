@@ -29,7 +29,7 @@ export default async function PlayPage({
     return <BrokenLink />;
   }
   // A private game shows only its join form until this phone enters the password
-  const { game, canPlay } = playable;
+  const { game, isPrivate, canPlay } = playable;
   const player = canPlay
     ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
     : undefined;
@@ -48,7 +48,7 @@ export default async function PlayPage({
               <Grid3x3Icon className="size-4" />
               {game.size}×{game.size}
             </span>
-            {!canPlay && (
+            {isPrivate && (
               <span className="flex items-center gap-1.5">
                 <LockIcon strokeWidth={3} className="size-4" />
                 Private
