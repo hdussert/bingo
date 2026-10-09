@@ -2,15 +2,8 @@
 
 import { CircleAlertIcon, LockIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-  startTransition,
-  useActionState,
-  useEffect,
-  useState,
-  ViewTransition,
-} from "react";
+import { useActionState, useEffect, useState, ViewTransition } from "react";
 import { createGame } from "@/actions/game/createGame";
-import EventSuggestions from "@/components/game/EventSuggestions";
 import EventsProgress from "@/components/game/EventsProgress";
 import EventsTileInput from "@/components/game/EventsTileInput";
 import FormStep from "@/components/game/FormStep";
@@ -102,20 +95,10 @@ export default function NewGameForm() {
           <input type="hidden" name="events" value={events.join("\n")} />
           <EventsProgress count={events.length} required={size ** 2} />
           <EventsTileInput events={events} size={size} onChange={setEvents} />
-          {/* Glides down as the tiles above grow a row */}
-          <ViewTransition>
-            <EventSuggestions
-              events={events}
-              onAdd={(event) =>
-                // A transition, so the new tile pops in like typed ones
-                startTransition(() => setEvents([...events, event]))
-              }
-            />
-          </ViewTransition>
         </FieldGroup>
       </FormStep>
 
-      {/* Glides down when the events grow a row, instead of jumping */}
+      {/* Glides down as the tiles grow a row */}
       <ViewTransition>
         <FormStep step={4} title="Who can join">
           <FieldGroup className="gap-4">
@@ -171,7 +154,7 @@ export default function NewGameForm() {
         </Alert>
       )}
 
-      {/* Stays reachable at the bottom of the screen while scrolling through the steps. Its own view transition name keeps it above tiles and cards animating under it */}
+      {/* Stays reachable while scrolling through the steps; globals.css keeps it above the animating tiles */}
       <div
         style={{ viewTransitionName: "create-game" }}
         className="sticky bottom-0 -mx-4 bg-linear-to-t from-background from-60% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]"

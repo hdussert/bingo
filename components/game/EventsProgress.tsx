@@ -1,4 +1,8 @@
-import { Progress, ProgressLabel } from "@/components/ui/progress";
+import {
+  Progress,
+  ProgressLabel,
+  ProgressValue,
+} from "@/components/ui/progress";
 
 type Props = {
   count: number;
@@ -20,9 +24,8 @@ export default function EventsProgress({ count, required }: Props) {
       <ProgressLabel className="font-heading text-base">
         {label(count, required)}
       </ProgressLabel>
-      <span className="ml-auto text-sm text-muted-foreground tabular-nums">
-        {count} / {required}
-      </span>
+      {/* The bar's own value stops at the grid size: show the real count */}
+      <ProgressValue>{() => `${count} / ${required}`}</ProgressValue>
     </Progress>
   );
 }

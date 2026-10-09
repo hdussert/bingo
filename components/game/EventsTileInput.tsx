@@ -2,6 +2,7 @@
 
 import { WandSparklesIcon, XIcon } from "lucide-react";
 import { startTransition, useRef, useState, ViewTransition } from "react";
+import EventSuggestions from "@/components/game/EventSuggestions";
 import { Button } from "@/components/ui/button";
 import {
   InputGroup,
@@ -27,14 +28,12 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
   const [draft, setDraft] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const isFull = events.length >= MAX_EVENTS;
-  const emptyTileCount = Math.min(
-    Math.max(size ** 2 - events.length, 0),
-    MAX_EMPTY_TILES,
-  );
+  const missingCount = Math.max(size ** 2 - events.length, 0);
+  const emptyTileCount = Math.min(missingCount, MAX_EMPTY_TILES);
 
-  // Pasted lists add one event per line; parseEvents drops blanks and duplicates
+  // Pasted lists add one event per line; parseEvents drops blanks and duplicates, and anything past the limit is left out
   function add(text: string) {
-    update(parseEvents([...events, text].join("\n")));
+    update(parseEvents([...events, text].join("\n")).slice(0, MAX_EVENTS));
   }
 
   function addDraft() {
@@ -53,9 +52,8 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
 
   // Development shortcut: test events until the grid is full, like pasting a list
   function fillGrid() {
-    const missing = Math.max(size ** 2 - events.length, 0);
     const fillers = Array.from(
-      { length: missing },
+      { length: missingCount },
       (_, i) => `Test event ${events.length + i + 1}`,
     );
     add(fillers.join("\n"));
@@ -162,6 +160,10 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
           Fill grid (dev)
         </Button>
       )}
+      {/* Glides down as the tiles above grow a row */}
+      <ViewTransition>
+        <EventSuggestions events={events} onAdd={add} />
+      </ViewTransition>
     </div>
   );
 }
