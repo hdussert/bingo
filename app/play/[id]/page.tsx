@@ -43,8 +43,9 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
   return (
     // Keyed by screen: joining stays on this route, where the root template doesn't slide
     <PageSlide key={player ? "grid" : "join"}>
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-        <div className="flex items-center justify-between">
+      {/* Equal rows above and below center the content on the whole screen, the header staying at the top */}
+      <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-6 px-4 py-8">
+        <div className="flex items-center justify-between self-start">
           <BackLink href="/games" />
           {player && (
             // Lines the trophy up with the content edge, like the back arrow
@@ -60,63 +61,65 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
             </div>
           )}
         </div>
-        <div className="flex flex-col items-center gap-2 text-center">
-          <PageTitle>{game.title}</PageTitle>
-          {!player && (
-            <p className="flex items-center gap-5 text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <Grid3x3Icon className="size-4" />
-                {game.size}×{game.size}
-              </span>
-              {isPrivate && (
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <PageTitle>{game.title}</PageTitle>
+            {!player && (
+              <p className="flex items-center gap-5 text-muted-foreground">
                 <span className="flex items-center gap-1.5">
-                  <LockIcon strokeWidth={3} className="size-4" />
-                  Private
+                  <Grid3x3Icon className="size-4" />
+                  {game.size}×{game.size}
                 </span>
-              )}
-            </p>
-          )}
-          {player && (
-            <p className="text-muted-foreground">
-              Playing as{" "}
-              <span className="font-semibold text-foreground">
-                {player.name}
-              </span>{" "}
-              ·{" "}
-              <Link
-                href={`/me?${new URLSearchParams({ back: `/play/${game.id}` })}`}
-                transitionTypes={NAV_FORWARD}
-                className="text-primary underline-offset-4 hover:underline"
-              >
-                Change
-              </Link>
-            </p>
+                {isPrivate && (
+                  <span className="flex items-center gap-1.5">
+                    <LockIcon strokeWidth={3} className="size-4" />
+                    Private
+                  </span>
+                )}
+              </p>
+            )}
+            {player && (
+              <p className="text-muted-foreground">
+                Playing as{" "}
+                <span className="font-semibold text-foreground">
+                  {player.name}
+                </span>{" "}
+                ·{" "}
+                <Link
+                  href={`/me?${new URLSearchParams({ back: `/play/${game.id}` })}`}
+                  transitionTypes={NAV_FORWARD}
+                  className="text-primary underline-offset-4 hover:underline"
+                >
+                  Change
+                </Link>
+              </p>
+            )}
+          </div>
+          {player ? (
+            <>
+              <BingoGrid
+                gameId={game.id}
+                size={game.size}
+                cells={player.grid.map((cell) => ({
+                  text: eventTexts.get(cell.eventId) ?? "",
+                  isTicked: cell.isTicked,
+                }))}
+              />
+              <PlayerRank
+                row={rows[position]}
+                position={position + 1}
+                playerCount={players.length}
+              />
+              <AutoRefresh />
+            </>
+          ) : (
+            <JoinForm
+              gameId={game.id}
+              defaultName={profile?.name ?? ""}
+              needsPassword={!isUnlocked}
+            />
           )}
         </div>
-        {player ? (
-          <>
-            <BingoGrid
-              gameId={game.id}
-              size={game.size}
-              cells={player.grid.map((cell) => ({
-                text: eventTexts.get(cell.eventId) ?? "",
-                isTicked: cell.isTicked,
-              }))}
-            />
-            <PlayerRank
-              row={rows[position]}
-              position={position + 1}
-              playerCount={players.length}
-            />
-            <AutoRefresh />
-          </>
-        ) : (
-          <JoinForm
-            gameId={game.id}
-            defaultName={profile?.name ?? ""}
-            needsPassword={!isUnlocked}
-          />
-        )}
       </main>
     </PageSlide>
   );
