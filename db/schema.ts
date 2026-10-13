@@ -20,14 +20,14 @@ export const games = snakeCase.table("games", {
   passwordHash: text(),
 });
 
-// A player without an account: this phone's cookie holds the token
+// A player without an account: their phones' cookie holds the profile's code
 export const profiles = snakeCase.table("profiles", {
   id: text().primaryKey(),
   createdAt: timestamp().notNull().defaultNow(),
 
   // The name the player last used, filled in when they join a new game
   name: text().notNull(),
-  // SHA-256 of the token in the profile cookie
+  // SHA-256 of the profile's code
   tokenHash: text().notNull().unique(),
 });
 

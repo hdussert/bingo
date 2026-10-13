@@ -3,30 +3,29 @@ import { and, eq, inArray, ne } from "drizzle-orm";
 import { db } from "@/db";
 import { games, players, profiles } from "@/db/schema";
 import { toNameKey } from "@/lib/game/grid";
+import { newCode } from "./code";
 import type { Profile } from "./types";
 
-function hashToken(token: string): string {
-  return createHash("sha256").update(token).digest("hex");
+function hashCode(code: string): string {
+  return createHash("sha256").update(code).digest("hex");
 }
 
-/** Creates a profile and returns it with its token, the secret its phone keeps. */
+/** Creates a profile and returns it with its code, the secret its phones keep. */
 export async function createProfile(
   name: string,
-): Promise<{ profile: Profile; token: string }> {
-  const token = randomBytes(32).toString("base64url");
+): Promise<{ profile: Profile; code: string }> {
+  const code = newCode();
   const profile = { id: randomBytes(9).toString("base64url"), name };
-  await db.insert(profiles).values({ ...profile, tokenHash: hashToken(token) });
-  return { profile, token };
+  await db.insert(profiles).values({ ...profile, tokenHash: hashCode(code) });
+  return { profile, code };
 }
 
-/** Finds the profile a token belongs to. */
-export async function findProfileByToken(
-  token: string,
-): Promise<Profile | null> {
+/** Finds the profile a code belongs to. */
+export async function findProfileByCode(code: string): Promise<Profile | null> {
   const [profile] = await db
     .select({ id: profiles.id, name: profiles.name })
     .from(profiles)
-    .where(eq(profiles.tokenHash, hashToken(token)))
+    .where(eq(profiles.tokenHash, hashCode(code)))
     .limit(1);
   return profile ?? null;
 }
