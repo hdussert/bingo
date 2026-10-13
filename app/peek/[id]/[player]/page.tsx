@@ -73,8 +73,9 @@ export default async function PeekPage({
         transitionTypes={NAV_BACK}
         size="xl"
         variant="outline"
+        className="self-center"
       >
-        <ArrowLeftIcon data-icon="inline-start" />
+        <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
         Back to my grid
       </ButtonLink>
       <AutoRefresh />
