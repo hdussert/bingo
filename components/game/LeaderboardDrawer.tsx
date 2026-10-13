@@ -2,7 +2,6 @@
 
 import { TrophyIcon } from "lucide-react";
 import { leaderboardHandle } from "@/components/game/leaderboardHandle";
-import { useMediaQuery } from "@/components/game/useMediaQuery";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -11,6 +10,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { pluralize } from "@/lib/game/format";
 
 type Props = {
@@ -22,12 +22,12 @@ type Props = {
 /** A trophy button that slides the leaderboard up from the bottom. */
 export default function LeaderboardDrawer({ playerCount, children }: Props) {
   // From the side on wide screens, where a bottom sheet would stretch across the page (md, as in globals.css)
-  const isWide = useMediaQuery("(min-width: 48rem)");
+  const isMobile = useIsMobile();
   return (
     <Drawer
       showSwipeHandle
       handle={leaderboardHandle}
-      swipeDirection={isWide ? "right" : "down"}
+      swipeDirection={isMobile ? "down" : "right"}
     >
       <DrawerTrigger
         render={
