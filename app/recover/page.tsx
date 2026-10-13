@@ -4,10 +4,7 @@ import RecoverForm from "@/components/profile/RecoverForm";
 import { findCurrentProfile } from "@/lib/profile/session";
 
 /** Gets a player's games back on another phone, from their code. */
-export default async function RecoverPage({
-  searchParams,
-}: PageProps<"/recover">) {
-  const { code } = await searchParams;
+export default async function RecoverPage() {
   const profile = await findCurrentProfile();
 
   return (
@@ -16,10 +13,7 @@ export default async function RecoverPage({
         <BackLink href="/games" />
         <PageTitle>Get your games</PageTitle>
       </div>
-      <RecoverForm
-        defaultCode={typeof code === "string" ? code : ""}
-        currentName={profile?.name ?? null}
-      />
+      <RecoverForm currentName={profile?.name ?? null} />
     </main>
   );
 }

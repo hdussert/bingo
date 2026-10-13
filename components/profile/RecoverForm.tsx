@@ -1,7 +1,7 @@
 "use client";
 
 import { CircleAlertIcon } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState, useSyncExternalStore } from "react";
 import { recoverProfile } from "@/actions/profile/recoverProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
@@ -15,17 +15,25 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 
+function subscribeToHash(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+}
+
 type Props = {
-  /** The code from the link opened, if any. */
-  defaultCode: string;
   /** The name of the profile this phone already has, which the code replaces. */
   currentName: string | null;
 };
 
 /** Takes the code shown on another phone, to play here as the same player. */
-export default function RecoverForm({ defaultCode, currentName }: Props) {
+export default function RecoverForm({ currentName }: Props) {
   const [state, formAction, isPending] = useActionState(recoverProfile, {});
-  const [code, setCode] = useState(defaultCode);
+  // The code from the link opened, after the #: the browser never sends it, so it stays out of server logs and link previews
+  const linkCode = useSyncExternalStore(
+    subscribeToHash,
+    () => decodeURIComponent(location.hash.slice(1)),
+    () => "",
+  );
   const isInvalid = Boolean(state.message);
 
   return (
@@ -40,14 +48,15 @@ export default function RecoverForm({ defaultCode, currentName }: Props) {
               id="code"
               name="code"
               required
-              autoFocus={!defaultCode}
+              autoFocus={!linkCode}
               autoComplete="off"
               autoCapitalize="characters"
               spellCheck={false}
               placeholder="K7QP-9XMA-3TRB"
               className="font-mono uppercase"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
+              // Keyed: filled in once the code is read from the link, after hydration
+              key={linkCode}
+              defaultValue={linkCode}
               aria-invalid={isInvalid}
             />
             <FieldDescription>

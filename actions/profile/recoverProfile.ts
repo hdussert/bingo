@@ -1,6 +1,8 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { profileCodeSchema } from "@/lib/profile/schemas";
 import { switchProfile } from "@/lib/profile/session";
 
 export type RecoverProfileState = {
@@ -14,13 +16,20 @@ export async function recoverProfile(
   formData: FormData,
 ): Promise<RecoverProfileState> {
   const code = String(formData.get("code") ?? "");
+  const result = profileCodeSchema.safeParse(code);
+  if (!result.success) {
+    return { message: result.error.issues[0].message, values: { code } };
+  }
+
   try {
-    if (!(await switchProfile(code))) {
+    if (!(await switchProfile(result.data))) {
       return { message: "No player has this code", values: { code } };
     }
   } catch {
     return { message: "Couldn't check the code, try again", values: { code } };
   }
+  // Every page showing who plays on this phone
+  revalidatePath("/", "layout");
   // Outside the try: redirect works by throwing
   redirect("/games");
 }
