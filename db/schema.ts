@@ -1,4 +1,5 @@
 import {
+  index,
   integer,
   jsonb,
   primaryKey,
@@ -24,7 +25,7 @@ export const profiles = snakeCase.table("profiles", {
   id: text().primaryKey(),
   createdAt: timestamp().notNull().defaultNow(),
 
-  // The name the player last used, filled in when they join a new game
+  // Shown in every game they joined; players are told apart by profile, so two can share it
   name: text().notNull(),
   // SHA-256 of the profile's code
   tokenHash: text().notNull().unique(),
@@ -42,11 +43,13 @@ export const players = snakeCase.table(
     profileId: text()
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
-    // Only shown: players are told apart by profile, so two can share a name
-    name: text().notNull(),
     grid: jsonb().$type<GridCell[]>().notNull(),
     // When the player first completed a line; cleared if they untick back to no line
     bingoAt: timestamp(),
   },
-  (table) => [primaryKey({ columns: [table.gameId, table.profileId] })],
+  (table) => [
+    primaryKey({ columns: [table.gameId, table.profileId] }),
+    // A profile's games: the primary key only helps from the game
+    index().on(table.profileId),
+  ],
 );

@@ -9,6 +9,7 @@ import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
+import { findPlayer } from "@/lib/game/grid";
 import { peekHref } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
 import { findCurrentProfile } from "@/lib/profile/session";
@@ -29,10 +30,8 @@ export default async function PeekPage({
     return <BrokenLink />;
   }
   const { game } = playable;
-  const player = players.find(
-    (candidate) => candidate.profileId === profile?.id,
-  );
-  const peeked = players.find((candidate) => candidate.profileId === peekedId);
+  const player = findPlayer(players, profile?.id);
+  const peeked = findPlayer(players, peekedId);
   // Only for players of the game, peeking at someone else
   if (!player || !peeked || peeked.profileId === player.profileId) {
     redirect(`/play/${id}`);

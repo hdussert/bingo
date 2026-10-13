@@ -42,6 +42,7 @@ export default async function GamesPage() {
   const joinedGames = profile ? await listJoinedGames(profile.id) : [];
   const joinedIds = new Set(joinedGames.map((game) => game.id));
   const games = runningGames.filter((game) => !joinedIds.has(game.id));
+  const hasJoined = joinedGames.length > 0;
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
@@ -66,7 +67,7 @@ export default async function GamesPage() {
           <RefreshButton />
         </div>
       </div>
-      {profile && joinedGames.length > 0 && (
+      {profile && hasJoined && (
         <section className="flex flex-col gap-4">
           <h2 className="font-heading text-2xl">Your games</h2>
           <ul className="flex flex-col gap-4">
@@ -76,10 +77,8 @@ export default async function GamesPage() {
               </li>
             ))}
           </ul>
+          <h2 className="mt-2 -mb-2 font-heading text-2xl">Other games</h2>
         </section>
-      )}
-      {joinedGames.length > 0 && (
-        <h2 className="-mb-2 font-heading text-2xl">Other games</h2>
       )}
       {games.length === 0 ? (
         <Empty>
@@ -88,9 +87,7 @@ export default async function GamesPage() {
               <Grid3x3Icon />
             </EmptyMedia>
             <EmptyTitle>
-              {joinedGames.length > 0
-                ? "No other game running"
-                : "No game running"}
+              {hasJoined ? "No other game running" : "No game running"}
             </EmptyTitle>
             <EmptyDescription>
               Ask the organizer for the link, or create your own game.

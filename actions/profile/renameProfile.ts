@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { playerNameSchema } from "@/lib/game/schemas";
-import { renameInGames } from "@/lib/profile/profiles";
+import { renameProfile as saveName } from "@/lib/profile/profiles";
 import { findCurrentProfile } from "@/lib/profile/session";
 
 export type RenameProfileState = {
@@ -28,7 +28,7 @@ export async function renameProfile(
     if (!profile) {
       return { message: "Join a game first", values: { name } };
     }
-    await renameInGames(profile.id, result.data);
+    await saveName(profile.id, result.data);
   } catch {
     return {
       message: "Couldn't change your name, try again",
@@ -37,5 +37,5 @@ export async function renameProfile(
   }
   // Every page showing the name: the games, their leaderboards and grids
   revalidatePath("/", "layout");
-  return { savedName: result.data, values: { name: result.data } };
+  return { savedName: result.data };
 }

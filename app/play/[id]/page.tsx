@@ -11,6 +11,7 @@ import Lobby from "@/components/game/Lobby";
 import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
+import { findPlayer } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
@@ -30,11 +31,9 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
   if (!playable) {
     return <BrokenLink />;
   }
-  const { game, isPrivate, canPlay } = playable;
+  const { game, isPrivate, isUnlocked } = playable;
   // Joining a private game took its password: no need to unlock it again on another phone
-  const player = players.find(
-    (candidate) => candidate.profileId === profile?.id,
-  );
+  const player = findPlayer(players, profile?.id);
   const rows = rankPlayers(players);
   const position = rows.findIndex((row) => row.profileId === player?.profileId);
   const eventTexts = new Map(
@@ -115,7 +114,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
           <JoinForm
             gameId={game.id}
             defaultName={profile?.name ?? ""}
-            needsPassword={!canPlay}
+            needsPassword={!isUnlocked}
           />
         )}
       </main>

@@ -1,4 +1,9 @@
-import type { Game, GridCell } from "./types";
+import type { Game, GridCell, Player } from "./types";
+
+/** The game's player with this profile, if they joined. */
+export function findPlayer(players: Player[], profileId: string | undefined) {
+  return players.find((player) => player.profileId === profileId);
+}
 
 /** Picks and shuffles a new player's cells, row by row, all unticked. */
 export function buildGrid(game: Game): GridCell[] {

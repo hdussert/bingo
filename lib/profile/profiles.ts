@@ -1,7 +1,8 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash } from "crypto";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { players, profiles } from "@/db/schema";
+import { profiles } from "@/db/schema";
+import { newId } from "@/lib/id";
 import { newCode } from "./code";
 import type { Profile } from "./types";
 
@@ -14,7 +15,7 @@ export async function createProfile(
   name: string,
 ): Promise<{ profile: Profile; code: string }> {
   const code = newCode();
-  const profile = { id: randomBytes(9).toString("base64url"), name };
+  const profile = { id: newId(9), name };
   await db.insert(profiles).values({ ...profile, tokenHash: hashCode(code) });
   return { profile, code };
 }
@@ -29,21 +30,10 @@ export async function findProfileByCode(code: string): Promise<Profile | null> {
   return profile ?? null;
 }
 
-/** Sets the name filled in when the player joins a new game. */
-export async function setDefaultName(
+/** Changes the player's name, in every game they joined. */
+export async function renameProfile(
   profileId: string,
   name: string,
 ): Promise<void> {
   await db.update(profiles).set({ name }).where(eq(profiles.id, profileId));
-}
-
-/** Renames the player in every game they joined. */
-export async function renameInGames(
-  profileId: string,
-  name: string,
-): Promise<void> {
-  await db.batch([
-    db.update(profiles).set({ name }).where(eq(profiles.id, profileId)),
-    db.update(players).set({ name }).where(eq(players.profileId, profileId)),
-  ]);
 }

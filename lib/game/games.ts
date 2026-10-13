@@ -1,20 +1,16 @@
-import { randomBytes } from "crypto";
 import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { games, players } from "@/db/schema";
+import { games, players, profiles } from "@/db/schema";
+import { newId } from "@/lib/id";
 import { findGridLines } from "./bingo";
 import { buildGrid } from "./grid";
 import type { NewGame } from "./schemas";
 import { RUNNING_GAME_HOURS } from "./const";
 import type { Game, JoinedGame, Player, RunningGame } from "./types";
 
-function newId(bytes: number): string {
-  return randomBytes(bytes).toString("base64url");
-}
-
 const playerColumns = {
   profileId: players.profileId,
-  name: players.name,
+  name: profiles.name,
   grid: players.grid,
   bingoAt: players.bingoAt,
 };
@@ -88,6 +84,7 @@ export async function listPlayers(gameId: string): Promise<Player[]> {
   return db
     .select(playerColumns)
     .from(players)
+    .innerJoin(profiles, eq(profiles.id, players.profileId))
     .where(eq(players.gameId, gameId))
     .orderBy(players.createdAt);
 }
@@ -96,40 +93,43 @@ export async function listPlayers(gameId: string): Promise<Player[]> {
 export async function listJoinedGames(
   profileId: string,
 ): Promise<JoinedGame[]> {
-  const joined = await db
-    .select({ id: games.id, title: games.title })
+  const myGames = db
+    .select({ gameId: players.gameId })
+    .from(players)
+    .where(eq(players.profileId, profileId));
+  const rows = await db
+    .select({
+      gameId: games.id,
+      title: games.title,
+      ...playerColumns,
+      updatedAt: players.updatedAt,
+    })
     .from(players)
     .innerJoin(games, eq(games.id, players.gameId))
-    .where(eq(players.profileId, profileId))
-    .orderBy(desc(players.updatedAt));
-  if (joined.length === 0) {
-    return [];
-  }
-  const allPlayers = await db
-    .select({ gameId: players.gameId, ...playerColumns })
-    .from(players)
-    .where(
-      inArray(
-        players.gameId,
-        joined.map((game) => game.id),
-      ),
-    )
+    .innerJoin(profiles, eq(profiles.id, players.profileId))
+    .where(inArray(players.gameId, myGames))
     .orderBy(players.createdAt);
-  return joined.map((game) => ({
-    ...game,
-    players: allPlayers.filter((player) => player.gameId === game.id),
-  }));
+  const joined = new Map<string, JoinedGame>();
+  // When this profile last ticked in each game
+  const playedAt = new Map<string, number>();
+  for (const { gameId, title, updatedAt, ...player } of rows) {
+    const game = joined.get(gameId) ?? { id: gameId, title, players: [] };
+    game.players.push(player);
+    joined.set(gameId, game);
+    if (player.profileId === profileId) {
+      playedAt.set(gameId, updatedAt.getTime());
+    }
+  }
+  return [...joined.values()].sort(
+    (a, b) => (playedAt.get(b.id) ?? 0) - (playedAt.get(a.id) ?? 0),
+  );
 }
 
 /** Adds the profile to the game with a new grid, or keeps their grid if they already joined. */
-export async function addPlayer(
-  game: Game,
-  profileId: string,
-  name: string,
-): Promise<void> {
+export async function addPlayer(game: Game, profileId: string): Promise<void> {
   await db
     .insert(players)
-    .values({ gameId: game.id, profileId, name, grid: buildGrid(game) })
+    .values({ gameId: game.id, profileId, grid: buildGrid(game) })
     .onConflictDoNothing();
 }
 

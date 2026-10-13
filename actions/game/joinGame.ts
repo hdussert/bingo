@@ -5,7 +5,7 @@ import { findPlayableGame, unlockGame } from "@/lib/game/access";
 import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
 import { findOrStartProfile } from "@/lib/profile/session";
-import { setDefaultName } from "@/lib/profile/profiles";
+import { renameProfile } from "@/lib/profile/profiles";
 
 export type JoinGameState = {
   message?: string;
@@ -35,7 +35,7 @@ export async function joinGame(
     if (!playable) {
       return { message: "This game doesn't exist anymore", values: { name } };
     }
-    if (!playable.canPlay) {
+    if (!playable.isUnlocked) {
       const password = String(formData.get("password") ?? "");
       if (!(await unlockGame(gameId, password))) {
         return {
@@ -46,15 +46,15 @@ export async function joinGame(
       }
     }
     const profile = await findOrStartProfile(result.data);
-    await addPlayer(playable.game, profile.id, result.data);
-    // The name to fill in next time
+    // One name in every game: joining under another one renames the player
     if (profile.name !== result.data) {
-      await setDefaultName(profile.id, result.data);
+      await renameProfile(profile.id, result.data);
     }
+    await addPlayer(playable.game, profile.id);
   } catch {
     return { message: "Couldn't join the game, try again", values: { name } };
   }
-  // Shows the grid in place of the join form
-  revalidatePath(`/play/${gameId}`);
+  // Shows the grid in place of the join form, and the name if it changed
+  revalidatePath("/", "layout");
   return {};
 }

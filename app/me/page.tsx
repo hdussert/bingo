@@ -22,9 +22,9 @@ export default async function MePage() {
     findCurrentProfile(),
     findCurrentCode(),
   ]);
-  const recoverUrl = await absoluteUrl(
-    `/recover?${new URLSearchParams({ code: code ?? "" })}`,
-  );
+  // Only phones with a profile have a code to share
+  const recoverUrl =
+    code && (await absoluteUrl(`/recover?${new URLSearchParams({ code })}`));
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
@@ -32,7 +32,7 @@ export default async function MePage() {
         <BackLink href="/games" />
         <PageTitle>You</PageTitle>
       </div>
-      {profile && code ? (
+      {profile && code && recoverUrl ? (
         <>
           <RenameForm name={profile.name} />
           <CodeCard code={formatCode(code)} url={recoverUrl} />
