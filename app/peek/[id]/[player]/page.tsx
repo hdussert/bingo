@@ -45,10 +45,10 @@ export default async function PeekPage({
   if (!peeked || peeked.nameKey === player.nameKey) {
     redirect(myGridHref);
   }
+  const rows = rankPlayers(players);
+  const rank = rows.findIndex((row) => row.nameKey === peeked.nameKey) + 1;
   // The other players in leaderboard order, wrapping around at both ends
-  const others = rankPlayers(players).filter(
-    (row) => row.nameKey !== player.nameKey,
-  );
+  const others = rows.filter((row) => row.nameKey !== player.nameKey);
   const index = others.findIndex((row) => row.nameKey === peeked.nameKey);
   const previous = others[(index - 1 + others.length) % others.length];
   const next = others[(index + 1) % others.length];
@@ -66,13 +66,11 @@ export default async function PeekPage({
     >
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
         <BackLink href={myGridHref} />
-        <div className="flex flex-col items-center gap-2 text-center">
-          <PageTitle>{game.title}</PageTitle>
-          <p className="text-muted-foreground">
-            Peeking at{" "}
-            <span className="font-semibold text-foreground">{peeked.name}</span>
-            &apos;s grid
-          </p>
+        <div className="flex flex-col items-center gap-1 text-center">
+          <p className="text-muted-foreground">Peeking at</p>
+          <PageTitle>
+            {peeked.name} (#{rank})
+          </PageTitle>
         </div>
         <BingoGrid
           gameId={game.id}
