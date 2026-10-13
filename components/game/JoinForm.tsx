@@ -23,6 +23,7 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/game/const";
+import { withBackToGame } from "@/lib/game/links";
 import { NAV_FORWARD } from "@/lib/transitions";
 
 type Props = {
@@ -84,7 +85,7 @@ export default function JoinForm({
                   <>
                     {" "}
                     <Link
-                      href="/recover"
+                      href={withBackToGame("/recover", gameId)}
                       transitionTypes={NAV_FORWARD}
                       className="text-primary"
                     >
