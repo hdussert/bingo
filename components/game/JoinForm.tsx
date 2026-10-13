@@ -43,8 +43,10 @@ export default function JoinForm({
 }: Props) {
   const [state, formAction, isPending] = useActionState(
     joinGame.bind(null, gameId),
-    { values: { name: defaultName } },
+    {},
   );
+  // Controlled: an uncontrolled field can't take the name echoed back with an error as its new default
+  const [name, setName] = useState(defaultName);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const router = useRouter();
 
@@ -79,7 +81,8 @@ export default function JoinForm({
                 maxLength={MAX_NAME_LENGTH}
                 autoComplete="given-name"
                 placeholder="Greg"
-                defaultValue={state.values?.name}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 aria-invalid={isNameInvalid}
               />
               <FieldDescription>
