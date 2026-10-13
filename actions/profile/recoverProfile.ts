@@ -11,7 +11,7 @@ export type RecoverProfileState = {
   values?: { code: string };
 };
 
-/** Switches this phone to the profile of the code typed in, then goes back to the game the player came from, or shows their games. */
+/** Switches this phone to the profile of the code typed in, then goes back to the page the player came from, or shows their games. */
 export async function recoverProfile(
   _state: RecoverProfileState,
   formData: FormData,

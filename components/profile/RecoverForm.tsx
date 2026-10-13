@@ -23,7 +23,7 @@ function subscribeToHash(onChange: () => void) {
 type Props = {
   /** The name of the profile this phone already has, which the code replaces. */
   currentName: string | null;
-  /** Where to go once the code is taken: the game the player came from, or their games. */
+  /** Where to go once the code is taken: the page the player came from, or their games. */
   back: string;
 };
 
