@@ -80,7 +80,7 @@ export default function BingoGrid({
   }
 
   return (
-    <div className="relative">
+    <>
       <div className={cn("grid gap-1.5", GRID_COLUMNS[size])}>
         {cells.map((cell, i) => (
           <Toggle
@@ -112,6 +112,6 @@ export default function BingoGrid({
         // Keyed, so a new line while it's showing replays it
         <BingoBanner key={celebrationId} />
       )}
-    </div>
+    </>
   );
 }
