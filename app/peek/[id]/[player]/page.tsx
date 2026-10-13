@@ -56,8 +56,7 @@ export default async function PeekPage({
         <div className="flex flex-col items-center gap-1 text-center">
           <p className="text-muted-foreground">Peeking at</p>
           <PageTitle>
-            {peeked.name} ({rank}
-            {ordinalSuffix(rank)})
+            {peeked.name} ({`${rank}${ordinalSuffix(rank)}`})
           </PageTitle>
         </div>
         <BingoGrid
