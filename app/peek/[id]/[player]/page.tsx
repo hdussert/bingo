@@ -1,18 +1,18 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { redirect } from "next/navigation";
-import { ViewTransition } from "react";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import ButtonLink from "@/components/game/ButtonLink";
+import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
-import { toNameKey } from "@/lib/game/grid";
+import { findPlayer } from "@/lib/game/grid";
 import { peekHref, playHref } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
-import { NAV_BACK, NAV_FORWARD, PAGE_SLIDES } from "@/lib/transitions";
+import { NAV_BACK } from "@/lib/transitions";
 
 /** Another player's grid, read-only, for a player of the same game. */
 export default async function PeekPage({
@@ -25,18 +25,14 @@ export default async function PeekPage({
 
   const [playable, players] = await Promise.all([
     findPlayableGame(id),
-    listPlayers(id),
+    playerName ? listPlayers(id) : [],
   ]);
   if (!playable) {
     return <BrokenLink />;
   }
   const { game, canPlay } = playable;
-  const player = players.find(
-    (candidate) => candidate.nameKey === toNameKey(playerName),
-  );
-  const peeked = players.find(
-    (candidate) => candidate.nameKey === toNameKey(peekedKey),
-  );
+  const player = findPlayer(players, playerName);
+  const peeked = findPlayer(players, peekedKey);
   // Only for players who can see the game (its password unlocked on this phone, for a private one)
   if (!canPlay || !player) {
     redirect(`/play/${id}`);
@@ -58,12 +54,7 @@ export default async function PeekPage({
 
   return (
     // Keyed by player: Previous and Next stay on this route, where the root template doesn't slide
-    <ViewTransition
-      key={peeked.nameKey}
-      enter={PAGE_SLIDES}
-      exit={PAGE_SLIDES}
-      default="none"
-    >
+    <PageSlide key={peeked.nameKey}>
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
         <BackLink href={myGridHref} />
         <div className="flex flex-col items-center gap-1 text-center">
@@ -82,11 +73,12 @@ export default async function PeekPage({
             isTicked: cell.isTicked,
           }))}
         />
-        {/* Only when there's someone else to peek at */}
+        {/* Only when there's someone else to peek at; prefetched, as the main way around this page */}
         {others.length > 1 && (
           <div className="flex justify-center gap-3">
             <ButtonLink
               href={peekHref(id, player.name, previous.nameKey)}
+              prefetch
               transitionTypes={NAV_BACK}
               size="xl"
               variant="outline"
@@ -96,7 +88,7 @@ export default async function PeekPage({
             </ButtonLink>
             <ButtonLink
               href={peekHref(id, player.name, next.nameKey)}
-              transitionTypes={NAV_FORWARD}
+              prefetch
               size="xl"
               variant="outline"
             >
@@ -107,6 +99,6 @@ export default async function PeekPage({
         )}
         <AutoRefresh />
       </main>
-    </ViewTransition>
+    </PageSlide>
   );
 }

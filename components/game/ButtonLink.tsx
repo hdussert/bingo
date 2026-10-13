@@ -7,18 +7,26 @@ type Props = Omit<ComponentProps<typeof Button>, "render" | "nativeButton"> & {
   href: string;
   /** How the next page slides in: forward unless told otherwise. */
   transitionTypes?: string[];
+  prefetch?: boolean;
 };
 
 /** A link styled as a button, that slides to the next page. */
 export default function ButtonLink({
   href,
   transitionTypes = NAV_FORWARD,
+  prefetch,
   ...props
 }: Props) {
   return (
     <Button
       nativeButton={false}
-      render={<Link href={href} transitionTypes={transitionTypes} />}
+      render={
+        <Link
+          href={href}
+          transitionTypes={transitionTypes}
+          prefetch={prefetch}
+        />
+      }
       {...props}
     />
   );

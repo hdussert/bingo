@@ -1,6 +1,5 @@
 import { Grid3x3Icon, LockIcon } from "lucide-react";
 import Link from "next/link";
-import { ViewTransition } from "react";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
@@ -12,10 +11,11 @@ import Lobby from "@/components/game/Lobby";
 import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
-import { toNameKey } from "@/lib/game/grid";
+import { findPlayer } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
+import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
-import { NAV_BACK, PAGE_SLIDES } from "@/lib/transitions";
+import { NAV_BACK } from "@/lib/transitions";
 import { absoluteUrl } from "@/lib/url";
 
 export default async function PlayPage({
@@ -38,9 +38,7 @@ export default async function PlayPage({
   }
   // A private game shows only its join form until this phone enters the password
   const { game, isPrivate, canPlay } = playable;
-  const player = canPlay
-    ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
-    : undefined;
+  const player = canPlay ? findPlayer(players, playerName) : undefined;
   const rows = rankPlayers(players);
   const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
   const eventTexts = new Map(
@@ -49,12 +47,7 @@ export default async function PlayPage({
 
   return (
     // Keyed by screen: joining stays on this route, where the root template doesn't slide
-    <ViewTransition
-      key={player ? "grid" : "join"}
-      enter={PAGE_SLIDES}
-      exit={PAGE_SLIDES}
-      default="none"
-    >
+    <PageSlide key={player ? "grid" : "join"}>
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
         <div className="flex items-center justify-between">
           <BackLink href="/games" />
@@ -63,12 +56,7 @@ export default async function PlayPage({
             <div className="-mr-3 flex items-center">
               <CopyLinkIconButton url={url} />
               <LeaderboardDrawer playerCount={players.length}>
-                <Lobby
-                  gameId={game.id}
-                  playerName={player.name}
-                  rows={rows}
-                  playerKey={player.nameKey}
-                />
+                <Lobby gameId={game.id} playerName={player.name} rows={rows} />
               </LeaderboardDrawer>
             </div>
           )}
@@ -132,6 +120,6 @@ export default async function PlayPage({
           />
         )}
       </main>
-    </ViewTransition>
+    </PageSlide>
   );
 }
