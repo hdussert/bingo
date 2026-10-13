@@ -16,10 +16,13 @@ export default async function SharePage({ params }: PageProps<"/share/[id]">) {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       {/* Home, not the filled-in form: the game is already saved */}
       <BackLink href="/" />
-      <GameReady href={href} url={url} />
+      {/* Centered in the space under the back arrow, like the home page */}
+      <div className="my-auto">
+        <GameReady href={href} url={url} />
+      </div>
     </main>
   );
 }
