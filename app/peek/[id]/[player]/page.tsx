@@ -98,6 +98,7 @@ export default async function PeekPage({
               href={peekHref(id, player.name, next.nameKey)}
               transitionTypes={NAV_FORWARD}
               size="xl"
+              variant="outline"
             >
               Next
               <ArrowRightIcon strokeWidth={3} data-icon="inline-end" />
