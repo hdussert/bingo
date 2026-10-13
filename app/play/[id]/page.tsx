@@ -11,34 +11,30 @@ import Lobby from "@/components/game/Lobby";
 import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
-import { findPlayer } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
-import { NAV_BACK } from "@/lib/transitions";
+import { findCurrentProfile } from "@/lib/profile/session";
+import { NAV_FORWARD } from "@/lib/transitions";
 import { absoluteUrl } from "@/lib/url";
 
-export default async function PlayPage({
-  params,
-  searchParams,
-}: PageProps<"/play/[id]">) {
+export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
   const { id } = await params;
-  const { name } = await searchParams;
-  const playerName = typeof name === "string" ? name.trim() : "";
 
-  // Visitors who haven't joined only see the join form: no need for the players
-  const [playable, players, url] = await Promise.all([
+  const [playable, profile, players, url] = await Promise.all([
     findPlayableGame(id),
-    playerName ? listPlayers(id) : [],
-    // The game's link without ?name=, for inviting others
+    findCurrentProfile(),
+    listPlayers(id),
     absoluteUrl(`/play/${id}`),
   ]);
   if (!playable) {
     return <BrokenLink />;
   }
-  // A private game shows only its join form until this phone enters the password
   const { game, isPrivate, canPlay } = playable;
-  const player = canPlay ? findPlayer(players, playerName) : undefined;
+  // Joining a private game took its password: no need to unlock it again on another phone
+  const player = players.find(
+    (candidate) => candidate.profileId === profile?.id,
+  );
   const rows = rankPlayers(players);
   const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
   const eventTexts = new Map(
@@ -56,7 +52,11 @@ export default async function PlayPage({
             <div className="-mr-3 flex items-center">
               <CopyLinkIconButton url={url} />
               <LeaderboardDrawer playerCount={players.length}>
-                <Lobby gameId={game.id} playerName={player.name} rows={rows} />
+                <Lobby
+                  gameId={game.id}
+                  playerKey={player.nameKey}
+                  rows={rows}
+                />
               </LeaderboardDrawer>
             </div>
           )}
@@ -85,11 +85,11 @@ export default async function PlayPage({
               </span>{" "}
               ·{" "}
               <Link
-                href={`/play/${game.id}`}
-                transitionTypes={NAV_BACK}
+                href="/me"
+                transitionTypes={NAV_FORWARD}
                 className="text-primary underline-offset-4 hover:underline"
               >
-                Not you?
+                Change
               </Link>
             </p>
           )}
@@ -98,7 +98,6 @@ export default async function PlayPage({
           <>
             <BingoGrid
               gameId={game.id}
-              playerName={player.name}
               size={game.size}
               cells={player.grid.map((cell) => ({
                 text: eventTexts.get(cell.eventId) ?? "",
@@ -115,7 +114,7 @@ export default async function PlayPage({
         ) : (
           <JoinForm
             gameId={game.id}
-            defaultName={playerName}
+            defaultName={profile?.name ?? ""}
             needsPassword={!canPlay}
           />
         )}

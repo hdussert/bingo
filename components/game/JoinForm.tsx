@@ -1,9 +1,8 @@
 "use client";
 
 import { CircleAlertIcon, EyeIcon, EyeOffIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useState } from "react";
-import { joinGame } from "@/actions/game/joinGame";
+import { addTransitionType, useActionState, useState } from "react";
+import { joinGame, type JoinGameState } from "@/actions/game/joinGame";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,7 +21,6 @@ import {
   InputGroupInput,
 } from "@/components/ui/input-group";
 import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/game/const";
-import { playHref } from "@/lib/game/links";
 import { NAV_FORWARD } from "@/lib/transitions";
 
 // Matches the card titles of the new game form
@@ -30,35 +28,29 @@ const LABEL_CLASS = "font-heading text-xl";
 
 type Props = {
   gameId: string;
+  /** The name the player used last time, if they played before on this phone. */
   defaultName: string;
   /** A private game this phone hasn't unlocked yet. */
   needsPassword: boolean;
 };
 
-/** Asks the player's name, then slides to their grid: a new name gets a new grid, a known one gets its grid back. */
+/** Asks the player's name (and the password of a private game), then slides to their new grid. */
 export default function JoinForm({
   gameId,
   defaultName,
   needsPassword,
 }: Props) {
   const [state, formAction, isPending] = useActionState(
-    joinGame.bind(null, gameId),
+    (previous: JoinGameState, formData: FormData) => {
+      // Once joined, the page comes back with the grid in place of the form: slides to it like a page change
+      NAV_FORWARD.forEach(addTransitionType);
+      return joinGame(gameId, previous, formData);
+    },
     {},
   );
   // Controlled: an uncontrolled field can't take the name echoed back with an error as its new default
   const [name, setName] = useState(defaultName);
   const [isPasswordShown, setIsPasswordShown] = useState(false);
-  const router = useRouter();
-
-  // Replaces the join form in the history, and slides to the grid like a page change
-  useEffect(() => {
-    if (state.joinedName) {
-      router.replace(playHref(gameId, state.joinedName), {
-        transitionTypes: NAV_FORWARD,
-      });
-    }
-  }, [state.joinedName, gameId, router]);
-  const isJoining = isPending || Boolean(state.joinedName);
   const isNameInvalid = state.invalidField === "name";
   // Without a password field (the phone's unlock expired since the page loaded), its error goes in the alert
   const isPasswordInvalid = needsPassword && state.invalidField === "password";
@@ -86,7 +78,7 @@ export default function JoinForm({
                 aria-invalid={isNameInvalid}
               />
               <FieldDescription>
-                Same name, same grid, on any phone.
+                Shown to the other players on the leaderboard.
               </FieldDescription>
               {isNameInvalid && <FieldError>{state.message}</FieldError>}
             </Field>
@@ -140,8 +132,8 @@ export default function JoinForm({
         </Alert>
       )}
 
-      <Button type="submit" size="xl" disabled={isJoining}>
-        {isJoining ? "Joining…" : "Get my grid"}
+      <Button type="submit" size="xl" disabled={isPending}>
+        {isPending ? "Joining…" : "Get my grid"}
       </Button>
     </form>
   );

@@ -3,7 +3,6 @@ import LinesBadge from "@/components/game/LinesBadge";
 import RankNumber from "@/components/game/RankNumber";
 import { DrawerClose } from "@/components/ui/drawer";
 import { Progress } from "@/components/ui/progress";
-import { toNameKey } from "@/lib/game/grid";
 import { peekHref } from "@/lib/game/links";
 import type { LobbyRow } from "@/lib/game/lobby";
 import { NAV_FORWARD } from "@/lib/transitions";
@@ -11,14 +10,13 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   gameId: string;
-  /** The current player's name, to highlight their row and keep in the links to the other grids. */
-  playerName: string;
+  /** The current player's name key, to highlight their row. */
+  playerKey: string;
   rows: LobbyRow[];
 };
 
 /** Every player of the game ranked, with their progress, bingos first: tapping one shows their grid. */
-export default function Lobby({ gameId, playerName, rows }: Props) {
-  const playerKey = toNameKey(playerName);
+export default function Lobby({ gameId, playerKey, rows }: Props) {
   return (
     <ol className="flex flex-col gap-2">
       {rows.map((row, i) => {
@@ -71,7 +69,7 @@ export default function Lobby({ gameId, playerName, rows }: Props) {
                 // Every row would otherwise prefetch a full render of its page
                 prefetch={false}
                 transitionTypes={NAV_FORWARD}
-                href={peekHref(gameId, playerName, row.nameKey)}
+                href={peekHref(gameId, row.nameKey)}
                 className={className}
               >
                 {content}
