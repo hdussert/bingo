@@ -3,9 +3,9 @@ import LinesBadge from "@/components/game/LinesBadge";
 import RankNumber from "@/components/game/RankNumber";
 import { DrawerClose } from "@/components/ui/drawer";
 import { Progress } from "@/components/ui/progress";
-import { playHref } from "@/lib/game/links";
+import { peekHref } from "@/lib/game/links";
 import type { LobbyRow } from "@/lib/game/lobby";
-import { NAV_BACK, NAV_FORWARD } from "@/lib/transitions";
+import { NAV_FORWARD } from "@/lib/transitions";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -15,29 +15,18 @@ type Props = {
   rows: LobbyRow[];
   /** The current player's name key, to highlight their row. */
   playerKey: string;
-  /** The name key of the player whose grid is on screen, if not the current player's. */
-  peekKey?: string;
 };
 
 /** Every player of the game ranked, with their progress, bingos first: tapping one shows their grid. */
-export default function Lobby({
-  gameId,
-  playerName,
-  rows,
-  playerKey,
-  peekKey,
-}: Props) {
+export default function Lobby({ gameId, playerName, rows, playerKey }: Props) {
   return (
     <ol className="flex flex-col gap-2">
       {rows.map((row, i) => {
         const isMe = row.nameKey === playerKey;
-        const isViewing = row.nameKey === peekKey;
-        const isShown = peekKey ? isViewing : isMe;
         const hasBingo = row.bingoRank !== null;
         const className = cn(
           "flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5 transition-transform active:scale-[0.98]",
           isMe ? "border-primary bg-primary/10" : "border-border",
-          isViewing && "border-highlight",
         );
         const content = (
           <>
@@ -53,9 +42,6 @@ export default function Lobby({
                   {isMe && (
                     <span className="text-muted-foreground"> (you)</span>
                   )}
-                  {isViewing && (
-                    <span className="text-muted-foreground"> (viewing)</span>
-                  )}
                 </span>
                 <LinesBadge lineCount={row.lineCount} hasBingo={hasBingo} />
               </div>
@@ -70,8 +56,8 @@ export default function Lobby({
         );
         return (
           <li key={row.nameKey}>
-            {isShown ? (
-              // Already on screen: only closes the drawer
+            {isMe ? (
+              // Your grid is already on screen: only closes the drawer
               <DrawerClose
                 nativeButton={false}
                 render={<div />}
@@ -80,17 +66,12 @@ export default function Lobby({
                 {content}
               </DrawerClose>
             ) : (
-              // The page slides to the other grid, which also closes the drawer (closing it here would cancel the slide)
+              // Leaving the page closes the drawer (closing it here would cancel the slide)
               <Link
-                // Every row would otherwise prefetch a full render of the game page
+                // Every row would otherwise prefetch a full render of its page
                 prefetch={false}
-                // Your own grid comes back from the left, like going back
-                transitionTypes={isMe ? NAV_BACK : NAV_FORWARD}
-                href={playHref(
-                  gameId,
-                  playerName,
-                  isMe ? undefined : row.nameKey,
-                )}
+                transitionTypes={NAV_FORWARD}
+                href={peekHref(gameId, playerName, row.nameKey)}
                 className={className}
               >
                 {content}

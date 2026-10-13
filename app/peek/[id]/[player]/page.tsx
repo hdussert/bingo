@@ -1,0 +1,83 @@
+import { ArrowLeftIcon } from "lucide-react";
+import { redirect } from "next/navigation";
+import AutoRefresh from "@/components/game/AutoRefresh";
+import BackLink from "@/components/game/BackLink";
+import BingoGrid from "@/components/game/BingoGrid";
+import BrokenLink from "@/components/game/BrokenLink";
+import ButtonLink from "@/components/game/ButtonLink";
+import PageTitle from "@/components/game/PageTitle";
+import { findPlayableGame } from "@/lib/game/access";
+import { listPlayers } from "@/lib/game/games";
+import { toNameKey } from "@/lib/game/grid";
+import { playHref } from "@/lib/game/links";
+import { NAV_BACK } from "@/lib/transitions";
+
+/** Another player's grid, read-only, for a player of the same game. */
+export default async function PeekPage({
+  params,
+  searchParams,
+}: PageProps<"/peek/[id]/[player]">) {
+  const { id, player: peekedKey } = await params;
+  const { name } = await searchParams;
+  const playerName = typeof name === "string" ? name.trim() : "";
+
+  const [playable, players] = await Promise.all([
+    findPlayableGame(id),
+    listPlayers(id),
+  ]);
+  if (!playable) {
+    return <BrokenLink />;
+  }
+  const { game, canPlay } = playable;
+  const player = players.find(
+    (candidate) => candidate.nameKey === toNameKey(playerName),
+  );
+  const peeked = players.find(
+    (candidate) => candidate.nameKey === toNameKey(peekedKey),
+  );
+  // Only for players who can see the game (its password unlocked on this phone, for a private one)
+  if (!canPlay || !player) {
+    redirect(`/play/${id}`);
+  }
+  const myGridHref = playHref(id, player.name);
+  if (!peeked || peeked.nameKey === player.nameKey) {
+    redirect(myGridHref);
+  }
+  const eventTexts = new Map(
+    game.events.map((event) => [event.id, event.text]),
+  );
+
+  return (
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+      <BackLink href={myGridHref} />
+      <div className="flex flex-col items-center gap-2 text-center">
+        <PageTitle>{game.title}</PageTitle>
+        <p className="text-muted-foreground">
+          Peeking at{" "}
+          <span className="font-semibold text-foreground">{peeked.name}</span>
+          &apos;s grid
+        </p>
+      </div>
+      <BingoGrid
+        gameId={game.id}
+        playerName={peeked.name}
+        size={game.size}
+        isReadOnly
+        cells={peeked.grid.map((cell) => ({
+          text: eventTexts.get(cell.eventId) ?? "",
+          isTicked: cell.isTicked,
+        }))}
+      />
+      <ButtonLink
+        href={myGridHref}
+        transitionTypes={NAV_BACK}
+        size="xl"
+        variant="outline"
+      >
+        <ArrowLeftIcon data-icon="inline-start" />
+        Back to my grid
+      </ButtonLink>
+      <AutoRefresh />
+    </main>
+  );
+}
