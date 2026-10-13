@@ -1,4 +1,16 @@
 const timeAgo = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+const ordinals = new Intl.PluralRules("en", { type: "ordinal" });
+const ORDINAL_SUFFIXES: Record<string, string> = {
+  one: "st",
+  two: "nd",
+  few: "rd",
+  other: "th",
+};
+
+/** The suffix of an ordinal number: "st" for 1 (1st), "nd" for 22 (22nd), "th" for 11 (11th). */
+export function ordinalSuffix(n: number): string {
+  return ORDINAL_SUFFIXES[ordinals.select(n)];
+}
 
 /** Formats a count with its word: "1 player", "3 players". */
 export function pluralize(count: number, word: string): string {

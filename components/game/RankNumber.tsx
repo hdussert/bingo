@@ -1,3 +1,4 @@
+import { ordinalSuffix } from "@/lib/game/format";
 import { cn } from "@/lib/utils";
 
 // Gold, silver and bronze for the first three bingos
@@ -15,10 +16,16 @@ type Props = {
   className?: string;
 };
 
-/** A leaderboard position, in gold, silver or bronze metal for the first three bingos. */
+/** A leaderboard position (1st, 2nd…), in gold, silver or bronze metal for the first three bingos. */
 export default function RankNumber({ position, bingoRank, className }: Props) {
   const color = bingoRank === null ? undefined : PODIUM_COLORS[bingoRank - 1];
   return (
-    <span className={cn("font-heading", color, className)}>{position}</span>
+    <span className={cn("font-heading whitespace-nowrap", color, className)}>
+      {position}
+      {/* Raised and small, like a written ordinal; its own metal, so the gradient fits its height */}
+      <span className={cn("align-super text-[0.5em]", color)}>
+        {ordinalSuffix(position)}
+      </span>
+    </span>
   );
 }

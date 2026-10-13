@@ -31,7 +31,7 @@ export default function Lobby({ gameId, playerId, rows }: Props) {
             <RankNumber
               position={i + 1}
               bingoRank={row.bingoRank}
-              className="w-8 shrink-0 text-center text-2xl"
+              className="w-12 shrink-0 text-center text-2xl"
             />
             <div className="flex min-w-0 flex-1 flex-col gap-1.5">
               <div className="flex items-center justify-between gap-2">
