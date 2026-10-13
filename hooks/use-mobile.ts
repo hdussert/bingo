@@ -4,17 +4,17 @@ const MOBILE_BREAKPOINT = 768
 
 const query = `(max-width: ${MOBILE_BREAKPOINT - 1}px)`
 
-// useSyncExternalStore rather than shadcn's setState in an effect, which the React Compiler lint rejects
 function subscribe(onChange: () => void) {
   const mql = window.matchMedia(query)
   mql.addEventListener("change", onChange)
   return () => mql.removeEventListener("change", onChange)
 }
 
+/** Whether the screen is narrower than the `md` breakpoint; mobile while server rendering. */
 export function useIsMobile() {
   return React.useSyncExternalStore(
     subscribe,
     () => window.matchMedia(query).matches,
-    () => false
+    () => true
   )
 }
