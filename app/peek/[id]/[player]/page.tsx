@@ -32,7 +32,8 @@ export default async function PeekPage({
   }
   const { game, canPlay } = playable;
   const player = findPlayer(players, playerName);
-  const peeked = findPlayer(players, peekedKey);
+  // The param arrives still percent-encoded, as peekHref built it
+  const peeked = findPlayer(players, decodeURIComponent(peekedKey));
   // Only for players who can see the game (its password unlocked on this phone, for a private one)
   if (!canPlay || !player) {
     redirect(`/play/${id}`);
@@ -73,12 +74,11 @@ export default async function PeekPage({
             isTicked: cell.isTicked,
           }))}
         />
-        {/* Only when there's someone else to peek at; prefetched, as the main way around this page */}
+        {/* Only when there's someone else to peek at */}
         {others.length > 1 && (
           <div className="flex justify-center gap-3">
             <ButtonLink
               href={peekHref(id, player.name, previous.nameKey)}
-              prefetch
               transitionTypes={NAV_BACK}
               size="xl"
               variant="outline"
@@ -88,7 +88,6 @@ export default async function PeekPage({
             </ButtonLink>
             <ButtonLink
               href={peekHref(id, player.name, next.nameKey)}
-              prefetch
               size="xl"
               variant="outline"
             >
