@@ -23,10 +23,12 @@ function subscribeToHash(onChange: () => void) {
 type Props = {
   /** The name of the profile this phone already has, which the code replaces. */
   currentName: string | null;
+  /** Where to go once the code is taken: the game the player came from, or their games. */
+  back: string;
 };
 
 /** Takes the code shown on another phone, to play here as the same player. */
-export default function RecoverForm({ currentName }: Props) {
+export default function RecoverForm({ currentName, back }: Props) {
   const [state, formAction, isPending] = useActionState(recoverProfile, {});
   // The code from the link opened, after the #: the browser never sends it, so it stays out of server logs and link previews
   const linkCode = useSyncExternalStore(
@@ -38,6 +40,7 @@ export default function RecoverForm({ currentName }: Props) {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="back" value={back} />
       <Card>
         <CardContent>
           <Field data-invalid={isInvalid}>

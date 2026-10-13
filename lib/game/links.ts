@@ -3,9 +3,9 @@ export function peekHref(gameId: string, profileId: string) {
   return `/peek/${gameId}/${profileId}`;
 }
 
-/** Where a back link returns: the game the player came from, if any, or the games. Only a game page, so the link can't lead off the site. */
-export function backHref(back: string | string[] | undefined) {
-  return typeof back === "string" && back.startsWith("/play/")
+/** Where a back link returns: the game the player came from, if any, or the games. Only a game page, so the link can't lead anywhere else. */
+export function backHref(back: unknown) {
+  return typeof back === "string" && /^\/play\/[\w-]+$/.test(back)
     ? back
     : "/games";
 }
