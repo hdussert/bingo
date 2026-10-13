@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { findPlayableGame, unlockGame } from "@/lib/game/access";
 import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
@@ -45,6 +46,7 @@ export async function joinGame(
       }
     }
     await addPlayer(playable.game, result.data);
+    revalidatePath(`/play/${gameId}`);
     return { joinedName: result.data };
   } catch {
     return { message: "Couldn't join the game, try again", values: { name } };
