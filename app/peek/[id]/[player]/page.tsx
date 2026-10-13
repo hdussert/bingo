@@ -45,21 +45,19 @@ export default async function PeekPage({
   if (!peeked || peeked.nameKey === player.nameKey) {
     redirect(myGridHref);
   }
-  // The other players in leaderboard order, from the one after the peeked player, wrapping around
+  // The other players in leaderboard order, wrapping around at both ends
   const others = rankPlayers(players).filter(
     (row) => row.nameKey !== player.nameKey,
   );
-  const next =
-    others[
-      (others.findIndex((row) => row.nameKey === peeked.nameKey) + 1) %
-        others.length
-    ];
+  const index = others.findIndex((row) => row.nameKey === peeked.nameKey);
+  const previous = others[(index - 1 + others.length) % others.length];
+  const next = others[(index + 1) % others.length];
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
 
   return (
-    // Keyed by player: Peek next stays on this route, where the root template doesn't slide
+    // Keyed by player: Previous and Next stay on this route, where the root template doesn't slide
     <ViewTransition
       key={peeked.nameKey}
       enter={PAGE_SLIDES}
@@ -86,28 +84,28 @@ export default async function PeekPage({
             isTicked: cell.isTicked,
           }))}
         />
-        <div className="flex flex-wrap justify-center gap-3">
-          <ButtonLink
-            href={myGridHref}
-            transitionTypes={NAV_BACK}
-            size="xl"
-            variant="outline"
-          >
-            <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
-            Back to my grid
-          </ButtonLink>
-          {/* Only when there's someone else to peek at */}
-          {next.nameKey !== peeked.nameKey && (
+        {/* Only when there's someone else to peek at */}
+        {others.length > 1 && (
+          <div className="flex justify-center gap-3">
+            <ButtonLink
+              href={peekHref(id, player.name, previous.nameKey)}
+              transitionTypes={NAV_BACK}
+              size="xl"
+              variant="outline"
+            >
+              <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
+              Previous
+            </ButtonLink>
             <ButtonLink
               href={peekHref(id, player.name, next.nameKey)}
               transitionTypes={NAV_FORWARD}
               size="xl"
             >
-              Peek next
+              Next
               <ArrowRightIcon strokeWidth={3} data-icon="inline-end" />
             </ButtonLink>
-          )}
-        </div>
+          </div>
+        )}
         <AutoRefresh />
       </main>
     </ViewTransition>
