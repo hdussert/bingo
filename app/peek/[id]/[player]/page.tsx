@@ -1,5 +1,6 @@
-import { ArrowLeftIcon } from "lucide-react";
+import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { redirect } from "next/navigation";
+import { ViewTransition } from "react";
 import AutoRefresh from "@/components/game/AutoRefresh";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
@@ -9,8 +10,9 @@ import PageTitle from "@/components/game/PageTitle";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 import { toNameKey } from "@/lib/game/grid";
-import { playHref } from "@/lib/game/links";
-import { NAV_BACK } from "@/lib/transitions";
+import { peekHref, playHref } from "@/lib/game/links";
+import { rankPlayers } from "@/lib/game/lobby";
+import { NAV_BACK, NAV_FORWARD, PAGE_SLIDES } from "@/lib/transitions";
 
 /** Another player's grid, read-only, for a player of the same game. */
 export default async function PeekPage({
@@ -43,42 +45,71 @@ export default async function PeekPage({
   if (!peeked || peeked.nameKey === player.nameKey) {
     redirect(myGridHref);
   }
+  // The other players in leaderboard order, from the one after the peeked player, wrapping around
+  const others = rankPlayers(players).filter(
+    (row) => row.nameKey !== player.nameKey,
+  );
+  const next =
+    others[
+      (others.findIndex((row) => row.nameKey === peeked.nameKey) + 1) %
+        others.length
+    ];
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      <BackLink href={myGridHref} />
-      <div className="flex flex-col items-center gap-2 text-center">
-        <PageTitle>{game.title}</PageTitle>
-        <p className="text-muted-foreground">
-          Peeking at{" "}
-          <span className="font-semibold text-foreground">{peeked.name}</span>
-          &apos;s grid
-        </p>
-      </div>
-      <BingoGrid
-        gameId={game.id}
-        playerName={peeked.name}
-        size={game.size}
-        isReadOnly
-        cells={peeked.grid.map((cell) => ({
-          text: eventTexts.get(cell.eventId) ?? "",
-          isTicked: cell.isTicked,
-        }))}
-      />
-      <ButtonLink
-        href={myGridHref}
-        transitionTypes={NAV_BACK}
-        size="xl"
-        variant="outline"
-        className="self-center"
-      >
-        <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
-        Back to my grid
-      </ButtonLink>
-      <AutoRefresh />
-    </main>
+    // Keyed by player: Peek next stays on this route, where the root template doesn't slide
+    <ViewTransition
+      key={peeked.nameKey}
+      enter={PAGE_SLIDES}
+      exit={PAGE_SLIDES}
+      default="none"
+    >
+      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+        <BackLink href={myGridHref} />
+        <div className="flex flex-col items-center gap-2 text-center">
+          <PageTitle>{game.title}</PageTitle>
+          <p className="text-muted-foreground">
+            Peeking at{" "}
+            <span className="font-semibold text-foreground">{peeked.name}</span>
+            &apos;s grid
+          </p>
+        </div>
+        <BingoGrid
+          gameId={game.id}
+          playerName={peeked.name}
+          size={game.size}
+          isReadOnly
+          cells={peeked.grid.map((cell) => ({
+            text: eventTexts.get(cell.eventId) ?? "",
+            isTicked: cell.isTicked,
+          }))}
+        />
+        <div className="flex flex-wrap justify-center gap-3">
+          <ButtonLink
+            href={myGridHref}
+            transitionTypes={NAV_BACK}
+            size="xl"
+            variant="outline"
+          >
+            <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
+            Back to my grid
+          </ButtonLink>
+          {/* Only when there's someone else to peek at */}
+          {next.nameKey !== peeked.nameKey && (
+            <ButtonLink
+              href={peekHref(id, player.name, next.nameKey)}
+              transitionTypes={NAV_FORWARD}
+              size="xl"
+            >
+              Peek next
+              <ArrowRightIcon strokeWidth={3} data-icon="inline-end" />
+            </ButtonLink>
+          )}
+        </div>
+        <AutoRefresh />
+      </main>
+    </ViewTransition>
   );
 }
