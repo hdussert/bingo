@@ -22,8 +22,8 @@ export default function RankNumber({ position, bingoRank, className }: Props) {
   return (
     <span className={cn("font-heading whitespace-nowrap", color, className)}>
       {position}
-      {/* Raised and small, like a written ordinal; in the same metal, which covers the whole text */}
-      <span className="align-super text-[0.5em]">
+      {/* Raised and small, like a written ordinal; its own metal, so the gradient fits its height */}
+      <span className={cn("align-super text-[0.5em]", color)}>
         {ordinalSuffix(position)}
       </span>
     </span>
