@@ -184,9 +184,21 @@
     opacity: 0;
   }
 }
+/* The leaderboard opens from the right on wide screens (LeaderboardDrawer) */
+@media (min-width: 48rem) {
+  ::view-transition-old(drawer-popup) {
+    animation-name: drawer-slide-out-right;
+  }
+}
+
 @keyframes drawer-slide-out {
   to {
     translate: 0 100%;
+  }
+}
+@keyframes drawer-slide-out-right {
+  to {
+    translate: 100% 0;
   }
 }
 
