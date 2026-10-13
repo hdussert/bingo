@@ -16,9 +16,12 @@ export default async function SharePage({ params }: PageProps<"/share/[id]">) {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      {/* Home, not the filled-in form: the game is already saved */}
-      <BackLink href="/" />
+    // Equal rows above and below center the content on the whole screen; on a short screen they shrink to the back arrow instead of overlapping it
+    <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-6 px-4 py-8">
+      <div className="self-start">
+        {/* Home, not the filled-in form: the game is already saved */}
+        <BackLink href="/" />
+      </div>
       <GameReady href={href} url={url} />
     </main>
   );
