@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { findPlayableGame, unlockGame } from "@/lib/game/access";
 import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
@@ -10,9 +10,11 @@ export type JoinGameState = {
   /** The field the message is about, to highlight it. */
   invalidField?: "name" | "password";
   values?: { name: string };
+  /** The player's name once they joined: the form then opens their grid. */
+  joinedName?: string;
 };
 
-/** Adds the player to the game (or finds them if they already joined), then opens their grid. */
+/** Adds the player to the game, or finds them if they already joined. */
 export async function joinGame(
   gameId: string,
   _state: JoinGameState,
@@ -44,10 +46,9 @@ export async function joinGame(
       }
     }
     await addPlayer(playable.game, result.data);
+    revalidatePath(`/play/${gameId}`);
+    return { joinedName: result.data };
   } catch {
     return { message: "Couldn't join the game, try again", values: { name } };
   }
-
-  // Outside the try: redirect works by throwing
-  redirect(`/play/${gameId}?name=${encodeURIComponent(result.data)}`);
 }

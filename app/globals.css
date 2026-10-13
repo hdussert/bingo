@@ -164,6 +164,43 @@
   --slide-offset: 60px;
 }
 
+/* An open drawer and its backdrop get their own layers above the sliding page, or the page's snapshot covers them from the first frame: they leave smoothly instead */
+[data-slot="drawer-overlay"] {
+  view-transition-name: drawer-overlay;
+}
+[data-slot="drawer-popup"] {
+  view-transition-name: drawer-popup;
+}
+[data-slot="drawer-popup"][data-swipe-direction="right"] {
+  view-transition-name: drawer-popup-right;
+}
+::view-transition-old(drawer-overlay) {
+  animation: 300ms ease-out both drawer-fade-out;
+}
+/* The drawer's own closing curve: off quickly, out of the new page's way, the way it swipes */
+::view-transition-old(drawer-popup) {
+  animation: 300ms cubic-bezier(0.32, 0.72, 0, 1) both drawer-slide-out;
+}
+::view-transition-old(drawer-popup-right) {
+  animation: 300ms cubic-bezier(0.32, 0.72, 0, 1) both drawer-slide-out-right;
+}
+
+@keyframes drawer-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes drawer-slide-out {
+  to {
+    translate: 0 100%;
+  }
+}
+@keyframes drawer-slide-out-right {
+  to {
+    translate: 100% 0;
+  }
+}
+
 /* Taps during a slide reach the new page instead of the animation overlay */
 ::view-transition {
   pointer-events: none;

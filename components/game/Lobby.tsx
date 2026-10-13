@@ -1,30 +1,35 @@
+import Link from "next/link";
 import LinesBadge from "@/components/game/LinesBadge";
 import RankNumber from "@/components/game/RankNumber";
+import { DrawerClose } from "@/components/ui/drawer";
 import { Progress } from "@/components/ui/progress";
+import { toNameKey } from "@/lib/game/grid";
+import { peekHref } from "@/lib/game/links";
 import type { LobbyRow } from "@/lib/game/lobby";
+import { NAV_FORWARD } from "@/lib/transitions";
 import { cn } from "@/lib/utils";
 
 type Props = {
+  gameId: string;
+  /** The current player's name, to highlight their row and keep in the links to the other grids. */
+  playerName: string;
   rows: LobbyRow[];
-  /** The current player's name key, to highlight their row. */
-  playerKey: string;
 };
 
-/** Every player of the game ranked, with their progress, bingos first. */
-export default function Lobby({ rows, playerKey }: Props) {
+/** Every player of the game ranked, with their progress, bingos first: tapping one shows their grid. */
+export default function Lobby({ gameId, playerName, rows }: Props) {
+  const playerKey = toNameKey(playerName);
   return (
     <ol className="flex flex-col gap-2">
       {rows.map((row, i) => {
         const isMe = row.nameKey === playerKey;
         const hasBingo = row.bingoRank !== null;
-        return (
-          <li
-            key={row.nameKey}
-            className={cn(
-              "flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5",
-              isMe ? "border-primary bg-primary/10" : "border-border",
-            )}
-          >
+        const className = cn(
+          "flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5 transition-transform active:scale-[0.98]",
+          isMe ? "border-primary bg-primary/10" : "border-border",
+        );
+        const content = (
+          <>
             <RankNumber
               position={i + 1}
               bingoRank={row.bingoRank}
@@ -47,6 +52,31 @@ export default function Lobby({ rows, playerKey }: Props) {
                 className="[&_[data-slot=progress-track]]:h-2"
               />
             </div>
+          </>
+        );
+        return (
+          <li key={row.nameKey}>
+            {isMe ? (
+              // Your grid is already on screen: only closes the drawer
+              <DrawerClose
+                nativeButton={false}
+                render={<div />}
+                className={className}
+              >
+                {content}
+              </DrawerClose>
+            ) : (
+              // Leaving the page closes the drawer (closing it here would cancel the slide)
+              <Link
+                // Every row would otherwise prefetch a full render of its page
+                prefetch={false}
+                transitionTypes={NAV_FORWARD}
+                href={peekHref(gameId, playerName, row.nameKey)}
+                className={className}
+              >
+                {content}
+              </Link>
+            )}
           </li>
         );
       })}

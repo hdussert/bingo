@@ -10,6 +10,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { pluralize } from "@/lib/game/format";
 
 type Props = {
@@ -20,8 +21,14 @@ type Props = {
 
 /** A trophy button that slides the leaderboard up from the bottom. */
 export default function LeaderboardDrawer({ playerCount, children }: Props) {
+  // From the side on wide screens, where a bottom sheet would stretch across the page (md, as in globals.css)
+  const isMobile = useIsMobile();
   return (
-    <Drawer showSwipeHandle handle={leaderboardHandle}>
+    <Drawer
+      showSwipeHandle
+      handle={leaderboardHandle}
+      swipeDirection={isMobile ? "down" : "right"}
+    >
       <DrawerTrigger
         render={
           <Button variant="ghost" size="icon-xl" aria-label="Leaderboard" />
@@ -29,8 +36,8 @@ export default function LeaderboardDrawer({ playerCount, children }: Props) {
       >
         <TrophyIcon strokeWidth={2.5} />
       </DrawerTrigger>
-      {/* A sheet attached to the bottom of the screen, not floating above it */}
-      <DrawerContent className="rounded-b-none [--drawer-inset:0px]">
+      {/* A sheet attached to the edge of the screen, not floating above it */}
+      <DrawerContent className="[--drawer-inset:0px] data-[swipe-direction=down]:rounded-b-none data-[swipe-direction=right]:rounded-r-none">
         <DrawerHeader className="flex-row items-center justify-between gap-4 px-8 pt-6 pb-2">
           <DrawerTitle className="flex items-center gap-2 text-2xl">
             <TrophyIcon strokeWidth={3} className="size-6" />

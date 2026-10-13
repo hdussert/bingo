@@ -11,9 +11,11 @@ import Lobby from "@/components/game/Lobby";
 import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
-import { toNameKey } from "@/lib/game/grid";
+import { findPlayer } from "@/lib/game/grid";
 import { rankPlayers } from "@/lib/game/lobby";
+import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
+import { NAV_BACK } from "@/lib/transitions";
 import { absoluteUrl } from "@/lib/url";
 
 export default async function PlayPage({
@@ -36,9 +38,7 @@ export default async function PlayPage({
   }
   // A private game shows only its join form until this phone enters the password
   const { game, isPrivate, canPlay } = playable;
-  const player = canPlay
-    ? players.find((candidate) => candidate.nameKey === toNameKey(playerName))
-    : undefined;
+  const player = canPlay ? findPlayer(players, playerName) : undefined;
   const rows = rankPlayers(players);
   const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
   const eventTexts = new Map(
@@ -46,74 +46,80 @@ export default async function PlayPage({
   );
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      <div className="flex items-center justify-between">
-        <BackLink href="/games" />
-        {player && (
-          // Lines the trophy up with the content edge, like the back arrow
-          <div className="-mr-3 flex items-center">
-            <CopyLinkIconButton url={url} />
-            <LeaderboardDrawer playerCount={players.length}>
-              <Lobby rows={rows} playerKey={player.nameKey} />
-            </LeaderboardDrawer>
-          </div>
-        )}
-      </div>
-      <div className="flex flex-col items-center gap-2 text-center">
-        <PageTitle>{game.title}</PageTitle>
-        {!player && (
-          <p className="flex items-center gap-5 text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <Grid3x3Icon className="size-4" />
-              {game.size}×{game.size}
-            </span>
-            {isPrivate && (
+    // Keyed by screen: joining stays on this route, where the root template doesn't slide
+    <PageSlide key={player ? "grid" : "join"}>
+      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+        <div className="flex items-center justify-between">
+          <BackLink href="/games" />
+          {player && (
+            // Lines the trophy up with the content edge, like the back arrow
+            <div className="-mr-3 flex items-center">
+              <CopyLinkIconButton url={url} />
+              <LeaderboardDrawer playerCount={players.length}>
+                <Lobby gameId={game.id} playerName={player.name} rows={rows} />
+              </LeaderboardDrawer>
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <PageTitle>{game.title}</PageTitle>
+          {!player && (
+            <p className="flex items-center gap-5 text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <LockIcon strokeWidth={3} className="size-4" />
-                Private
+                <Grid3x3Icon className="size-4" />
+                {game.size}×{game.size}
               </span>
-            )}
-          </p>
-        )}
-        {player && (
-          <p className="text-muted-foreground">
-            Playing as{" "}
-            <span className="font-semibold text-foreground">{player.name}</span>{" "}
-            ·{" "}
-            <Link
-              href={`/play/${game.id}`}
-              className="text-primary underline-offset-4 hover:underline"
-            >
-              Not you?
-            </Link>
-          </p>
-        )}
-      </div>
-      {player ? (
-        <>
-          <BingoGrid
+              {isPrivate && (
+                <span className="flex items-center gap-1.5">
+                  <LockIcon strokeWidth={3} className="size-4" />
+                  Private
+                </span>
+              )}
+            </p>
+          )}
+          {player && (
+            <p className="text-muted-foreground">
+              Playing as{" "}
+              <span className="font-semibold text-foreground">
+                {player.name}
+              </span>{" "}
+              ·{" "}
+              <Link
+                href={`/play/${game.id}`}
+                transitionTypes={NAV_BACK}
+                className="text-primary underline-offset-4 hover:underline"
+              >
+                Not you?
+              </Link>
+            </p>
+          )}
+        </div>
+        {player ? (
+          <>
+            <BingoGrid
+              gameId={game.id}
+              playerName={player.name}
+              size={game.size}
+              cells={player.grid.map((cell) => ({
+                text: eventTexts.get(cell.eventId) ?? "",
+                isTicked: cell.isTicked,
+              }))}
+            />
+            <PlayerRank
+              row={rows[position]}
+              position={position + 1}
+              playerCount={players.length}
+            />
+            <AutoRefresh />
+          </>
+        ) : (
+          <JoinForm
             gameId={game.id}
-            playerName={player.name}
-            size={game.size}
-            cells={player.grid.map((cell) => ({
-              text: eventTexts.get(cell.eventId) ?? "",
-              isTicked: cell.isTicked,
-            }))}
+            defaultName={playerName}
+            needsPassword={!canPlay}
           />
-          <PlayerRank
-            row={rows[position]}
-            position={position + 1}
-            playerCount={players.length}
-          />
-          <AutoRefresh />
-        </>
-      ) : (
-        <JoinForm
-          gameId={game.id}
-          defaultName={playerName}
-          needsPassword={!canPlay}
-        />
-      )}
-    </main>
+        )}
+      </main>
+    </PageSlide>
   );
 }
