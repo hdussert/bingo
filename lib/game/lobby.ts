@@ -4,7 +4,7 @@ import type { Player } from "./types";
 /** A player's progress, as shown in the lobby. */
 export type LobbyRow = {
   name: string;
-  nameKey: string;
+  profileId: string;
   tickCount: number;
   cellCount: number;
   lineCount: number;
@@ -16,7 +16,7 @@ export type LobbyRow = {
 export function rankPlayers(players: Player[]): LobbyRow[] {
   const rows = players.map((player) => ({
     name: player.name,
-    nameKey: player.nameKey,
+    profileId: player.profileId,
     tickCount: player.grid.filter((cell) => cell.isTicked).length,
     cellCount: player.grid.length,
     lineCount: findGridLines(player.grid).length,

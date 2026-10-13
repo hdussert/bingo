@@ -22,12 +22,18 @@ export type GridCell = {
 };
 
 export type Player = {
+  profileId: string;
   name: string;
-  /** Identifies the player within the game: see `toNameKey`. */
-  nameKey: string;
   grid: GridCell[];
   /** When the player first completed a line, or `null` without a line. */
   bingoAt: Date | null;
+};
+
+/** A game the current player joined, with all its players. */
+export type JoinedGame = {
+  id: string;
+  title: string;
+  players: Player[];
 };
 
 /** A game as shown in the list of running games. */

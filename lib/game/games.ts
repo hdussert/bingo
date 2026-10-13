@@ -1,19 +1,22 @@
-import { randomBytes } from "crypto";
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { games, players } from "@/db/schema";
+import { games, players, profiles } from "@/db/schema";
+import { newId } from "@/lib/id";
 import { findGridLines } from "./bingo";
-import { buildGrid, toNameKey } from "./grid";
+import { buildGrid } from "./grid";
 import type { NewGame } from "./schemas";
 import { RUNNING_GAME_HOURS } from "./const";
-import type { Game, Player, RunningGame } from "./types";
+import type { Game, JoinedGame, Player, RunningGame } from "./types";
 
-function newId(bytes: number): string {
-  return randomBytes(bytes).toString("base64url");
-}
+const playerColumns = {
+  profileId: players.profileId,
+  name: profiles.name,
+  grid: players.grid,
+  bingoAt: players.bingoAt,
+};
 
-function isPlayer(gameId: string, name: string) {
-  return and(eq(players.gameId, gameId), eq(players.nameKey, toNameKey(name)));
+function isPlayer(gameId: string, profileId: string) {
+  return and(eq(players.gameId, gameId), eq(players.profileId, profileId));
 }
 
 /** Saves a new game and returns its id, used in its link. */
@@ -79,34 +82,61 @@ export async function listRunningGames(): Promise<RunningGame[]> {
 /** Lists the players of a game, in the order they joined. */
 export async function listPlayers(gameId: string): Promise<Player[]> {
   return db
-    .select({
-      name: players.name,
-      nameKey: players.nameKey,
-      grid: players.grid,
-      bingoAt: players.bingoAt,
-    })
+    .select(playerColumns)
     .from(players)
+    .innerJoin(profiles, eq(profiles.id, players.profileId))
     .where(eq(players.gameId, gameId))
     .orderBy(players.createdAt);
 }
 
-/** Adds a player with a new grid, or keeps the existing player of that name. */
-export async function addPlayer(game: Game, name: string): Promise<void> {
-  await db
-    .insert(players)
-    .values({
-      gameId: game.id,
-      name,
-      nameKey: toNameKey(name),
-      grid: buildGrid(game),
+/** Lists the games a profile joined, with their players, most recently played first. */
+export async function listJoinedGames(
+  profileId: string,
+): Promise<JoinedGame[]> {
+  const myGames = db
+    .select({ gameId: players.gameId })
+    .from(players)
+    .where(eq(players.profileId, profileId));
+  const rows = await db
+    .select({
+      gameId: games.id,
+      title: games.title,
+      ...playerColumns,
+      updatedAt: players.updatedAt,
     })
-    .onConflictDoNothing({ target: [players.gameId, players.nameKey] });
+    .from(players)
+    .innerJoin(games, eq(games.id, players.gameId))
+    .innerJoin(profiles, eq(profiles.id, players.profileId))
+    .where(inArray(players.gameId, myGames))
+    .orderBy(players.createdAt);
+  const joined = new Map<string, JoinedGame>();
+  // When this profile last ticked in each game
+  const playedAt = new Map<string, number>();
+  for (const { gameId, title, updatedAt, ...player } of rows) {
+    const game = joined.get(gameId) ?? { id: gameId, title, players: [] };
+    game.players.push(player);
+    joined.set(gameId, game);
+    if (player.profileId === profileId) {
+      playedAt.set(gameId, updatedAt.getTime());
+    }
+  }
+  return [...joined.values()].sort(
+    (a, b) => (playedAt.get(b.id) ?? 0) - (playedAt.get(a.id) ?? 0),
+  );
 }
 
-/** Ticks or unticks one cell of a player's grid, and records when they first reach a bingo. An index outside the grid changes nothing. */
+/** Adds the profile to the game with a new grid, or keeps their grid if they already joined. */
+export async function addPlayer(game: Game, profileId: string): Promise<void> {
+  await db
+    .insert(players)
+    .values({ gameId: game.id, profileId, grid: buildGrid(game) })
+    .onConflictDoNothing();
+}
+
+/** Ticks or unticks one cell of a player's grid, and records when they first reach a bingo. An index outside the grid, or a profile that isn't a player of the game, changes nothing. */
 export async function setCellTicked(
   gameId: string,
-  name: string,
+  profileId: string,
   index: number,
   isTicked: boolean,
 ): Promise<void> {
@@ -117,7 +147,7 @@ export async function setCellTicked(
       grid: sql`jsonb_set(${players.grid}, array[${String(index)}, 'isTicked'], to_jsonb(${isTicked}::boolean), false)`,
       updatedAt: new Date(),
     })
-    .where(isPlayer(gameId, name))
+    .where(isPlayer(gameId, profileId))
     .returning({ grid: players.grid, bingoAt: players.bingoAt });
   if (!player) {
     return;
@@ -133,7 +163,7 @@ export async function setCellTicked(
     // Only if the grid is still the one checked: a newer tick from another device decides instead
     .where(
       and(
-        isPlayer(gameId, name),
+        isPlayer(gameId, profileId),
         sql`${players.grid} = ${JSON.stringify(player.grid)}::jsonb`,
       ),
     );

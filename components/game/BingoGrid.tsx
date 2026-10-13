@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   gameId: string;
-  playerName: string;
   size: GridSize;
   cells: { text: string; isTicked: boolean }[];
   /** Another player's grid, to look at but not tick. */
@@ -42,7 +41,6 @@ async function celebrate() {
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
 export default function BingoGrid({
   gameId,
-  playerName,
   size,
   cells,
   isReadOnly = false,
@@ -77,7 +75,7 @@ export default function BingoGrid({
     startTransition(async () => {
       setOptimisticTicks(next);
       // If saving fails, the cell goes back to its saved state when the transition ends
-      await tickCell(gameId, playerName, index, isTicked).catch(() => {});
+      await tickCell(gameId, index, isTicked).catch(() => {});
     });
   }
 

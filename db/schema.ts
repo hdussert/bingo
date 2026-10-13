@@ -1,4 +1,5 @@
 import {
+  index,
   integer,
   jsonb,
   primaryKey,
@@ -19,6 +20,17 @@ export const games = snakeCase.table("games", {
   passwordHash: text(),
 });
 
+// A player without an account: their phones' cookie holds the profile's code
+export const profiles = snakeCase.table("profiles", {
+  id: text().primaryKey(),
+  createdAt: timestamp().notNull().defaultNow(),
+
+  // Shown in every game they joined; players are told apart by profile, so two can share it
+  name: text().notNull(),
+  // SHA-256 of the profile's code
+  tokenHash: text().notNull().unique(),
+});
+
 export const players = snakeCase.table(
   "players",
   {
@@ -28,12 +40,16 @@ export const players = snakeCase.table(
     gameId: text()
       .notNull()
       .references(() => games.id, { onDelete: "cascade" }),
-    name: text().notNull(),
-    // Lowercased and trimmed name, so rejoining with the same name finds the same player
-    nameKey: text().notNull(),
+    profileId: text()
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
     grid: jsonb().$type<GridCell[]>().notNull(),
     // When the player first completed a line; cleared if they untick back to no line
     bingoAt: timestamp(),
   },
-  (table) => [primaryKey({ columns: [table.gameId, table.nameKey] })],
+  (table) => [
+    primaryKey({ columns: [table.gameId, table.profileId] }),
+    // A profile's games: the primary key only helps from the game
+    index().on(table.profileId),
+  ],
 );

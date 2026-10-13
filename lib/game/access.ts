@@ -38,10 +38,10 @@ export async function grantAccess(
   });
 }
 
-/** Finds a game, whether it's private, and whether this phone may play it: always for a public game, only after its password for a private one. */
+/** Finds a game, whether it's private, and whether this phone may join it: always for a public game, only after its password for a private one. Its players don't need it: they play from their profile. */
 export async function findPlayableGame(
   gameId: string,
-): Promise<{ game: Game; isPrivate: boolean; canPlay: boolean } | null> {
+): Promise<{ game: Game; isPrivate: boolean; isUnlocked: boolean } | null> {
   const stored = await findGameWithPassword(gameId);
   if (!stored) {
     return null;
@@ -49,7 +49,7 @@ export async function findPlayableGame(
   return {
     game: stored.game,
     isPrivate: stored.passwordHash !== null,
-    canPlay: await hasAccess(gameId, stored.passwordHash),
+    isUnlocked: await hasAccess(gameId, stored.passwordHash),
   };
 }
 
