@@ -1,6 +1,7 @@
 "use client";
 
 import { CircleAlertIcon, EyeIcon, EyeOffIcon } from "lucide-react";
+import Link from "next/link";
 import { addTransitionType, useActionState, useState } from "react";
 import { joinGame, type JoinGameState } from "@/actions/game/joinGame";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -79,6 +80,19 @@ export default function JoinForm({
               />
               <FieldDescription>
                 Shown to the other players on the leaderboard.
+                {/* A phone without a profile: maybe a new phone of someone who already plays */}
+                {!defaultName && (
+                  <>
+                    {" "}
+                    <Link
+                      href="/recover"
+                      transitionTypes={NAV_FORWARD}
+                      className="text-primary"
+                    >
+                      Played on another phone?
+                    </Link>
+                  </>
+                )}
               </FieldDescription>
               {isNameInvalid && <FieldError>{state.message}</FieldError>}
             </Field>

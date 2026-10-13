@@ -2,6 +2,7 @@ import { UserIcon } from "lucide-react";
 import BackLink from "@/components/game/BackLink";
 import ButtonLink from "@/components/game/ButtonLink";
 import PageTitle from "@/components/game/PageTitle";
+import CodeCard from "@/components/profile/CodeCard";
 import RenameForm from "@/components/profile/RenameForm";
 import {
   Empty,
@@ -11,11 +12,19 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
-import { findCurrentProfile } from "@/lib/profile/session";
+import { formatCode } from "@/lib/profile/code";
+import { findCurrentCode, findCurrentProfile } from "@/lib/profile/session";
+import { absoluteUrl } from "@/lib/url";
 
-/** The player's profile on this phone: their name. */
+/** The player's profile on this phone: their name, and their code for another phone. */
 export default async function MePage() {
-  const profile = await findCurrentProfile();
+  const [profile, code] = await Promise.all([
+    findCurrentProfile(),
+    findCurrentCode(),
+  ]);
+  const recoverUrl = await absoluteUrl(
+    `/recover?${new URLSearchParams({ code: code ?? "" })}`,
+  );
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
@@ -23,8 +32,11 @@ export default async function MePage() {
         <BackLink href="/games" />
         <PageTitle>You</PageTitle>
       </div>
-      {profile ? (
-        <RenameForm name={profile.name} />
+      {profile && code ? (
+        <>
+          <RenameForm name={profile.name} />
+          <CodeCard code={formatCode(code)} url={recoverUrl} />
+        </>
       ) : (
         <Empty>
           <EmptyHeader>
@@ -38,6 +50,9 @@ export default async function MePage() {
           </EmptyHeader>
           <EmptyContent>
             <ButtonLink href="/games">Join a game</ButtonLink>
+            <ButtonLink href="/recover" variant="link">
+              Played on another phone?
+            </ButtonLink>
           </EmptyContent>
         </Empty>
       )}
