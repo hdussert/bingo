@@ -17,8 +17,9 @@ export default async function SharePage({ params }: PageProps<"/share/[id]">) {
 
   return (
     <main className="relative mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-4 py-8">
-      {/* Out of the flow, where it sits on other pages, so the content centers on the whole screen. Home, not the filled-in form: the game is already saved */}
+      {/* Out of the flow, where it sits on other pages, so the content centers on the whole screen */}
       <div className="absolute top-8 left-4">
+        {/* Home, not the filled-in form: the game is already saved */}
         <BackLink href="/" />
       </div>
       <GameReady href={href} url={url} />
