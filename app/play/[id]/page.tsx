@@ -1,8 +1,9 @@
-import { Grid3x3Icon, LockIcon } from "lucide-react";
+import { ArrowLeftIcon, Grid3x3Icon, LockIcon } from "lucide-react";
 import Link from "next/link";
 import BackLink from "@/components/game/BackLink";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
+import ButtonLink from "@/components/game/ButtonLink";
 import CopyLinkIconButton from "@/components/game/CopyLinkIconButton";
 import JoinForm from "@/components/game/JoinForm";
 import LeaderboardDrawer from "@/components/game/LeaderboardDrawer";
@@ -94,13 +95,7 @@ export default async function PlayPage({
           <p className="text-muted-foreground">
             Peeking at{" "}
             <span className="font-semibold text-foreground">{peeked.name}</span>
-            &apos;s grid ·{" "}
-            <Link
-              href={playHref(game.id, player.name)}
-              className="text-primary underline-offset-4 hover:underline"
-            >
-              Back to my grid
-            </Link>
+            &apos;s grid
           </p>
         )}
         {player && !peeked && (
@@ -131,11 +126,23 @@ export default async function PlayPage({
               isTicked: cell.isTicked,
             }))}
           />
-          <PlayerRank
-            row={rows[position]}
-            position={position + 1}
-            playerCount={players.length}
-          />
+          {/* The rank card would read as the peeked player's */}
+          {peeked ? (
+            <ButtonLink
+              href={playHref(game.id, player.name)}
+              size="xl"
+              variant="outline"
+            >
+              <ArrowLeftIcon data-icon="inline-start" />
+              Back to my grid
+            </ButtonLink>
+          ) : (
+            <PlayerRank
+              row={rows[position]}
+              position={position + 1}
+              playerCount={players.length}
+            />
+          )}
           <AutoRefresh />
         </>
       ) : (
