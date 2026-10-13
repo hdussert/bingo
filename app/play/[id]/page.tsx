@@ -36,7 +36,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
     (candidate) => candidate.profileId === profile?.id,
   );
   const rows = rankPlayers(players);
-  const position = rows.findIndex((row) => row.nameKey === player?.nameKey);
+  const position = rows.findIndex((row) => row.profileId === player?.profileId);
   const eventTexts = new Map(
     game.events.map((event) => [event.id, event.text]),
   );
@@ -54,7 +54,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
               <LeaderboardDrawer playerCount={players.length}>
                 <Lobby
                   gameId={game.id}
-                  playerKey={player.nameKey}
+                  playerId={player.profileId}
                   rows={rows}
                 />
               </LeaderboardDrawer>

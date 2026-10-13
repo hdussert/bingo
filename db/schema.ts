@@ -5,7 +5,6 @@ import {
   snakeCase,
   text,
   timestamp,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import type { GameEvent, GridCell, GridSize } from "@/lib/game/types";
 
@@ -43,15 +42,11 @@ export const players = snakeCase.table(
     profileId: text()
       .notNull()
       .references(() => profiles.id, { onDelete: "cascade" }),
+    // Only shown: players are told apart by profile, so two can share a name
     name: text().notNull(),
-    // Lowercased and trimmed name, so two players of a game can't take the same name
-    nameKey: text().notNull(),
     grid: jsonb().$type<GridCell[]>().notNull(),
     // When the player first completed a line; cleared if they untick back to no line
     bingoAt: timestamp(),
   },
-  (table) => [
-    primaryKey({ columns: [table.gameId, table.profileId] }),
-    uniqueIndex().on(table.gameId, table.nameKey),
-  ],
+  (table) => [primaryKey({ columns: [table.gameId, table.profileId] })],
 );

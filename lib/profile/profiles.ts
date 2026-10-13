@@ -1,8 +1,7 @@
 import { createHash, randomBytes } from "crypto";
-import { and, eq, inArray, ne } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { games, players, profiles } from "@/db/schema";
-import { toNameKey } from "@/lib/game/grid";
+import { players, profiles } from "@/db/schema";
 import { newCode } from "./code";
 import type { Profile } from "./types";
 
@@ -38,36 +37,13 @@ export async function setDefaultName(
   await db.update(profiles).set({ name }).where(eq(profiles.id, profileId));
 }
 
-/** Renames the player in every game they joined. Returns the titles of the games where another player already has that name, and then renames nothing. */
+/** Renames the player in every game they joined. */
 export async function renameInGames(
   profileId: string,
   name: string,
-): Promise<string[]> {
-  const nameKey = toNameKey(name);
-  const myGameIds = db
-    .select({ gameId: players.gameId })
-    .from(players)
-    .where(eq(players.profileId, profileId));
-  const taken = await db
-    .select({ title: games.title })
-    .from(players)
-    .innerJoin(games, eq(games.id, players.gameId))
-    .where(
-      and(
-        inArray(players.gameId, myGameIds),
-        eq(players.nameKey, nameKey),
-        ne(players.profileId, profileId),
-      ),
-    );
-  if (taken.length > 0) {
-    return taken.map((game) => game.title);
-  }
+): Promise<void> {
   await db.batch([
     db.update(profiles).set({ name }).where(eq(profiles.id, profileId)),
-    db
-      .update(players)
-      .set({ name, nameKey })
-      .where(eq(players.profileId, profileId)),
+    db.update(players).set({ name }).where(eq(players.profileId, profileId)),
   ]);
-  return [];
 }

@@ -9,7 +9,6 @@ import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
-import { findPlayer } from "@/lib/game/grid";
 import { peekHref } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
 import { findCurrentProfile } from "@/lib/profile/session";
@@ -19,7 +18,7 @@ import { NAV_BACK } from "@/lib/transitions";
 export default async function PeekPage({
   params,
 }: PageProps<"/peek/[id]/[player]">) {
-  const { id, player: peekedKey } = await params;
+  const { id, player: peekedId } = await params;
 
   const [playable, profile, players] = await Promise.all([
     findPlayableGame(id),
@@ -33,17 +32,16 @@ export default async function PeekPage({
   const player = players.find(
     (candidate) => candidate.profileId === profile?.id,
   );
-  // The param arrives still percent-encoded, as peekHref built it
-  const peeked = findPlayer(players, decodeURIComponent(peekedKey));
+  const peeked = players.find((candidate) => candidate.profileId === peekedId);
   // Only for players of the game, peeking at someone else
-  if (!player || !peeked || peeked.nameKey === player.nameKey) {
+  if (!player || !peeked || peeked.profileId === player.profileId) {
     redirect(`/play/${id}`);
   }
   const rows = rankPlayers(players);
-  const rank = rows.findIndex((row) => row.nameKey === peeked.nameKey) + 1;
+  const rank = rows.findIndex((row) => row.profileId === peeked.profileId) + 1;
   // The other players in leaderboard order, wrapping around at both ends
-  const others = rows.filter((row) => row.nameKey !== player.nameKey);
-  const index = others.findIndex((row) => row.nameKey === peeked.nameKey);
+  const others = rows.filter((row) => row.profileId !== player.profileId);
+  const index = others.findIndex((row) => row.profileId === peeked.profileId);
   const previous = others[(index - 1 + others.length) % others.length];
   const next = others[(index + 1) % others.length];
   const eventTexts = new Map(
@@ -52,7 +50,7 @@ export default async function PeekPage({
 
   return (
     // Keyed by player: Previous and Next stay on this route, where the root template doesn't slide
-    <PageSlide key={peeked.nameKey}>
+    <PageSlide key={peeked.profileId}>
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
         <BackLink href={`/play/${id}`} />
         <div className="flex flex-col items-center gap-1 text-center">
@@ -74,7 +72,7 @@ export default async function PeekPage({
         {others.length > 1 && (
           <div className="flex justify-center gap-3">
             <ButtonLink
-              href={peekHref(id, previous.nameKey)}
+              href={peekHref(id, previous.profileId)}
               transitionTypes={NAV_BACK}
               size="xl"
               variant="outline"
@@ -83,7 +81,7 @@ export default async function PeekPage({
               Previous
             </ButtonLink>
             <ButtonLink
-              href={peekHref(id, next.nameKey)}
+              href={peekHref(id, next.profileId)}
               size="xl"
               variant="outline"
             >

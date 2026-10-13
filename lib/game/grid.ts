@@ -1,15 +1,4 @@
-import type { Game, GridCell, Player } from "./types";
-
-/** Identifies a player within a game: the same name, ignoring case and surrounding spaces, is the same player. */
-export function toNameKey(name: string): string {
-  return name.trim().toLowerCase();
-}
-
-/** The game's player with this name (or name key), if they joined. */
-export function findPlayer(players: Player[], name: string) {
-  const nameKey = toNameKey(name);
-  return players.find((player) => player.nameKey === nameKey);
-}
+import type { Game, GridCell } from "./types";
 
 /** Picks and shuffles a new player's cells, row by row, all unticked. */
 export function buildGrid(game: Game): GridCell[] {

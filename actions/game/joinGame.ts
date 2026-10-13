@@ -46,13 +46,7 @@ export async function joinGame(
       }
     }
     const profile = await findOrStartProfile(result.data);
-    if (!(await addPlayer(playable.game, profile.id, result.data))) {
-      return {
-        message: "Someone in this game already has this name",
-        invalidField: "name",
-        values: { name },
-      };
-    }
+    await addPlayer(playable.game, profile.id, result.data);
     // The name to fill in next time
     if (profile.name !== result.data) {
       await setDefaultName(profile.id, result.data);

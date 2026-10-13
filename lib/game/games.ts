@@ -3,7 +3,7 @@ import { and, count, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { games, players } from "@/db/schema";
 import { findGridLines } from "./bingo";
-import { buildGrid, toNameKey } from "./grid";
+import { buildGrid } from "./grid";
 import type { NewGame } from "./schemas";
 import { RUNNING_GAME_HOURS } from "./const";
 import type { Game, JoinedGame, Player, RunningGame } from "./types";
@@ -15,7 +15,6 @@ function newId(bytes: number): string {
 const playerColumns = {
   profileId: players.profileId,
   name: players.name,
-  nameKey: players.nameKey,
   grid: players.grid,
   bingoAt: players.bingoAt,
 };
@@ -122,32 +121,16 @@ export async function listJoinedGames(
   }));
 }
 
-/** Adds the profile to the game with a new grid, or keeps their grid if they already joined. Returns `false` if another player of the game has that name. */
+/** Adds the profile to the game with a new grid, or keeps their grid if they already joined. */
 export async function addPlayer(
   game: Game,
   profileId: string,
   name: string,
-): Promise<boolean> {
-  const added = await db
+): Promise<void> {
+  await db
     .insert(players)
-    .values({
-      gameId: game.id,
-      profileId,
-      name,
-      nameKey: toNameKey(name),
-      grid: buildGrid(game),
-    })
-    .onConflictDoNothing()
-    .returning({ profileId: players.profileId });
-  if (added.length > 0) {
-    return true;
-  }
-  const [existing] = await db
-    .select({ profileId: players.profileId })
-    .from(players)
-    .where(isPlayer(game.id, profileId))
-    .limit(1);
-  return Boolean(existing);
+    .values({ gameId: game.id, profileId, name, grid: buildGrid(game) })
+    .onConflictDoNothing();
 }
 
 /** Ticks or unticks one cell of a player's grid, and records when they first reach a bingo. An index outside the grid, or a profile that isn't a player of the game, changes nothing. */

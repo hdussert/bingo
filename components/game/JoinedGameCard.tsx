@@ -13,8 +13,7 @@ type Props = {
 /** A game the player joined, with their place on its leaderboard: tapping it opens their grid. */
 export default function JoinedGameCard({ game, profileId }: Props) {
   const rows = rankPlayers(game.players);
-  const me = game.players.find((player) => player.profileId === profileId);
-  const position = rows.findIndex((row) => row.nameKey === me?.nameKey);
+  const position = rows.findIndex((row) => row.profileId === profileId);
   return (
     <Link
       href={`/play/${game.id}`}

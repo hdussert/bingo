@@ -28,13 +28,7 @@ export async function renameProfile(
     if (!profile) {
       return { message: "Join a game first", values: { name } };
     }
-    const takenIn = await renameInGames(profile.id, result.data);
-    if (takenIn.length > 0) {
-      return {
-        message: `Someone already has this name in ${takenIn.join(", ")}`,
-        values: { name },
-      };
-    }
+    await renameInGames(profile.id, result.data);
   } catch {
     return {
       message: "Couldn't change your name, try again",
