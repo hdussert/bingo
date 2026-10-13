@@ -2,6 +2,7 @@
 
 import { CheckIcon, LinkIcon, XIcon } from "lucide-react";
 import { useCopyLink } from "@/components/game/useCopyLink";
+import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -32,7 +33,7 @@ export default function CodeCard({ code, url }: Props) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-heading text-xl">On another phone</CardTitle>
+        <CardTitle className={CARD_LABEL_CLASS}>On another phone</CardTitle>
         <CardDescription>
           Open this link there, or type the code: it&apos;s the key to your
           games, keep it to yourself.

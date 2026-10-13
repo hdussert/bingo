@@ -3,6 +3,7 @@
 import { CheckIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import { renameProfile } from "@/actions/profile/renameProfile";
+import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -30,7 +31,7 @@ export default function RenameForm({ name: savedName }: Props) {
       <Card>
         <CardContent>
           <Field data-invalid={isInvalid}>
-            <FieldLabel htmlFor="name" className="font-heading text-xl">
+            <FieldLabel htmlFor="name" className={CARD_LABEL_CLASS}>
               Your name
             </FieldLabel>
             <Input

@@ -14,6 +14,7 @@ import {
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
+import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
@@ -23,9 +24,6 @@ import {
 } from "@/components/ui/input-group";
 import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from "@/lib/game/const";
 import { NAV_FORWARD } from "@/lib/transitions";
-
-// Matches the card titles of the new game form
-const LABEL_CLASS = "font-heading text-xl";
 
 type Props = {
   gameId: string;
@@ -62,7 +60,7 @@ export default function JoinForm({
         <CardContent>
           <FieldGroup className="gap-6">
             <Field data-invalid={isNameInvalid}>
-              <FieldLabel htmlFor="name" className={LABEL_CLASS}>
+              <FieldLabel htmlFor="name" className={CARD_LABEL_CLASS}>
                 Your name
               </FieldLabel>
               <Input
@@ -99,7 +97,7 @@ export default function JoinForm({
 
             {needsPassword && (
               <Field data-invalid={isPasswordInvalid}>
-                <FieldLabel htmlFor="password" className={LABEL_CLASS}>
+                <FieldLabel htmlFor="password" className={CARD_LABEL_CLASS}>
                   Password
                 </FieldLabel>
                 <InputGroup>

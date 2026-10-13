@@ -4,6 +4,7 @@ import { CircleAlertIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import { recoverProfile } from "@/actions/profile/recoverProfile";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -32,7 +33,7 @@ export default function RecoverForm({ defaultCode, currentName }: Props) {
       <Card>
         <CardContent>
           <Field data-invalid={isInvalid}>
-            <FieldLabel htmlFor="code" className="font-heading text-xl">
+            <FieldLabel htmlFor="code" className={CARD_LABEL_CLASS}>
               Your code
             </FieldLabel>
             <Input
@@ -50,7 +51,8 @@ export default function RecoverForm({ defaultCode, currentName }: Props) {
               aria-invalid={isInvalid}
             />
             <FieldDescription>
-              On the phone you played on: the person icon at the top of the games.
+              On the phone you played on: the person icon at the top of the
+              games.
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>
