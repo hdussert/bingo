@@ -17,22 +17,25 @@ import { findCurrentCode, findCurrentProfile } from "@/lib/profile/session";
 import { absoluteUrl } from "@/lib/url";
 
 /** The player's profile on this phone: their name, and their code for another phone. */
-export default async function MePage() {
+export default async function MePage({ searchParams }: PageProps<"/me">) {
+  const { back } = await searchParams;
   const [profile, code] = await Promise.all([
     findCurrentProfile(),
     findCurrentCode(),
   ]);
-  // Only phones with a profile have a code to share
-  const recoverUrl =
-    code && (await absoluteUrl(`/recover?${new URLSearchParams({ code })}`));
+  // After the #, the code never reaches a server: not ours, not a link preview's
+  const recoverUrl = await absoluteUrl(`/recover#${code ?? ""}`);
+  // Back to the game the player came from, if any; only a game page, so the link can't lead off the site
+  const backHref =
+    typeof back === "string" && back.startsWith("/play/") ? back : "/games";
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
-        <BackLink href="/games" />
+        <BackLink href={backHref} />
         <PageTitle>You</PageTitle>
       </div>
-      {profile && code && recoverUrl ? (
+      {profile && code ? (
         <>
           <RenameForm name={profile.name} />
           <CodeCard code={formatCode(code)} url={recoverUrl} />

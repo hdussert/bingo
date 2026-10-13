@@ -78,6 +78,7 @@ export default function JoinForm({
               />
               <FieldDescription>
                 Shown to the other players on the leaderboard.
+                {defaultName && " Changing it renames you in all your games."}
                 {/* A phone without a profile: maybe a new phone of someone who already plays */}
                 {!defaultName && (
                   <>

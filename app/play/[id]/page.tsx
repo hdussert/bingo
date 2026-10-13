@@ -84,7 +84,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
               </span>{" "}
               ·{" "}
               <Link
-                href="/me"
+                href={`/me?${new URLSearchParams({ back: `/play/${game.id}` })}`}
                 transitionTypes={NAV_FORWARD}
                 className="text-primary underline-offset-4 hover:underline"
               >
