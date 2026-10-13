@@ -72,7 +72,11 @@ export default function Lobby({
           <li key={row.nameKey}>
             {isShown ? (
               // Already on screen: only closes the drawer
-              <DrawerClose nativeButton={false} className={className}>
+              <DrawerClose
+                nativeButton={false}
+                render={<div />}
+                className={className}
+              >
                 {content}
               </DrawerClose>
             ) : (
