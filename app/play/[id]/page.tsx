@@ -79,7 +79,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
             )}
           </PageHeader>
         </div>
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-8">
           <div className="flex flex-col items-center gap-2 text-center">
             <PageTitle>{game.title}</PageTitle>
             {!player && (
@@ -121,7 +121,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
               ))}
           </div>
           {player ? (
-            <>
+            <div className="flex flex-col gap-4">
               <BingoGrid
                 gameId={game.id}
                 size={game.size}
@@ -137,7 +137,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
                 playerCount={players.length}
               />
               <AutoRefresh />
-            </>
+            </div>
           ) : isEnded ? (
             <Empty>
               <EmptyHeader>
