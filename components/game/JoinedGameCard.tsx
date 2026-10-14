@@ -1,3 +1,4 @@
+import { CrownIcon } from "lucide-react";
 import Link from "next/link";
 import RankSummary from "@/components/game/RankSummary";
 import { Badge } from "@/components/ui/badge";
@@ -30,9 +31,17 @@ export default function JoinedGameCard({ game, profileId }: Props) {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl break-words">{game.title}</CardTitle>
-          {game.isEnded && (
-            <CardAction className="row-span-1 self-center">
-              <Badge variant="secondary">Ended</Badge>
+          {(game.isEnded || game.isOrganizer) && (
+            // Where the lock sits on the other games' cards
+            <CardAction className="row-span-1 flex items-center gap-3 self-center">
+              {game.isEnded && <Badge variant="secondary">Ended</Badge>}
+              {game.isOrganizer && (
+                <CrownIcon
+                  strokeWidth={3}
+                  className="size-6"
+                  aria-label="You organize it"
+                />
+              )}
             </CardAction>
           )}
         </CardHeader>

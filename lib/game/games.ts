@@ -111,6 +111,7 @@ export async function listJoinedGames(
       gameId: games.id,
       title: games.title,
       endedAt: games.endedAt,
+      creatorId: games.creatorId,
       ...playerColumns,
       updatedAt: players.updatedAt,
     })
@@ -122,11 +123,19 @@ export async function listJoinedGames(
   const joined = new Map<string, JoinedGame>();
   // When this profile last ticked in each game
   const playedAt = new Map<string, number>();
-  for (const { gameId, title, endedAt, updatedAt, ...player } of rows) {
+  for (const {
+    gameId,
+    title,
+    endedAt,
+    creatorId,
+    updatedAt,
+    ...player
+  } of rows) {
     const game = joined.get(gameId) ?? {
       id: gameId,
       title,
       isEnded: endedAt !== null,
+      isOrganizer: creatorId === profileId,
       players: [],
     };
     game.players.push(player);
@@ -209,4 +218,20 @@ export async function setGameEnded(
     .update(games)
     .set({ endedAt: isEnded ? new Date() : null })
     .where(eq(games.id, gameId));
+}
+
+/** Makes a game private with that password's hash, or public with `null`. */
+export async function setGamePasswordHash(
+  gameId: string,
+  passwordHash: string | null,
+): Promise<void> {
+  await db.update(games).set({ passwordHash }).where(eq(games.id, gameId));
+}
+
+/** Removes a player and their grid from a game. */
+export async function removePlayer(
+  gameId: string,
+  profileId: string,
+): Promise<void> {
+  await db.delete(players).where(isPlayer(gameId, profileId));
 }

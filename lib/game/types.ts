@@ -39,6 +39,8 @@ export type JoinedGame = {
   id: string;
   title: string;
   isEnded: boolean;
+  /** Whether the current player organizes it. */
+  isOrganizer: boolean;
   players: Player[];
 };
 
