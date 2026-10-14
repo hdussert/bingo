@@ -232,15 +232,19 @@ export async function setCellTicked(
     );
 }
 
-/** Renames a game, if that profile organizes it; returns whether it did. */
-export async function renameGame(
+/**
+ * Saves a game's title and who can join, if that profile organizes it; returns whether it did.
+ * `passwordHash` makes it private with that password, `null` public, and `undefined` keeps its current access.
+ */
+export async function saveGameSettings(
   gameId: string,
   organizerId: string,
-  title: string,
+  settings: { title: string; passwordHash: string | null | undefined },
 ): Promise<boolean> {
+  const { title, passwordHash } = settings;
   const rows = await db
     .update(games)
-    .set({ title })
+    .set(passwordHash === undefined ? { title } : { title, passwordHash })
     .where(isOrganizedBy(gameId, organizerId))
     .returning({ id: games.id });
   return rows.length > 0;
@@ -255,20 +259,6 @@ export async function setGameEnded(
   const rows = await db
     .update(games)
     .set({ endedAt: isEnded ? new Date() : null })
-    .where(isOrganizedBy(gameId, organizerId))
-    .returning({ id: games.id });
-  return rows.length > 0;
-}
-
-/** Makes a game private with that password's hash, or public with `null`, if that profile organizes it; returns whether it did. */
-export async function setGamePasswordHash(
-  gameId: string,
-  organizerId: string,
-  passwordHash: string | null,
-): Promise<boolean> {
-  const rows = await db
-    .update(games)
-    .set({ passwordHash })
     .where(isOrganizedBy(gameId, organizerId))
     .returning({ id: games.id });
   return rows.length > 0;

@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import EndGameForm from "@/components/game/EndGameForm";
-import GameAccessForm from "@/components/game/GameAccessForm";
 import GamePlayersCard from "@/components/game/GamePlayersCard";
-import GameTitleForm from "@/components/game/GameTitleForm";
+import GameSettingsForm from "@/components/game/GameSettingsForm";
 import PageHeader from "@/components/game/PageHeader";
 import PageTitle from "@/components/game/PageTitle";
 import { findOrganizedGame } from "@/lib/game/access";
@@ -24,7 +23,8 @@ export default async function AdminPage({
   const { game, isPrivate, organizerId } = organized;
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 py-8">
+    // Room at the bottom for the Save bar, so it never covers the last button
+    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 pt-8 pb-32">
       <div className="flex flex-col items-start gap-2">
         <PageHeader back={`/play/${id}`} />
         <PageTitle>Manage game</PageTitle>
@@ -33,8 +33,11 @@ export default async function AdminPage({
         </p>
       </div>
       <div className="flex flex-col gap-8">
-        <GameTitleForm gameId={game.id} title={game.title} />
-        <GameAccessForm gameId={game.id} isPrivate={isPrivate} />
+        <GameSettingsForm
+          gameId={game.id}
+          title={game.title}
+          isPrivate={isPrivate}
+        />
         <GamePlayersCard
           gameId={game.id}
           organizerId={organizerId}
