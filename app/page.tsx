@@ -8,8 +8,8 @@ export default function Home() {
       <div className="self-start">
         <PageHeader />
       </div>
-      <div className="flex flex-col gap-10">
-        <div className="flex flex-col items-center gap-6 text-center">
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col items-center gap-4 text-center">
           <h1 className="font-heading text-7xl text-cartoon">Bingo!</h1>
           <p className="text-muted-foreground">
             Bingo for your team building: guess what will happen, tick it when

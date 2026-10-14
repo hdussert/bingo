@@ -6,6 +6,7 @@ import { useActionState, useEffect, useState, ViewTransition } from "react";
 import { createGame } from "@/actions/game/createGame";
 import EventsProgress from "@/components/game/EventsProgress";
 import EventsTileInput from "@/components/game/EventsTileInput";
+import { BOTTOM_BAR_CLASS } from "@/components/game/const";
 import FormStep from "@/components/game/FormStep";
 import GridSizePicker from "@/components/game/GridSizePicker";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -30,6 +31,7 @@ import {
 import { newGameSchema, playerNameSchema } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
 import { NAV_FORWARD } from "@/lib/transitions";
+import { cn } from "@/lib/utils";
 
 type Props = {
   /** A phone without a profile: the organizer gives their name, which starts one. */
@@ -79,7 +81,7 @@ export default function NewGameForm({ needsName }: Props) {
   const isCreating = isPending || Boolean(state.gameId);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-3">
       <FormStep step={1} title="Name it">
         <Input
           name="title"
@@ -110,7 +112,8 @@ export default function NewGameForm({ needsName }: Props) {
       {/* Glides down as the tiles grow a row */}
       <ViewTransition>
         <FormStep step={4} title="Who can join">
-          <FieldGroup className="gap-4">
+          {/* No gap: the closed password field would still leave one, so the open one brings its own */}
+          <FieldGroup className="gap-0">
             <Field orientation="horizontal">
               <FieldContent>
                 <FieldLabel htmlFor="isPrivate">
@@ -129,7 +132,7 @@ export default function NewGameForm({ needsName }: Props) {
             </Field>
             <Collapsible open={isPrivate}>
               <CollapsibleContent>
-                <Field>
+                <Field className="pt-4">
                   <Input
                     name="password"
                     aria-label="Password"
@@ -185,7 +188,7 @@ export default function NewGameForm({ needsName }: Props) {
       {/* Stays reachable while scrolling through the steps; globals.css keeps it above the animating tiles */}
       <div
         style={{ viewTransitionName: "create-game" }}
-        className="sticky bottom-0 -mx-4 bg-linear-to-t from-background from-60% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))]"
+        className={cn("sticky bottom-0 -mx-4", BOTTOM_BAR_CLASS)}
       >
         <Button
           type="submit"

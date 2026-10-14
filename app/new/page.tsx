@@ -7,7 +7,7 @@ export default async function NewGamePage() {
   const profile = await findCurrentProfile();
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-lg flex-col gap-8 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
         <PageHeader back="/" />
         <PageTitle>New game</PageTitle>

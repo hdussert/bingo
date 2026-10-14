@@ -51,46 +51,53 @@ export default async function PeekPage({
   return (
     // Keyed by player: Previous and Next stay on this route, where the root template doesn't slide
     <PageSlide key={peeked.profileId}>
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-        <PageHeader back={`/play/${id}`} />
-        <div className="flex flex-col items-center gap-1 text-center">
-          <p className="text-muted-foreground">Peeking at</p>
-          <PageTitle>
-            {peeked.name} ({`${rank}${ordinalSuffix(rank)}`})
-          </PageTitle>
+      {/* Equal rows above and below center the content on the whole screen, the header staying at the top */}
+      <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-6 px-4 py-8">
+        <div className="self-start">
+          <PageHeader back={`/play/${id}`} />
         </div>
-        <BingoGrid
-          gameId={game.id}
-          size={game.size}
-          isReadOnly
-          cells={peeked.grid.map((cell) => ({
-            text: eventTexts.get(cell.eventId) ?? "",
-            isTicked: cell.isTicked,
-          }))}
-        />
-        {/* Only when there's someone else to peek at */}
-        {others.length > 1 && (
-          <div className="flex justify-center gap-3">
-            <ButtonLink
-              href={peekHref(id, previous.profileId)}
-              transitionTypes={NAV_BACK}
-              size="xl"
-              variant="outline"
-            >
-              <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
-              Previous
-            </ButtonLink>
-            <ButtonLink
-              href={peekHref(id, next.profileId)}
-              size="xl"
-              variant="outline"
-            >
-              Next
-              <ArrowRightIcon strokeWidth={3} data-icon="inline-end" />
-            </ButtonLink>
+        <div className="flex flex-col gap-8">
+          <div className="flex flex-col items-center gap-2 text-center">
+            <PageTitle>
+              {peeked.name} ({`${rank}${ordinalSuffix(rank)}`})
+            </PageTitle>
+            <p className="text-muted-foreground">Peeking at their grid</p>
           </div>
-        )}
-        <AutoRefresh />
+          <div className="flex flex-col gap-4">
+            <BingoGrid
+              gameId={game.id}
+              size={game.size}
+              isReadOnly
+              cells={peeked.grid.map((cell) => ({
+                text: eventTexts.get(cell.eventId) ?? "",
+                isTicked: cell.isTicked,
+              }))}
+            />
+            {/* Only when there's someone else to peek at */}
+            {others.length > 1 && (
+              <div className="flex justify-center gap-3">
+                <ButtonLink
+                  href={peekHref(id, previous.profileId)}
+                  transitionTypes={NAV_BACK}
+                  size="xl"
+                  variant="outline"
+                >
+                  <ArrowLeftIcon strokeWidth={3} data-icon="inline-start" />
+                  Previous
+                </ButtonLink>
+                <ButtonLink
+                  href={peekHref(id, next.profileId)}
+                  size="xl"
+                  variant="outline"
+                >
+                  Next
+                  <ArrowRightIcon strokeWidth={3} data-icon="inline-end" />
+                </ButtonLink>
+              </div>
+            )}
+            <AutoRefresh />
+          </div>
+        </div>
       </main>
     </PageSlide>
   );
