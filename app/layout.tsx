@@ -29,10 +29,15 @@ const luckiestGuy = localFont({
   ],
 });
 
+const description =
+  "Play bingo with your friends: guess what will happen, then tick it off when it does.";
+
 export const metadata: Metadata = {
   title: "Bingo",
-  description:
-    "Play bingo with your friends: guess what will happen, then tick it off when it does.",
+  description,
+  openGraph: { title: "Bingo", description, siteName: "Bingo" },
+  // The preview image in full, not a thumbnail
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
