@@ -68,6 +68,8 @@ export function shareImage({ title, subtitle, details = [], size }: Props) {
           display: "flex",
           flexDirection: "column",
           flex: 1,
+          // Lets a long title wrap instead of widening the column under the grid
+          minWidth: 0,
           height: "100%",
           justifyContent: "space-between",
         }}
@@ -105,6 +107,8 @@ export function shareImage({ title, subtitle, details = [], size }: Props) {
               // Smaller as titles get longer, so the longest still fit
               fontSize: title.length > 40 ? 56 : title.length > 20 ? 72 : 92,
               lineHeight: 1.05,
+              // A title without spaces breaks anywhere
+              wordBreak: "break-word",
             }}
           >
             {title}
