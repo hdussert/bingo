@@ -79,8 +79,12 @@ export async function unlockGame(
   return true;
 }
 
-/** Finds a game if this phone's profile organizes it, so it may manage it. */
-export async function findOrganizedGame(gameId: string): Promise<Game | null> {
+/** Finds a game and whether it's private, if this phone's profile organizes it, so it may manage it. */
+export async function findOrganizedGame(
+  gameId: string,
+): Promise<{ game: Game; isPrivate: boolean } | null> {
   const playable = await findPlayableGame(gameId);
-  return playable?.isOrganizer ? playable.game : null;
+  return playable?.isOrganizer
+    ? { game: playable.game, isPrivate: playable.isPrivate }
+    : null;
 }
