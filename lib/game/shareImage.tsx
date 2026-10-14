@@ -23,6 +23,12 @@ const COLORS = {
   border: "rgba(255, 255, 255, 0.22)",
 };
 
+// The home page's text-7xl
+const LOGO_SIZE = 72;
+
+// Offsets of the pink copies stacked under the logo, as deep as the home page's extrusion
+const LOGO_DEPTHS = Array.from({ length: 11 }, (_, i) => LOGO_SIZE * 0.015 * i);
+
 const GRID_WIDTH = 380;
 const GRID_GAP = 12;
 
@@ -66,15 +72,31 @@ export function shareImage({ title, subtitle, details = [], size }: Props) {
           justifyContent: "space-between",
         }}
       >
+        {/* The home page's `text-cartoon` logo. The renderer can't draw a stroke under the fill nor
+            shadow it, so outlined pink copies stack into the extrusion under the white letters */}
         <div
           style={{
             display: "flex",
+            position: "relative",
             fontFamily: "Luckiest Guy",
-            fontSize: 44,
-            color: COLORS.primary,
+            fontSize: LOGO_SIZE,
           }}
         >
-          Bingo
+          {LOGO_DEPTHS.map((depth) => (
+            <div
+              key={depth}
+              style={{
+                position: "absolute",
+                top: depth,
+                left: depth,
+                color: COLORS.primary,
+                WebkitTextStroke: `${LOGO_SIZE * 0.12}px ${COLORS.primary}`,
+              }}
+            >
+              Bingo!
+            </div>
+          ))}
+          <div style={{ color: COLORS.foreground }}>Bingo!</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div
