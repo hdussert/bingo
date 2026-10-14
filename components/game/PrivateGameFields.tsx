@@ -29,7 +29,7 @@ type Props = {
   passwordError?: string;
 };
 
-/** The private game switch, and the password field it opens (sent as `password` while open). */
+/** The private game switch, and the password field it opens (sent as `password` while open). The switch itself sends nothing: a form that needs `isPrivate` adds it. */
 export default function PrivateGameFields({
   isPrivate,
   onIsPrivateChange,
