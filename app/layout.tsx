@@ -1,22 +1,42 @@
 import type { Metadata } from "next";
-import { Fredoka, Luckiest_Guy } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const fredoka = Fredoka({
+const fredoka = localFont({
+  src: [
+    { path: "./fonts/Fredoka-400-Latin.woff2", weight: "400" },
+    { path: "./fonts/Fredoka-500-Latin.woff2", weight: "500" },
+    { path: "./fonts/Fredoka-600-Latin.woff2", weight: "600" },
+  ],
   variable: "--font-sans",
-  subsets: ["latin"],
+  // Its letters sit low in the line box (lowercase 0.13em below center): moving descent space
+  // above centers the middle of the lowercase and capital heights in inputs and buttons
+  declarations: [
+    { prop: "ascent-override", value: "90%" },
+    { prop: "descent-override", value: "31%" },
+  ],
 });
 
-const luckiestGuy = Luckiest_Guy({
+const luckiestGuy = localFont({
+  src: "./fonts/LuckiestGuy-Latin.woff2",
   variable: "--font-heading",
-  subsets: ["latin"],
-  weight: "400",
+  // The font reserves 30% of its height below the baseline for descenders, but its letters are
+  // all capitals 71% tall: moving that space above centers them in any box
+  declarations: [
+    { prop: "ascent-override", value: "85.5%" },
+    { prop: "descent-override", value: "14.5%" },
+  ],
 });
 
 export const metadata: Metadata = {
   title: "Bingo",
-  description: "Bingo grids for team building events",
+  description:
+    "Play bingo with your friends: guess what will happen, then tick it off when it does.",
+  // Pages' title and description fill in the rest of the link preview
+  openGraph: { siteName: "Bingo" },
+  // The preview image in full, not a thumbnail
+  twitter: { card: "summary_large_image" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

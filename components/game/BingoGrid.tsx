@@ -1,28 +1,30 @@
 "use client";
 
+import { startTransition, useEffect, useOptimistic, useState } from "react";
+import { tickCell } from "@/actions/game/tickCell";
+import BingoBanner from "@/components/game/BingoBanner";
 import { Toggle } from "@/components/ui/toggle";
 import { findBingoLines } from "@/lib/game/bingo";
+import { GRID_COLUMNS } from "@/lib/game/const";
 import type { GridSize } from "@/lib/game/types";
 import { cn } from "@/lib/utils";
-import { useTicks } from "./useTicks";
 
-const COLUMNS: Record<GridSize, string> = {
-  3: "grid-cols-3",
-  4: "grid-cols-4",
-  5: "grid-cols-5",
+type Props = {
+  gameId: string;
+  size: GridSize;
+  cells: { text: string; isTicked: boolean }[];
+  /** A grid to look at but not tick: another player's, or one of an ended game. */
+  isReadOnly?: boolean;
 };
 
 const TEXT_SIZES: Record<GridSize, string> = {
-  3: "text-sm sm:text-base",
-  4: "text-xs sm:text-sm",
-  5: "text-[10px] sm:text-xs",
+  3: "text-base sm:text-lg",
+  4: "text-sm sm:text-base",
+  5: "text-xs sm:text-sm",
 };
 
-type Props = {
-  cells: string[];
-  size: GridSize;
-  storageKey: string;
-};
+// Long enough for the letters to bounce in and be read
+const BANNER_MS = 2000;
 
 async function celebrate() {
   const { default: confetti } = await import("canvas-confetti");
@@ -31,52 +33,85 @@ async function celebrate() {
     spread: 90,
     origin: { y: 0.7 },
     disableForReducedMotion: true,
+    // Above the grid but under the Bingo! banner (and the leaderboard drawer)
+    zIndex: 10,
   });
 }
 
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
-export default function BingoGrid({ cells, size, storageKey }: Props) {
-  const { ticked, toggle } = useTicks(storageKey, cells.length);
+export default function BingoGrid({
+  gameId,
+  size,
+  cells,
+  isReadOnly = false,
+}: Props) {
+  const [ticked, setOptimisticTicks] = useOptimistic(
+    cells.map((cell) => cell.isTicked),
+    (_, next: boolean[]) => next,
+  );
   const lines = findBingoLines(ticked, size);
   const winningCells = new Set(lines.flat());
+  // The last cell tapped, so only it bounces: cells already ticked on page load stay still
+  const [tappedIndex, setTappedIndex] = useState<number | null>(null);
+  // Set when a tick completes a line, to show the banner for a moment
+  const [celebrationId, setCelebrationId] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (celebrationId === null) {
+      return;
+    }
+    const timeout = setTimeout(() => setCelebrationId(null), BANNER_MS);
+    return () => clearTimeout(timeout);
+  }, [celebrationId]);
 
   function handleToggle(index: number) {
-    const next = toggle(index);
+    const isTicked = !ticked[index];
+    setTappedIndex(index);
+    const next = ticked.map((value, i) => (i === index ? isTicked : value));
     if (findBingoLines(next, size).length > lines.length) {
       void celebrate();
+      setCelebrationId((id) => (id ?? 0) + 1);
     }
+    startTransition(async () => {
+      setOptimisticTicks(next);
+      // If saving fails, the cell goes back to its saved state when the transition ends
+      await tickCell(gameId, index, isTicked).catch(() => {});
+    });
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className={cn("grid gap-2", COLUMNS[size])}>
+    <>
+      <div className={cn("grid gap-1.5", GRID_COLUMNS[size])}>
         {cells.map((cell, i) => (
           <Toggle
             key={i}
             variant="primary"
             pressed={ticked[i]}
+            disabled={isReadOnly}
             onPressedChange={() => handleToggle(i)}
             className={cn(
-              // Raised like a game button, pressed flat once ticked
-              "aspect-square h-auto min-w-0 rounded-[22%] border-2 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
+              // Raised like a game button, pressed flat once ticked; the gap leaves room for the raised edge
+              "aspect-square h-auto min-w-0 rounded-[22%] border-0 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
+              // Squashes and bounces back when ticked (the scale property, so it adds to the pressed translate)
+              i === tappedIndex &&
+                "aria-pressed:animate-[tick-pop_300ms_ease-out] motion-reduce:animate-none",
               TEXT_SIZES[size],
               winningCells.has(i)
-                ? "translate-y-1 font-semibold shadow-none aria-pressed:border-highlight aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
+                ? "translate-y-1 font-semibold shadow-none aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
                 : "aria-pressed:translate-y-1 aria-pressed:shadow-none",
+              // Flat and at full color: nothing to press, but nothing grayed out either
+              isReadOnly &&
+                "translate-y-0 shadow-none disabled:opacity-100 aria-pressed:translate-y-0",
             )}
           >
-            {cell}
+            {cell.text}
           </Toggle>
         ))}
       </div>
-      {lines.length > 0 && (
-        <p
-          role="status"
-          className="pb-6 text-center font-heading text-7xl text-cartoon animate-in duration-500 zoom-in-50"
-        >
-          Bingo!
-        </p>
+      {celebrationId !== null && (
+        // Keyed, so a new line while it's showing replays it
+        <BingoBanner key={celebrationId} />
       )}
-    </div>
+    </>
   );
 }

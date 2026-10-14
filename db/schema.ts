@@ -1,0 +1,62 @@
+import {
+  type AnyPgColumn,
+  index,
+  integer,
+  jsonb,
+  primaryKey,
+  snakeCase,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
+import type { GameEvent, GridCell, GridSize } from "@/lib/game/types";
+
+export const games = snakeCase.table("games", {
+  id: text().primaryKey(),
+  createdAt: timestamp().notNull().defaultNow(),
+
+  title: text().notNull(),
+  size: integer().$type<GridSize>().notNull(),
+  events: jsonb().$type<GameEvent[]>().notNull(),
+  // Salted scrypt hash of the join password ("salt:hash"), or null for a public game
+  passwordHash: text(),
+  // The organizer, who can manage the game; null for games created before profiles
+  creatorId: text().references((): AnyPgColumn => profiles.id, {
+    onDelete: "set null",
+  }),
+  // Set when the organizer ends the game: no more joining or ticking
+  endedAt: timestamp(),
+});
+
+// A player without an account: their phones' cookie holds the profile's code
+export const profiles = snakeCase.table("profiles", {
+  id: text().primaryKey(),
+  createdAt: timestamp().notNull().defaultNow(),
+
+  // Shown in every game they joined; players are told apart by profile, so two can share it
+  name: text().notNull(),
+  // SHA-256 of the profile's code
+  tokenHash: text().notNull().unique(),
+});
+
+export const players = snakeCase.table(
+  "players",
+  {
+    createdAt: timestamp().notNull().defaultNow(),
+    updatedAt: timestamp().notNull().defaultNow(),
+
+    gameId: text()
+      .notNull()
+      .references(() => games.id, { onDelete: "cascade" }),
+    profileId: text()
+      .notNull()
+      .references(() => profiles.id, { onDelete: "cascade" }),
+    grid: jsonb().$type<GridCell[]>().notNull(),
+    // When the player first completed a line; cleared if they untick back to no line
+    bingoAt: timestamp(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.gameId, table.profileId] }),
+    // A profile's games: the primary key only helps from the game
+    index().on(table.profileId),
+  ],
+);

@@ -1,159 +1,146 @@
 "use client";
 
-import { CheckIcon, CircleAlertIcon, CopyIcon } from "lucide-react";
-import Link from "next/link";
-import { useState } from "react";
+import { CircleAlertIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useState, ViewTransition } from "react";
+import { createGame } from "@/actions/game/createGame";
+import EventsProgress from "@/components/game/EventsProgress";
+import EventsTileInput from "@/components/game/EventsTileInput";
+import { BOTTOM_BAR_CLASS } from "@/components/game/const";
+import FormStep from "@/components/game/FormStep";
+import GridSizePicker from "@/components/game/GridSizePicker";
+import PrivateGameFields from "@/components/game/PrivateGameFields";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
+import { FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { encodeGame, gameSchema } from "@/lib/game/code";
 import {
   DEFAULT_GRID_SIZE,
-  GRID_SIZES,
+  MAX_NAME_LENGTH,
   MAX_TITLE_LENGTH,
+  MIN_PASSWORD_LENGTH,
 } from "@/lib/game/const";
+import { newGameSchema, playerNameSchema } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
+import { NAV_FORWARD } from "@/lib/transitions";
+import { cn } from "@/lib/utils";
 
-/** Returns the non-empty lines of `text`, trimmed and without duplicates (ignoring case). */
-function parseEvents(text: string): string[] {
-  const seen = new Set<string>();
-  return text
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => {
-      const key = line.toLowerCase();
-      if (!line || seen.has(key)) {
-        return false;
-      }
-      seen.add(key);
-      return true;
-    });
-}
+type Props = {
+  /** A phone without a profile: the organizer gives their name, which starts one. */
+  needsName: boolean;
+};
 
-function toAbsoluteUrl(path: string): string {
-  return new URL(path, location.origin).toString();
-}
-
-/** Lets the organizer set up a game and share its link. */
-export default function NewGameForm() {
+/** Lets the organizer set up a game, step by step, then slides to its link. */
+export default function NewGameForm({ needsName }: Props) {
+  const router = useRouter();
+  const [state, formAction, isPending] = useActionState(createGame, {});
   const [title, setTitle] = useState("");
   const [size, setSize] = useState<GridSize>(DEFAULT_GRID_SIZE);
-  const [eventsText, setEventsText] = useState("");
-  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">(
-    "idle",
-  );
+  const [events, setEvents] = useState<string[]>([]);
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
-  const isCopied = copyStatus === "copied";
-  const events = parseEvents(eventsText);
-  const required = size ** 2;
-  const result = gameSchema.safeParse({ title, size, events });
-  const href = result.success ? `/play?g=${encodeGame(result.data)}` : null;
-  // The counter already shows missing events, and an empty title only hides the link
-  const errors = result.success
+  const result = newGameSchema.safeParse({
+    title,
+    size,
+    events,
+    password: isPrivate ? password : null,
+  });
+  // The progress bar already shows missing events, and an empty title or password only disables the button
+  const liveErrors = result.success
     ? []
-    : [
-        ...new Set(
-          result.error.issues
-            .filter(
-              (issue) =>
-                issue.code !== "custom" &&
-                !(issue.code === "too_small" && issue.path[0] === "title"),
-            )
-            .map((issue) => issue.message),
-        ),
-      ];
+    : result.error.issues
+        .filter(
+          (issue) =>
+            issue.code !== "custom" &&
+            !(issue.code === "too_small" && issue.path[0] === "title") &&
+            !(issue.code === "too_small" && password === ""),
+        )
+        .map((issue) => issue.message);
+  const errors = [...new Set([...liveErrors, ...(state.errors ?? [])])];
+  // An empty name only disables the button, like the title
+  const isNameValid = !needsName || playerNameSchema.safeParse(name).success;
 
-  async function copyLink() {
-    if (!href) {
-      return;
+  // Replaces the form in the history: going back from the link lands on the home page, not on a second copy of the game
+  useEffect(() => {
+    if (state.gameId) {
+      router.replace(`/share/${state.gameId}`, {
+        transitionTypes: NAV_FORWARD,
+      });
     }
-    try {
-      await navigator.clipboard.writeText(toAbsoluteUrl(href));
-      setCopyStatus("copied");
-      setTimeout(() => setCopyStatus("idle"), 2000);
-    } catch {
-      // No clipboard on plain-HTTP pages, or access refused: show the link to copy by hand
-      setCopyStatus("failed");
-    }
-  }
+  }, [state.gameId, router]);
+  const isCreating = isPending || Boolean(state.gameId);
 
   return (
-    <FieldGroup>
-      <Field>
-        <FieldLabel htmlFor="title">Title</FieldLabel>
+    <form action={formAction} className="flex flex-col gap-3">
+      <FormStep step={1} title="Name it">
         <Input
-          id="title"
+          name="title"
+          aria-label="Game title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={MAX_TITLE_LENGTH}
-          placeholder="Team building bingo"
+          placeholder="Saturday night bingo"
         />
-      </Field>
+      </FormStep>
 
-      <FieldSet>
-        <FieldLegend variant="label">Grid size</FieldLegend>
-        <ToggleGroup
-          variant="primary"
-          value={[String(size)]}
-          onValueChange={(value) => {
-            // Tapping the selected size unselects it: keep the current size instead
-            if (value.length === 0) {
-              return;
+      <FormStep step={2} title="Grid size">
+        <GridSizePicker size={size} onChange={setSize} />
+      </FormStep>
+
+      <FormStep
+        step={3}
+        title="What might happen?"
+        description="Add more than the grid needs, and everyone gets a different mix."
+      >
+        <FieldGroup className="gap-4">
+          <input type="hidden" name="events" value={events.join("\n")} />
+          <EventsProgress count={events.length} required={size ** 2} />
+          <EventsTileInput events={events} size={size} onChange={setEvents} />
+        </FieldGroup>
+      </FormStep>
+
+      {/* Glides down as the tiles grow a row */}
+      <ViewTransition>
+        <FormStep step={4} title="Who can join">
+          <PrivateGameFields
+            isPrivate={isPrivate}
+            onIsPrivateChange={setIsPrivate}
+            switchDescription="Players need a password to join."
+            password={password}
+            onPasswordChange={setPassword}
+            passwordLabel="Password"
+            passwordPlaceholder="party2026"
+            passwordDescription={
+              <>
+                At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
+                will say it out loud, and case doesn&apos;t matter.
+              </>
             }
-            setSize(Number(value[0]) as GridSize);
-          }}
-          className="w-full"
-        >
-          {GRID_SIZES.map((option) => (
-            <ToggleGroupItem
-              key={option}
-              value={String(option)}
-              className="flex-1"
-            >
-              {option}×{option}
-            </ToggleGroupItem>
-          ))}
-        </ToggleGroup>
-      </FieldSet>
+          />
+        </FormStep>
+      </ViewTransition>
 
-      <Field>
-        <div className="flex items-center justify-between">
-          <FieldLabel htmlFor="events">Events, one per line</FieldLabel>
-          <Badge variant={events.length >= required ? "default" : "secondary"}>
-            {events.length} / {required}
-          </Badge>
-        </div>
-        <Textarea
-          id="events"
-          value={eventsText}
-          onChange={(e) => setEventsText(e.target.value)}
-          placeholder={"Greg says kudos\nBakari talks about AI\n…"}
-          className="min-h-48"
-        />
-        <FieldDescription>
-          At least {required} events for a {size}×{size} grid. With more, each
-          player gets a different selection.
-        </FieldDescription>
-      </Field>
+      {needsName && (
+        <ViewTransition>
+          <FormStep
+            step={5}
+            title="Your name"
+            description="Shown to the other players. Change it anytime from the profile icon."
+          >
+            <Input
+              name="name"
+              aria-label="Your name"
+              placeholder="Greg"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={MAX_NAME_LENGTH}
+              autoComplete="given-name"
+            />
+          </FormStep>
+        </ViewTransition>
+      )}
 
       {errors.length > 0 && (
         <Alert variant="destructive">
@@ -168,41 +155,20 @@ export default function NewGameForm() {
         </Alert>
       )}
 
-      {href && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Your game is ready 🎉</CardTitle>
-            <CardDescription>Share its link with the players.</CardDescription>
-          </CardHeader>
-          {copyStatus === "failed" && (
-            <CardContent>
-              <Input
-                readOnly
-                aria-label="Game link"
-                value={toAbsoluteUrl(href)}
-                onFocus={(e) => e.target.select()}
-              />
-            </CardContent>
-          )}
-          <CardFooter className="grid grid-cols-2 gap-2">
-            <Button onClick={copyLink}>
-              {isCopied ? (
-                <CheckIcon data-icon="inline-start" />
-              ) : (
-                <CopyIcon data-icon="inline-start" />
-              )}
-              {isCopied ? "Copied!" : "Copy link"}
-            </Button>
-            <Button
-              variant="outline"
-              nativeButton={false}
-              render={<Link href={href} />}
-            >
-              Open game
-            </Button>
-          </CardFooter>
-        </Card>
-      )}
-    </FieldGroup>
+      {/* Stays reachable while scrolling through the steps; globals.css keeps it above the animating tiles */}
+      <div
+        style={{ viewTransitionName: "create-game" }}
+        className={cn("sticky bottom-0 -mx-4", BOTTOM_BAR_CLASS)}
+      >
+        <Button
+          type="submit"
+          size="xl"
+          className="w-full"
+          disabled={!result.success || !isNameValid || isCreating}
+        >
+          {isCreating ? "Creating…" : "Create game"}
+        </Button>
+      </div>
+    </form>
   );
 }

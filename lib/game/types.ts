@@ -1,10 +1,55 @@
+import type { Profile } from "@/lib/profile/types";
 import type { GRID_SIZES } from "./const";
 
 export type GridSize = (typeof GRID_SIZES)[number];
 
-/** A bingo game, as encoded in its shareable link. */
+/** An event that might happen during the game. Grid cells refer to it by id. */
+export type GameEvent = {
+  id: string;
+  text: string;
+};
+
 export type Game = {
+  id: string;
   title: string;
   size: GridSize;
-  events: string[];
+  events: GameEvent[];
+  /** The organizer, who can manage the game, or `null` for a game created before profiles. */
+  creator: Profile | null;
+  /** Whether the organizer ended it: no more joining or ticking. */
+  isEnded: boolean;
+};
+
+/** A cell of a player's grid, row by row. */
+export type GridCell = {
+  eventId: string;
+  isTicked: boolean;
+};
+
+export type Player = {
+  profileId: string;
+  name: string;
+  grid: GridCell[];
+  /** When the player first completed a line, or `null` without a line. */
+  bingoAt: Date | null;
+};
+
+/** A game the current player joined, with all its players. */
+export type JoinedGame = {
+  id: string;
+  title: string;
+  isEnded: boolean;
+  /** Whether the current player organizes it. */
+  isOrganizer: boolean;
+  players: Player[];
+};
+
+/** A game as shown in the list of running games. */
+export type RunningGame = {
+  id: string;
+  title: string;
+  size: GridSize;
+  playerCount: number;
+  lastActivityAt: Date;
+  isPrivate: boolean;
 };

@@ -1,15 +1,27 @@
-import NewGameForm from "@/components/game/NewGameForm";
+import ButtonLink from "@/components/game/ButtonLink";
+import CenteredPageLayout from "@/components/game/CenteredPageLayout";
+import PageHeader from "@/components/game/PageHeader";
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-      <div className="flex flex-col items-center gap-6 text-center">
-        <h1 className="font-heading text-7xl text-cartoon">Bingo!</h1>
-        <p className="text-muted-foreground">
-          List what might happen, pick a grid size, and share the link.
-        </p>
+    <CenteredPageLayout header={<PageHeader />}>
+      <div className="flex flex-col gap-8">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <h1 className="font-heading text-7xl text-cartoon">Bingo!</h1>
+          <p className="text-muted-foreground">
+            Play bingo with your friends: guess what will happen, then tick it
+            off when it does.
+          </p>
+        </div>
+        <div className="flex flex-col gap-3">
+          <ButtonLink href="/new" size="xl">
+            New game
+          </ButtonLink>
+          <ButtonLink href="/games" size="xl" variant="outline">
+            Join a game
+          </ButtonLink>
+        </div>
       </div>
-      <NewGameForm />
-    </main>
+    </CenteredPageLayout>
   );
 }
