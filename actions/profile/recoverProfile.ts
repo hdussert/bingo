@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { backHref } from "@/lib/game/links";
 import { profileCodeSchema } from "@/lib/profile/schemas";
 import { switchProfile } from "@/lib/profile/session";
 
@@ -10,7 +11,7 @@ export type RecoverProfileState = {
   values?: { code: string };
 };
 
-/** Switches this phone to the profile of the code typed in, then shows its games. */
+/** Switches this phone to the profile of the code typed in, then goes back to the page the player came from, or shows their games. */
 export async function recoverProfile(
   _state: RecoverProfileState,
   formData: FormData,
@@ -31,5 +32,5 @@ export async function recoverProfile(
   // Every page showing who plays on this phone
   revalidatePath("/", "layout");
   // Outside the try: redirect works by throwing
-  redirect("/games");
+  redirect(backHref(formData.get("back")));
 }

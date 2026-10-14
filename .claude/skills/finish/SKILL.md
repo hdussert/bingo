@@ -25,6 +25,7 @@ Fix anything that fails, commit, and re-run.
 
 Size the review to the diff (`git diff --stat <base>...HEAD`):
 
+- **Under ~20 changed lines**: skip both. Review the diff yourself for bugs, reuse and dead code, reading the code around it as needed (a `/code-review` agent costs a minute of setup whatever the diff size). Run `/code-review` anyway if the change touches data, auth, access or a migration.
 - **Under ~150 changed lines**: skip `/simplify` (its parallel agents cost far more than such a diff needs). Read the diff yourself for reuse, simplification and dead code, then run `/code-review` once.
 - **Larger**: run `/simplify` on the branch diff: keep the readability fixes that hold up (it applies them; revert any that change behavior or fight the conventions), commit, and re-verify. Then run `/code-review` on the diff.
 

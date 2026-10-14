@@ -1,6 +1,6 @@
 import { Grid3x3Icon, LockIcon } from "lucide-react";
 import Link from "next/link";
-import BackLink from "@/components/game/BackLink";
+import PageHeader from "@/components/game/PageHeader";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import CopyLinkIconButton from "@/components/game/CopyLinkIconButton";
@@ -12,6 +12,7 @@ import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 import { findPlayer } from "@/lib/game/grid";
+import { withBackToGame } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
@@ -45,21 +46,21 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
     <PageSlide key={player ? "grid" : "join"}>
       {/* Equal rows above and below center the content on the whole screen, the header staying at the top */}
       <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-6 px-4 py-8">
-        <div className="flex items-center justify-between self-start">
-          <BackLink href="/games" />
-          {player && (
-            // Lines the trophy up with the content edge, like the back arrow
-            <div className="-mr-3 flex items-center">
-              <CopyLinkIconButton url={url} />
-              <LeaderboardDrawer playerCount={players.length}>
-                <Lobby
-                  gameId={game.id}
-                  playerId={player.profileId}
-                  rows={rows}
-                />
-              </LeaderboardDrawer>
-            </div>
-          )}
+        <div className="self-start">
+          <PageHeader back="/games">
+            {player && (
+              <>
+                <CopyLinkIconButton url={url} />
+                <LeaderboardDrawer playerCount={players.length}>
+                  <Lobby
+                    gameId={game.id}
+                    playerId={player.profileId}
+                    rows={rows}
+                  />
+                </LeaderboardDrawer>
+              </>
+            )}
+          </PageHeader>
         </div>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col items-center gap-2 text-center">
@@ -86,7 +87,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
                 </span>{" "}
                 ·{" "}
                 <Link
-                  href={`/me?${new URLSearchParams({ back: `/play/${game.id}` })}`}
+                  href={withBackToGame("/me", game.id)}
                   transitionTypes={NAV_FORWARD}
                   className="text-primary underline-offset-4 hover:underline"
                 >
