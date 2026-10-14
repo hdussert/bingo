@@ -26,9 +26,9 @@ export default function JoinedGameCard({ game, profileId }: Props) {
     <Link
       href={`/play/${game.id}`}
       transitionTypes={NAV_FORWARD}
-      className="block rounded-2xl transition-transform active:scale-[0.98]"
+      className="block rounded-xl transition-transform active:scale-[0.98]"
     >
-      <Card size="sm">
+      <Card size="sm" className="rounded-xl">
         <CardHeader>
           <CardTitle className="text-xl break-words">{game.title}</CardTitle>
           {(game.isEnded || game.isOrganizer) && (
