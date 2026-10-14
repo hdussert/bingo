@@ -23,28 +23,34 @@ type Props = {
 export default function GameReady({ href, url }: Props) {
   const { copyStatus, copyLink } = useCopyLink(url);
   return (
-    <div className="flex flex-col items-center gap-6 text-center">
-      <h1 className="font-heading text-5xl text-cartoon">Game ready!</h1>
-      <p className="text-muted-foreground">Share this link with the players.</p>
-      <Input
-        readOnly
-        aria-label="Game link"
-        value={url}
-        onFocus={(e) => e.target.select()}
-        className="text-center"
-      />
-      <div className="flex w-full flex-col gap-3">
-        <Button size="xl" onClick={copyLink}>
-          {copyStatus === "copied" ? (
-            <CheckIcon data-icon="inline-start" />
-          ) : (
-            <CopyIcon data-icon="inline-start" />
-          )}
-          {COPY_LABELS[copyStatus]}
-        </Button>
-        <ButtonLink href={href} size="xl" variant="outline">
-          Open game
-        </ButtonLink>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col items-center gap-2 text-center">
+        <h1 className="font-heading text-5xl text-cartoon">Game ready!</h1>
+        <p className="text-muted-foreground">
+          Share this link with the players.
+        </p>
+      </div>
+      <div className="flex flex-col gap-4">
+        <Input
+          readOnly
+          aria-label="Game link"
+          value={url}
+          onFocus={(e) => e.target.select()}
+          className="text-center"
+        />
+        <div className="flex w-full flex-col gap-3">
+          <Button size="xl" onClick={copyLink}>
+            {copyStatus === "copied" ? (
+              <CheckIcon data-icon="inline-start" />
+            ) : (
+              <CopyIcon data-icon="inline-start" />
+            )}
+            {COPY_LABELS[copyStatus]}
+          </Button>
+          <ButtonLink href={href} size="xl" variant="outline">
+            Open game
+          </ButtonLink>
+        </div>
       </div>
     </div>
   );
