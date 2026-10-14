@@ -8,8 +8,7 @@ import { findCurrentProfile } from "@/lib/profile/session";
 export type RenameProfileState = {
   message?: string;
   values?: { name: string };
-  /** The new name, once saved. */
-  savedName?: string;
+  isSaved?: boolean;
 };
 
 /** Renames the current player in every game they joined. */
@@ -37,5 +36,5 @@ export async function renameProfile(
   }
   // Every page showing the name: the games, their leaderboards and grids
   revalidatePath("/", "layout");
-  return { savedName: result.data };
+  return { isSaved: true };
 }

@@ -1,10 +1,9 @@
 "use client";
 
-import { CheckIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import { renameGame } from "@/actions/game/renameGame";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
-import { Button } from "@/components/ui/button";
+import SaveButton from "@/components/game/SaveButton";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
@@ -28,7 +27,8 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
   );
   const [title, setTitle] = useState(savedTitle);
   const isInvalid = Boolean(state.message);
-  const isSaved = state.savedTitle === title.trim();
+  const isChanged = title.trim() !== savedTitle;
+  const isSaved = Boolean(state.isSaved) && !isChanged;
 
   return (
     <form action={formAction}>
@@ -52,23 +52,14 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>
-          <Button
-            type="submit"
+          <SaveButton
+            label="Rename"
             size="lg"
             variant="outline"
-            disabled={isPending || title.trim() === savedTitle}
-          >
-            {isSaved ? (
-              <>
-                <CheckIcon strokeWidth={3} data-icon="inline-start" />
-                Saved
-              </>
-            ) : isPending ? (
-              "Saving…"
-            ) : (
-              "Rename"
-            )}
-          </Button>
+            isPending={isPending}
+            isSaved={isSaved}
+            disabled={isPending || !isChanged}
+          />
         </CardContent>
       </Card>
     </form>

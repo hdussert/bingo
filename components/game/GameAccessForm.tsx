@@ -1,13 +1,13 @@
 "use client";
 
-import { CheckIcon, LockIcon } from "lucide-react";
+import { LockIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import {
   setGameAccess,
   type SetGameAccessState,
 } from "@/actions/game/setGameAccess";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
-import { Button } from "@/components/ui/button";
+import SaveButton from "@/components/game/SaveButton";
 import {
   Card,
   CardContent,
@@ -52,7 +52,7 @@ export default function GameAccessForm({
     {},
   );
   const isChanged = isPrivate !== savedIsPrivate || password !== "";
-  const isSaved = !isChanged && state.savedIsPrivate === savedIsPrivate;
+  const isSaved = Boolean(state.isSaved) && !isChanged;
 
   return (
     <form action={formAction}>
@@ -106,23 +106,14 @@ export default function GameAccessForm({
             </Collapsible>
             {state.message && <FieldError>{state.message}</FieldError>}
           </FieldGroup>
-          <Button
-            type="submit"
+          <SaveButton
+            label="Save"
             size="lg"
             variant="outline"
+            isPending={isPending}
+            isSaved={isSaved}
             disabled={isPending || !isChanged}
-          >
-            {isSaved ? (
-              <>
-                <CheckIcon strokeWidth={3} data-icon="inline-start" />
-                Saved
-              </>
-            ) : isPending ? (
-              "Saving…"
-            ) : (
-              "Save"
-            )}
-          </Button>
+          />
         </CardContent>
       </Card>
     </form>
