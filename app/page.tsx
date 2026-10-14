@@ -9,8 +9,8 @@ export default function Home() {
         <div className="flex flex-col items-center gap-4 text-center">
           <h1 className="font-heading text-7xl text-cartoon">Bingo!</h1>
           <p className="text-muted-foreground">
-            Bingo for your team building: guess what will happen, tick it when
-            it does.
+            Play bingo with your friends: guess what will happen, then tick it
+            off when it does.
           </p>
         </div>
         <div className="flex flex-col gap-3">
@@ -18,7 +18,7 @@ export default function Home() {
             New game
           </ButtonLink>
           <ButtonLink href="/games" size="xl" variant="outline">
-            Join
+            Join a game
           </ButtonLink>
         </div>
       </div>

@@ -26,7 +26,7 @@ export default async function AdminPage({
     <PageLayout
       header={<PageHeader back={`/play/${id}`} />}
       title="Manage game"
-      subtitle="Only you see this page, as the organizer."
+      subtitle="Only you can see this page: you created the game."
       // Room at the bottom for the Save bar, so it never covers the last button
       className="pb-32"
     >

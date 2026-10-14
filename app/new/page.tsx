@@ -10,7 +10,7 @@ export default async function NewGamePage() {
     <PageLayout
       header={<PageHeader back="/" />}
       title="New game"
-      subtitle="List what might happen, pick a grid size, and share the link."
+      subtitle="Guess what might happen, pick a grid, and invite your friends."
     >
       <NewGameForm needsName={!profile} />
     </PageLayout>

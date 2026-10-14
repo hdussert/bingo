@@ -30,8 +30,8 @@ export default function GamePlayersCard({
           {pluralize(players.length, "player")}
         </CardTitle>
         <CardDescription>
-          A removed player loses their grid. They can join again, unless a new
-          password keeps them out.
+          Removing a player deletes their grid. They can rejoin, unless you
+          change the password.
         </CardDescription>
       </CardHeader>
       <CardContent>

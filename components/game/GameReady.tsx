@@ -9,11 +9,11 @@ import { Input } from "@/components/ui/input";
 const COPY_LABELS = {
   idle: "Copy link",
   copied: "Copied!",
-  failed: "Copy it from above",
+  failed: "Copy it from the field above",
 };
 
 type Props = {
-  /** The game's path, for the Open game button. */
+  /** The game's path, for the Go to my grid button. */
   href: string;
   /** The game's full link, to share. */
   url: string;
@@ -27,7 +27,7 @@ export default function GameReady({ href, url }: Props) {
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="font-heading text-5xl text-cartoon">Game ready!</h1>
         <p className="text-muted-foreground">
-          Share this link with the players.
+          Send this link to your friends so they can join.
         </p>
       </div>
       <div className="flex flex-col gap-4">
@@ -48,7 +48,7 @@ export default function GameReady({ href, url }: Props) {
             {COPY_LABELS[copyStatus]}
           </Button>
           <ButtonLink href={href} size="xl" variant="outline">
-            Open game
+            Go to my grid
           </ButtonLink>
         </div>
       </div>

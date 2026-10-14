@@ -26,7 +26,7 @@ export const MAX_PASSWORD_LENGTH = 30;
 /** A game with no activity (created, joined or ticked) for this long is no longer listed as running. */
 export const RUNNING_GAME_HOURS = 24;
 
-/** Tappable ideas for a game's events, typical of a team building. */
+/** Tappable ideas for a game's events. */
 export const EVENT_SUGGESTIONS = [
   "Someone arrives late",
   "A speech runs too long",

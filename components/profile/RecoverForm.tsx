@@ -63,8 +63,7 @@ export default function RecoverForm({ currentName, back }: Props) {
               aria-invalid={isInvalid}
             />
             <FieldDescription>
-              On the phone you played on: the person icon at the top of the
-              games.
+              Find it on your other phone: tap the person icon at the top.
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>
@@ -74,9 +73,9 @@ export default function RecoverForm({ currentName, back }: Props) {
         <Alert>
           <CircleAlertIcon />
           <AlertDescription>
-            This phone plays as {currentName}: with the code, it plays as the
-            other player instead. Note {currentName}&apos;s code first to keep
-            their games.
+            This phone plays as {currentName}. With the code, it switches to the
+            other player. Save {currentName}&apos;s code first if you want to
+            keep those games.
           </AlertDescription>
         </Alert>
       )}

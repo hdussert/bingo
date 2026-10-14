@@ -21,7 +21,7 @@ export default function JoinedGameCard({ game, profileId }: Props) {
       action={
         (game.isEnded || game.isOrganizer) && (
           <>
-            {game.isEnded && <Badge variant="secondary">Ended</Badge>}
+            {game.isEnded && <Badge variant="secondary">Game over</Badge>}
             {game.isOrganizer && (
               <CrownIcon
                 strokeWidth={3}

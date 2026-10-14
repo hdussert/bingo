@@ -131,7 +131,8 @@ export default function JoinForm({
                     </InputGroupAddon>
                   </InputGroup>
                   <FieldDescription>
-                    This game is private: ask the organizer for its password.
+                    This game is private: ask whoever invited you for the
+                    password.
                   </FieldDescription>
                   {isPasswordInvalid && (
                     <FieldError>{state.message}</FieldError>

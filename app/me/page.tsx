@@ -46,7 +46,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
             </EmptyMedia>
             <EmptyTitle>No name yet</EmptyTitle>
             <EmptyDescription>
-              Join or create a game: this phone then remembers your name and
+              Join or start a game, and this phone will remember your name and
               your games.
             </EmptyDescription>
           </EmptyHeader>

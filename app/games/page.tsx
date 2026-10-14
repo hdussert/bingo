@@ -39,7 +39,7 @@ export default async function GamesPage() {
         </PageHeader>
       }
       title="Join a game"
-      subtitle="Tap a game to get your grid."
+      subtitle="Pick a game and grab your grid."
     >
       {profile && hasJoined && (
         <section className="flex flex-col gap-3">
@@ -62,14 +62,14 @@ export default async function GamesPage() {
                 <Grid3x3Icon />
               </EmptyMedia>
               <EmptyTitle>
-                {hasJoined ? "No other game running" : "No game running"}
+                {hasJoined ? "No other games right now" : "No games yet"}
               </EmptyTitle>
               <EmptyDescription>
-                Ask the organizer for the link, or create your own game.
+                Ask a friend for their game&apos;s link, or start your own.
               </EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <ButtonLink href="/new">Create a game</ButtonLink>
+              <ButtonLink href="/new">New game</ButtonLink>
             </EmptyContent>
           </Empty>
         ) : (
