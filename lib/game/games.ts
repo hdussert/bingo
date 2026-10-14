@@ -9,6 +9,7 @@ import {
   ne,
   sql,
 } from "drizzle-orm";
+import { cache } from "react";
 import { db } from "@/db";
 import { games, players, profiles } from "@/db/schema";
 import { newId } from "@/lib/id";
@@ -60,8 +61,8 @@ export async function saveGame(
   return id;
 }
 
-/** Finds a game and its join password's hash (`null` for a public game). The hash must stay on the server: see `findPlayableGame`. */
-export async function findGameWithPassword(
+/** Finds a game and its join password's hash (`null` for a public game). The hash must stay on the server: see `findPlayableGame`. Cached per request, for a page and its metadata. */
+export const findGameWithPassword = cache(async function (
   id: string,
 ): Promise<{ game: Game; passwordHash: string | null } | null> {
   const [row] = await db
@@ -92,7 +93,7 @@ export async function findGameWithPassword(
     game: { ...game, creator, isEnded: endedAt !== null },
     passwordHash,
   };
-}
+});
 
 /** Lists the games still running with recent activity, most recently active first. */
 export async function listRunningGames(): Promise<RunningGame[]> {

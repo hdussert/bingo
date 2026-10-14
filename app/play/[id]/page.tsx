@@ -1,4 +1,5 @@
 import { FlagIcon, Grid3x3Icon, LockIcon, SettingsIcon } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import CenteredPageLayout from "@/components/game/CenteredPageLayout";
 import PageHeader from "@/components/game/PageHeader";
@@ -19,7 +20,7 @@ import {
   EmptyTitle,
 } from "@/components/ui/empty";
 import { findPlayableGame } from "@/lib/game/access";
-import { listPlayers } from "@/lib/game/games";
+import { findGameWithPassword, listPlayers } from "@/lib/game/games";
 import { findPlayer } from "@/lib/game/grid";
 import { withBackToGame } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
@@ -27,6 +28,22 @@ import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
 import { NAV_FORWARD } from "@/lib/transitions";
 import { absoluteUrl } from "@/lib/url";
+
+/** The game's title and who invites, for the preview of its link in a chat. */
+export async function generateMetadata({
+  params,
+}: PageProps<"/play/[id]">): Promise<Metadata> {
+  const { id } = await params;
+  const stored = await findGameWithPassword(id);
+  if (!stored) {
+    return {};
+  }
+  const { title, creator } = stored.game;
+  const description = creator
+    ? `${creator.name} invites you to play bingo with friends.`
+    : "You're invited to play bingo with friends.";
+  return { title, description };
+}
 
 export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
   const { id } = await params;
