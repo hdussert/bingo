@@ -13,7 +13,7 @@ type Props = {
   gameId: string;
   size: GridSize;
   cells: { text: string; isTicked: boolean }[];
-  /** Another player's grid, to look at but not tick. */
+  /** A grid to look at but not tick: another player's, or one of an ended game. */
   isReadOnly?: boolean;
 };
 

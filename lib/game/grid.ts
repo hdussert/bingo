@@ -6,7 +6,7 @@ export function findPlayer(players: Player[], profileId: string | undefined) {
 }
 
 /** Picks and shuffles a new player's cells, row by row, all unticked. */
-export function buildGrid(game: Game): GridCell[] {
+export function buildGrid(game: Pick<Game, "size" | "events">): GridCell[] {
   const events = [...game.events];
   for (let i = events.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

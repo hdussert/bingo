@@ -1,4 +1,5 @@
 import {
+  type AnyPgColumn,
   index,
   integer,
   jsonb,
@@ -18,6 +19,12 @@ export const games = snakeCase.table("games", {
   events: jsonb().$type<GameEvent[]>().notNull(),
   // Salted scrypt hash of the join password ("salt:hash"), or null for a public game
   passwordHash: text(),
+  // The organizer, who can manage the game; null for games created before profiles
+  creatorId: text().references((): AnyPgColumn => profiles.id, {
+    onDelete: "set null",
+  }),
+  // Set when the organizer ends the game: no more joining or ticking
+  endedAt: timestamp(),
 });
 
 // A player without an account: their phones' cookie holds the profile's code

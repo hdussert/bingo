@@ -22,16 +22,22 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import {
   DEFAULT_GRID_SIZE,
+  MAX_NAME_LENGTH,
   MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
   MIN_PASSWORD_LENGTH,
 } from "@/lib/game/const";
-import { newGameSchema } from "@/lib/game/schemas";
+import { newGameSchema, playerNameSchema } from "@/lib/game/schemas";
 import type { GridSize } from "@/lib/game/types";
 import { NAV_FORWARD } from "@/lib/transitions";
 
+type Props = {
+  /** A phone without a profile: the organizer gives their name, which starts one. */
+  needsName: boolean;
+};
+
 /** Lets the organizer set up a game, step by step, then slides to its link. */
-export default function NewGameForm() {
+export default function NewGameForm({ needsName }: Props) {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState(createGame, {});
   const [title, setTitle] = useState("");
@@ -39,6 +45,7 @@ export default function NewGameForm() {
   const [events, setEvents] = useState<string[]>([]);
   const [isPrivate, setIsPrivate] = useState(false);
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
   const result = newGameSchema.safeParse({
     title,
@@ -58,6 +65,8 @@ export default function NewGameForm() {
         )
         .map((issue) => issue.message);
   const errors = [...new Set([...liveErrors, ...(state.errors ?? [])])];
+  // An empty name only disables the button, like the title
+  const isNameValid = !needsName || playerNameSchema.safeParse(name).success;
 
   // Replaces the form in the history: going back from the link lands on the home page, not on a second copy of the game
   useEffect(() => {
@@ -141,6 +150,25 @@ export default function NewGameForm() {
         </FormStep>
       </ViewTransition>
 
+      {needsName && (
+        <ViewTransition>
+          <FormStep
+            step={5}
+            title="Your name"
+            description="Shown to the players as the organizer, and used when you join a game. Change it anytime from the profile icon."
+          >
+            <Input
+              name="name"
+              aria-label="Your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={MAX_NAME_LENGTH}
+              autoComplete="given-name"
+            />
+          </FormStep>
+        </ViewTransition>
+      )}
+
       {errors.length > 0 && (
         <Alert variant="destructive">
           <CircleAlertIcon />
@@ -163,7 +191,7 @@ export default function NewGameForm() {
           type="submit"
           size="xl"
           className="w-full"
-          disabled={!result.success || isCreating}
+          disabled={!result.success || !isNameValid || isCreating}
         >
           {isCreating ? "Creating…" : "Create game"}
         </Button>

@@ -5,7 +5,6 @@ import { findPlayableGame, unlockGame } from "@/lib/game/access";
 import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
 import { findOrStartProfile } from "@/lib/profile/session";
-import { renameProfile } from "@/lib/profile/profiles";
 
 export type JoinGameState = {
   message?: string;
@@ -14,15 +13,16 @@ export type JoinGameState = {
   values?: { name: string };
 };
 
-/** Adds the player to the game under that name, starting their profile on this phone if needed. */
+/** Adds this phone's profile to the game, or starts one from the name typed in on a phone without one. */
 export async function joinGame(
   gameId: string,
   _state: JoinGameState,
   formData: FormData,
 ): Promise<JoinGameState> {
   const name = String(formData.get("name") ?? "");
-  const result = playerNameSchema.safeParse(name);
-  if (!result.success) {
+  // Only asked when this phone has no profile yet
+  const result = formData.has("name") ? playerNameSchema.safeParse(name) : null;
+  if (result?.success === false) {
     return {
       message: result.error.issues[0].message,
       invalidField: "name",
@@ -35,6 +35,9 @@ export async function joinGame(
     if (!playable) {
       return { message: "This game doesn't exist anymore", values: { name } };
     }
+    if (playable.game.isEnded) {
+      return { message: "This game has ended", values: { name } };
+    }
     if (!playable.isUnlocked) {
       const password = String(formData.get("password") ?? "");
       if (!(await unlockGame(gameId, password))) {
@@ -45,16 +48,19 @@ export async function joinGame(
         };
       }
     }
-    const profile = await findOrStartProfile(result.data);
-    // One name in every game: joining under another one renames the player
-    if (profile.name !== result.data) {
-      await renameProfile(profile.id, result.data);
+    const profile = result
+      ? await findOrStartProfile(result.data)
+      : playable.profile;
+    if (!profile) {
+      // The page had a profile that this phone lost since: it comes back with the name field
+      revalidatePath(`/play/${gameId}`);
+      return { message: "Enter your name to join", values: { name } };
     }
     await addPlayer(playable.game, profile.id);
   } catch {
     return { message: "Couldn't join the game, try again", values: { name } };
   }
-  // Shows the grid in place of the join form, and the name if it changed
+  // Shows the grid in place of the join form, and the new profile's icon
   revalidatePath("/", "layout");
   return {};
 }

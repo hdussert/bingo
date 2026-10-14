@@ -1,10 +1,9 @@
 "use client";
 
-import { CheckIcon } from "lucide-react";
 import { useActionState, useState } from "react";
 import { renameProfile } from "@/actions/profile/renameProfile";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
-import { Button } from "@/components/ui/button";
+import SaveButton from "@/components/game/SaveButton";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
@@ -24,7 +23,8 @@ export default function RenameForm({ name: savedName }: Props) {
   const [state, formAction, isPending] = useActionState(renameProfile, {});
   const [name, setName] = useState(savedName);
   const isInvalid = Boolean(state.message);
-  const isSaved = state.savedName === name.trim();
+  const isChanged = name.trim() !== savedName;
+  const isSaved = Boolean(state.isSaved) && !isChanged;
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
@@ -45,28 +45,20 @@ export default function RenameForm({ name: savedName }: Props) {
               aria-invalid={isInvalid}
             />
             <FieldDescription>
-              In every game you joined, and filled in when you join a new one.
+              Shown in every game you play or organize, and used to join new
+              ones.
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>
         </CardContent>
       </Card>
-      <Button
-        type="submit"
+      <SaveButton
+        label="Save"
         size="xl"
-        disabled={isPending || name.trim() === savedName}
-      >
-        {isSaved ? (
-          <>
-            <CheckIcon strokeWidth={3} data-icon="inline-start" />
-            Saved
-          </>
-        ) : isPending ? (
-          "Saving…"
-        ) : (
-          "Save"
-        )}
-      </Button>
+        isPending={isPending}
+        isSaved={isSaved}
+        disabled={isPending || !isChanged}
+      />
     </form>
   );
 }

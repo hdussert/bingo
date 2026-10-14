@@ -1,3 +1,4 @@
+import type { Profile } from "@/lib/profile/types";
 import type { GRID_SIZES } from "./const";
 
 export type GridSize = (typeof GRID_SIZES)[number];
@@ -13,6 +14,10 @@ export type Game = {
   title: string;
   size: GridSize;
   events: GameEvent[];
+  /** The organizer, who can manage the game, or `null` for a game created before profiles. */
+  creator: Profile | null;
+  /** Whether the organizer ended it: no more joining or ticking. */
+  isEnded: boolean;
 };
 
 /** A cell of a player's grid, row by row. */
@@ -33,6 +38,9 @@ export type Player = {
 export type JoinedGame = {
   id: string;
   title: string;
+  isEnded: boolean;
+  /** Whether the current player organizes it. */
+  isOrganizer: boolean;
   players: Player[];
 };
 
