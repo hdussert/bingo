@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckIcon, LinkIcon, XIcon } from "lucide-react";
+import Link from "next/link";
 import { useCopyLink } from "@/components/game/useCopyLink";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { NAV_FORWARD } from "@/lib/transitions";
 
 const LABELS = {
   idle: "Copy the link",
@@ -47,6 +49,14 @@ export default function CodeCard({ code, url }: Props) {
           <Icon strokeWidth={2.5} data-icon="inline-start" />
           {LABELS[copyStatus]}
         </Button>
+        {/* This phone already plays as someone: the way to switch to another player's games */}
+        <Link
+          href="/recover?back=/me"
+          transitionTypes={NAV_FORWARD}
+          className="self-center text-sm text-primary"
+        >
+          Played on another phone?
+        </Link>
       </CardContent>
     </Card>
   );
