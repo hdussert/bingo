@@ -42,11 +42,7 @@ export async function generateMetadata({
   const description = creator
     ? `${creator.name} invites you to play bingo with friends.`
     : "You're invited to play bingo with friends.";
-  return {
-    title,
-    description,
-    openGraph: { title, description, siteName: "Bingo" },
-  };
+  return { title, description };
 }
 
 export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
