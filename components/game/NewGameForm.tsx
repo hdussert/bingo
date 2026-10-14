@@ -155,7 +155,7 @@ export default function NewGameForm({ needsName }: Props) {
           <FormStep
             step={5}
             title="Your name"
-            description="Shown to the players as the organizer, and filled in when you join a game."
+            description="Shown to the players as the organizer, and used when you join a game. Change it anytime from the profile icon."
           >
             <Input
               name="name"

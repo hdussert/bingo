@@ -17,7 +17,7 @@ export default function ProfileButton({ name }: Props) {
       href={`/me?${new URLSearchParams({ back: pathname })}`}
       variant="ghost"
       size="icon-xl"
-      aria-label={`${name}: your name`}
+      aria-label={`${name}: your profile`}
     >
       <UserIcon strokeWidth={3} />
     </ButtonLink>
