@@ -3,7 +3,6 @@
 import { CheckIcon, LinkIcon, XIcon } from "lucide-react";
 import { useCopyLink } from "@/components/game/useCopyLink";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,11 +10,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 
 const LABELS = {
   idle: "Copy the link",
   copied: "Link copied",
-  failed: "Couldn't copy",
+  failed: "Couldn't copy the link",
 };
 
 type Props = {
@@ -39,14 +44,27 @@ export default function CodeCard({ code, url }: Props) {
           games, keep it to yourself.
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
-        <p className="text-center font-mono text-2xl tracking-wider select-all">
-          {code}
-        </p>
-        <Button variant="outline" size="lg" onClick={copyLink}>
-          <Icon strokeWidth={2.5} data-icon="inline-start" />
-          {LABELS[copyStatus]}
-        </Button>
+      <CardContent>
+        {/* Sunk into the card like a code block: read, not typed in */}
+        <InputGroup className="border-transparent bg-background">
+          <InputGroupInput
+            readOnly
+            aria-label="Your code"
+            value={code}
+            onFocus={(e) => e.target.select()}
+            className="font-mono text-lg tracking-wider"
+          />
+          <InputGroupAddon align="inline-end">
+            <InputGroupButton
+              size="icon-sm"
+              onClick={copyLink}
+              aria-label={LABELS[copyStatus]}
+              title={LABELS[copyStatus]}
+            >
+              <Icon strokeWidth={2.5} />
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
       </CardContent>
     </Card>
   );
