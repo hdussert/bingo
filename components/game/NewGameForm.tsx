@@ -81,7 +81,7 @@ export default function NewGameForm({ needsName }: Props) {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           maxLength={MAX_TITLE_LENGTH}
-          placeholder="Team building bingo"
+          placeholder="Saturday night bingo"
         />
       </FormStep>
 
@@ -92,7 +92,7 @@ export default function NewGameForm({ needsName }: Props) {
       <FormStep
         step={3}
         title="What might happen?"
-        description="With more events than the grid needs, each player gets a different mix."
+        description="Add more than the grid needs, and everyone gets a different mix."
       >
         <FieldGroup className="gap-4">
           <input type="hidden" name="events" value={events.join("\n")} />
@@ -127,11 +127,12 @@ export default function NewGameForm({ needsName }: Props) {
           <FormStep
             step={5}
             title="Your name"
-            description="Shown to the players as the organizer, and used when you join a game. Change it anytime from the profile icon."
+            description="Shown to the other players. Change it anytime from the profile icon."
           >
             <Input
               name="name"
               aria-label="Your name"
+              placeholder="Greg"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={MAX_NAME_LENGTH}

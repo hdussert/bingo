@@ -20,11 +20,11 @@ export default function BrokenLink() {
           </EmptyMedia>
           <EmptyTitle>This game link is broken</EmptyTitle>
           <EmptyDescription>
-            Ask the organizer for the link again, or create your own game.
+            Ask a friend for the link again, or start your own.
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <ButtonLink href="/new">Create a game</ButtonLink>
+          <ButtonLink href="/new">New game</ButtonLink>
         </EmptyContent>
       </Empty>
     </main>

@@ -36,8 +36,8 @@ export default function CodeCard({ code, url }: Props) {
       <CardHeader>
         <CardTitle className={CARD_LABEL_CLASS}>On another phone</CardTitle>
         <CardDescription>
-          Open this link there, or type the code: it&apos;s the key to your
-          games, keep it to yourself.
+          Open this link there, or type the code. It unlocks your games, so keep
+          it to yourself.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

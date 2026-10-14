@@ -95,7 +95,7 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
           }}
           maxLength={MAX_EVENT_LENGTH}
           disabled={isFull}
-          placeholder={isFull ? "That's the maximum" : "Greg says kudos"}
+          placeholder={isFull ? "That's the maximum" : "Someone sings off-key"}
         />
         <InputGroupAddon align="inline-end">
           <InputGroupButton

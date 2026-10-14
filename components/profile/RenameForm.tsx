@@ -45,8 +45,7 @@ export default function RenameForm({ name: savedName }: Props) {
               aria-invalid={isInvalid}
             />
             <FieldDescription>
-              Shown in every game you play or organize, and used to join new
-              ones.
+              Shown to the other players in all your games.
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>

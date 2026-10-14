@@ -145,10 +145,8 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
                 <EmptyMedia variant="icon">
                   <FlagIcon />
                 </EmptyMedia>
-                <EmptyTitle>This game has ended</EmptyTitle>
-                <EmptyDescription>
-                  Nobody can join anymore, unless the organizer reopens it.
-                </EmptyDescription>
+                <EmptyTitle>Game over</EmptyTitle>
+                <EmptyDescription>Nobody can join anymore.</EmptyDescription>
               </EmptyHeader>
             </Empty>
           ) : (

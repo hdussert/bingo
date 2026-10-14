@@ -31,7 +31,8 @@ const luckiestGuy = localFont({
 
 export const metadata: Metadata = {
   title: "Bingo",
-  description: "Bingo grids for team building events",
+  description:
+    "Play bingo with your friends: guess what will happen, then tick it off when it does.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
