@@ -1,6 +1,13 @@
 import Link from "next/link";
 import RankSummary from "@/components/game/RankSummary";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { rankPlayers } from "@/lib/game/lobby";
 import type { JoinedGame } from "@/lib/game/types";
 import { NAV_FORWARD } from "@/lib/transitions";
@@ -23,6 +30,11 @@ export default function JoinedGameCard({ game, profileId }: Props) {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl break-words">{game.title}</CardTitle>
+          {game.isEnded && (
+            <CardAction className="row-span-1 self-center">
+              <Badge variant="secondary">Ended</Badge>
+            </CardAction>
+          )}
         </CardHeader>
         <CardContent>
           <RankSummary
