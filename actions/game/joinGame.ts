@@ -52,11 +52,9 @@ export async function joinGame(
       ? await findOrStartProfile(result.data)
       : playable.profile;
     if (!profile) {
-      return {
-        message: "Enter your name",
-        invalidField: "name",
-        values: { name },
-      };
+      // The page had a profile that this phone lost since: it comes back with the name field
+      revalidatePath(`/play/${gameId}`);
+      return { message: "Enter your name to join", values: { name } };
     }
     await addPlayer(playable.game, profile.id);
   } catch {

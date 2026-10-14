@@ -24,23 +24,21 @@ import { withBackToGame } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
-import { findCurrentProfile } from "@/lib/profile/session";
 import { NAV_FORWARD } from "@/lib/transitions";
 import { absoluteUrl } from "@/lib/url";
 
 export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
   const { id } = await params;
 
-  const [playable, profile, players, url] = await Promise.all([
+  const [playable, players, url] = await Promise.all([
     findPlayableGame(id),
-    findCurrentProfile(),
     listPlayers(id),
     absoluteUrl(`/play/${id}`),
   ]);
   if (!playable) {
     return <BrokenLink />;
   }
-  const { game, isPrivate, isOrganizer, isUnlocked } = playable;
+  const { game, profile, isPrivate, isOrganizer, isUnlocked } = playable;
   const { isEnded } = game;
   // Joining a private game took its password: no need to unlock it again on another phone
   const player = findPlayer(players, profile?.id);

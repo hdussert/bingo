@@ -42,12 +42,15 @@ export async function setGameAccess(
       return { message: "Choose a password" };
     }
     // Private with no new password: nothing to change
-    if (!isPrivate || password) {
-      await setGamePasswordHash(
+    if (
+      (!isPrivate || password) &&
+      !(await setGamePasswordHash(
         gameId,
         organized.organizerId,
         isPrivate ? await hashPassword(password) : null,
-      );
+      ))
+    ) {
+      return { message: "Only the organizer can change who can join" };
     }
   } catch {
     return { message: "Couldn't save, try again" };

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { saveGame } from "@/lib/game/games";
 import { hashPassword } from "@/lib/game/password";
 import {
@@ -46,7 +47,9 @@ export async function createGame(
       ? await findOrStartProfile(name.data)
       : await findCurrentProfile();
     if (!profile) {
-      return { errors: ["Enter your name"] };
+      // The page had a profile that this phone lost since: it comes back with the name step
+      revalidatePath("/new");
+      return { errors: ["Enter your name in the last step"] };
     }
     const passwordHash = game.password
       ? await hashPassword(game.password)
