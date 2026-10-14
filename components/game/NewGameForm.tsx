@@ -79,7 +79,7 @@ export default function NewGameForm({ needsName }: Props) {
   const isCreating = isPending || Boolean(state.gameId);
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-3">
       <FormStep step={1} title="Name it">
         <Input
           name="title"
