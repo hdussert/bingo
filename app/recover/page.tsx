@@ -1,4 +1,4 @@
-import BackLink from "@/components/game/BackLink";
+import PageHeader from "@/components/game/PageHeader";
 import PageTitle from "@/components/game/PageTitle";
 import RecoverForm from "@/components/profile/RecoverForm";
 import { backHref } from "@/lib/game/links";
@@ -15,7 +15,7 @@ export default async function RecoverPage({
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
-        <BackLink href={backTo} />
+        <PageHeader back={backTo} />
         <PageTitle>Get your games</PageTitle>
       </div>
       <RecoverForm currentName={profile?.name ?? null} back={backTo} />

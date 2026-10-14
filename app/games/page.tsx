@@ -1,13 +1,7 @@
-import {
-  ClockIcon,
-  Grid3x3Icon,
-  LockIcon,
-  UserIcon,
-  UsersIcon,
-} from "lucide-react";
+import { ClockIcon, Grid3x3Icon, LockIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 import { connection } from "next/server";
-import BackLink from "@/components/game/BackLink";
+import PageHeader from "@/components/game/PageHeader";
 import RefreshButton from "@/components/game/RefreshButton";
 import {
   Card,
@@ -47,25 +41,10 @@ export default async function GamesPage() {
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
-        <div className="flex w-full items-center justify-between">
-          <BackLink href="/" />
-          {profile && (
-            <ButtonLink
-              href="/me"
-              variant="ghost"
-              size="icon-xl"
-              // Lines the icon up with the content edge, like the back arrow
-              className="-mr-3"
-              aria-label={`${profile.name}: your name`}
-            >
-              <UserIcon strokeWidth={3} />
-            </ButtonLink>
-          )}
-        </div>
-        <div className="flex w-full items-center justify-between gap-4">
-          <PageTitle>Join a game</PageTitle>
+        <PageHeader back="/">
           <RefreshButton />
-        </div>
+        </PageHeader>
+        <PageTitle>Join a game</PageTitle>
       </div>
       {profile && hasJoined && (
         <section className="flex flex-col gap-4">

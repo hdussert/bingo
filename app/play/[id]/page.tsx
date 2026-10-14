@@ -1,6 +1,6 @@
 import { Grid3x3Icon, LockIcon } from "lucide-react";
 import Link from "next/link";
-import BackLink from "@/components/game/BackLink";
+import PageHeader from "@/components/game/PageHeader";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import CopyLinkIconButton from "@/components/game/CopyLinkIconButton";
@@ -45,11 +45,9 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
     // Keyed by screen: joining stays on this route, where the root template doesn't slide
     <PageSlide key={player ? "grid" : "join"}>
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-        <div className="flex items-center justify-between">
-          <BackLink href="/games" />
+        <PageHeader back="/games">
           {player && (
-            // Lines the trophy up with the content edge, like the back arrow
-            <div className="-mr-3 flex items-center">
+            <>
               <CopyLinkIconButton url={url} />
               <LeaderboardDrawer playerCount={players.length}>
                 <Lobby
@@ -58,9 +56,9 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
                   rows={rows}
                 />
               </LeaderboardDrawer>
-            </div>
+            </>
           )}
-        </div>
+        </PageHeader>
         <div className="flex flex-col items-center gap-2 text-center">
           <PageTitle>{game.title}</PageTitle>
           {!player && (

@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, ArrowRightIcon } from "lucide-react";
 import { redirect } from "next/navigation";
 import AutoRefresh from "@/components/game/AutoRefresh";
-import BackLink from "@/components/game/BackLink";
+import PageHeader from "@/components/game/PageHeader";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
 import ButtonLink from "@/components/game/ButtonLink";
@@ -52,7 +52,7 @@ export default async function PeekPage({
     // Keyed by player: Previous and Next stay on this route, where the root template doesn't slide
     <PageSlide key={peeked.profileId}>
       <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8">
-        <BackLink href={`/play/${id}`} />
+        <PageHeader back={`/play/${id}`} />
         <div className="flex flex-col items-center gap-1 text-center">
           <p className="text-muted-foreground">Peeking at</p>
           <PageTitle>
