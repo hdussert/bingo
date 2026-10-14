@@ -31,9 +31,9 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
   const isSaved = Boolean(state.isSaved) && !isChanged;
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className="flex flex-col gap-4">
       <Card className="rounded-xl">
-        <CardContent className="flex flex-col gap-4">
+        <CardContent>
           <Field data-invalid={isInvalid}>
             <FieldLabel htmlFor="title" className={CARD_LABEL_CLASS}>
               Title
@@ -52,16 +52,15 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>
-          <SaveButton
-            label="Rename"
-            size="lg"
-            variant="outline"
-            isPending={isPending}
-            isSaved={isSaved}
-            disabled={isPending || !isChanged}
-          />
         </CardContent>
       </Card>
+      <SaveButton
+        label="Rename"
+        size="xl"
+        isPending={isPending}
+        isSaved={isSaved}
+        disabled={isPending || !isChanged}
+      />
     </form>
   );
 }

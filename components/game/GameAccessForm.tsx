@@ -55,7 +55,7 @@ export default function GameAccessForm({
   const isSaved = Boolean(state.isSaved) && !isChanged;
 
   return (
-    <form action={formAction}>
+    <form action={formAction} className="flex flex-col gap-4">
       <Card className="rounded-xl">
         <CardHeader>
           <CardTitle className={CARD_LABEL_CLASS}>Who can join</CardTitle>
@@ -63,7 +63,7 @@ export default function GameAccessForm({
             Players already in the game keep playing without the password.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
+        <CardContent>
           {/* No gap: the closed password field would still leave one, so the open one brings its own */}
           <FieldGroup className="gap-0">
             <input type="hidden" name="isPrivate" value={String(isPrivate)} />
@@ -109,16 +109,15 @@ export default function GameAccessForm({
               <FieldError className="mt-4">{state.message}</FieldError>
             )}
           </FieldGroup>
-          <SaveButton
-            label="Save"
-            size="lg"
-            variant="outline"
-            isPending={isPending}
-            isSaved={isSaved}
-            disabled={isPending || !isChanged}
-          />
         </CardContent>
       </Card>
+      <SaveButton
+        label="Save"
+        size="xl"
+        isPending={isPending}
+        isSaved={isSaved}
+        disabled={isPending || !isChanged}
+      />
     </form>
   );
 }

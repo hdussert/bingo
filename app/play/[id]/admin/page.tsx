@@ -32,7 +32,7 @@ export default async function AdminPage({
           Only you see this page, as the organizer.
         </p>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-8">
         <GameTitleForm gameId={game.id} title={game.title} />
         <GameAccessForm gameId={game.id} isPrivate={isPrivate} />
         <GamePlayersCard
