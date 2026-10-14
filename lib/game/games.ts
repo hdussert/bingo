@@ -19,21 +19,30 @@ function isPlayer(gameId: string, profileId: string) {
   return and(eq(players.gameId, gameId), eq(players.profileId, profileId));
 }
 
-/** Saves a new game, organized by that profile, and returns its id, used in its link. */
+/** Saves a new game, organized by that profile, with the organizer as its first player; returns its id, used in its link. */
 export async function saveGame(
   game: NewGame,
   passwordHash: string | null,
   creatorId: string,
 ): Promise<string> {
   const id = newId(6);
-  await db.insert(games).values({
-    id,
-    title: game.title,
-    size: game.size,
-    events: game.events.map((text) => ({ id: newId(4), text })),
-    passwordHash,
-    creatorId,
-  });
+  const events = game.events.map((text) => ({ id: newId(4), text }));
+  // One round trip, and no game without its organizer's grid
+  await db.batch([
+    db.insert(games).values({
+      id,
+      title: game.title,
+      size: game.size,
+      events,
+      passwordHash,
+      creatorId,
+    }),
+    db.insert(players).values({
+      gameId: id,
+      profileId: creatorId,
+      grid: buildGrid({ size: game.size, events }),
+    }),
+  ]);
   return id;
 }
 
