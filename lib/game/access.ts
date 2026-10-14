@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { findCurrentProfile } from "@/lib/profile/session";
 import { findGameWithPassword } from "./games";
 import { accessToken, verifyPassword } from "./password";
 import type { Game } from "./types";
@@ -23,7 +24,7 @@ async function hasAccess(
 }
 
 /** Remembers on this phone that the game's password was entered. Only works in server actions. */
-export async function grantAccess(
+async function grantAccess(
   gameId: string,
   passwordHash: string,
 ): Promise<void> {
@@ -38,18 +39,27 @@ export async function grantAccess(
   });
 }
 
-/** Finds a game, whether it's private, and whether this phone may join it: always for a public game, only after its password for a private one. Its players don't need it: they play from their profile. */
-export async function findPlayableGame(
-  gameId: string,
-): Promise<{ game: Game; isPrivate: boolean; isUnlocked: boolean } | null> {
-  const stored = await findGameWithPassword(gameId);
+/** Finds a game, whether it's private, whether this phone's profile organizes it, and whether this phone may join it: always for a public game or its organizer, only after its password otherwise. Its players don't need it: they play from their profile. */
+export async function findPlayableGame(gameId: string): Promise<{
+  game: Game;
+  isPrivate: boolean;
+  isOrganizer: boolean;
+  isUnlocked: boolean;
+} | null> {
+  const [stored, profile] = await Promise.all([
+    findGameWithPassword(gameId),
+    findCurrentProfile(),
+  ]);
   if (!stored) {
     return null;
   }
+  const isOrganizer =
+    profile !== null && stored.game.creator?.id === profile.id;
   return {
     game: stored.game,
     isPrivate: stored.passwordHash !== null,
-    isUnlocked: await hasAccess(gameId, stored.passwordHash),
+    isOrganizer,
+    isUnlocked: isOrganizer || (await hasAccess(gameId, stored.passwordHash)),
   };
 }
 
@@ -67,4 +77,10 @@ export async function unlockGame(
   }
   await grantAccess(gameId, stored.passwordHash);
   return true;
+}
+
+/** Finds a game if this phone's profile organizes it, so it may manage it. */
+export async function findOrganizedGame(gameId: string): Promise<Game | null> {
+  const playable = await findPlayableGame(gameId);
+  return playable?.isOrganizer ? playable.game : null;
 }

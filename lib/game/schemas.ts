@@ -9,17 +9,20 @@ import {
   MIN_PASSWORD_LENGTH,
 } from "./const";
 
+/** Validates a game's title, with messages meant for the organizer. */
+export const gameTitleSchema = z
+  .string()
+  .trim()
+  .min(1, "Give the game a title")
+  .max(
+    MAX_TITLE_LENGTH,
+    `The title is limited to ${MAX_TITLE_LENGTH} characters`,
+  );
+
 /** Validates a new game, with messages meant for the organizer. */
 export const newGameSchema = z
   .object({
-    title: z
-      .string()
-      .trim()
-      .min(1, "Give the game a title")
-      .max(
-        MAX_TITLE_LENGTH,
-        `The title is limited to ${MAX_TITLE_LENGTH} characters`,
-      ),
+    title: gameTitleSchema,
     size: z.literal(GRID_SIZES),
     events: z
       .array(
