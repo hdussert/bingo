@@ -14,10 +14,10 @@ export default async function PageHeader({ back, children }: Props) {
   const profile = await findCurrentProfile();
 
   return (
-    <div className="flex min-h-12 w-full items-center justify-between">
-      {back ? <BackLink href={back} /> : <span />}
-      {/* Lines the last icon up with the content edge, like the back arrow */}
-      <div className="-mr-3 flex items-center">
+    <div className="flex min-h-12 w-full items-center">
+      {back && <BackLink href={back} />}
+      {/* Pushed right; lines the last icon up with the content edge, like the back arrow */}
+      <div className="-mr-3 ml-auto flex items-center">
         {children}
         {profile && <ProfileButton name={profile.name} />}
       </div>
