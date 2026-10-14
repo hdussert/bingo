@@ -155,7 +155,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
           ) : (
             <JoinForm
               gameId={game.id}
-              defaultName={profile?.name ?? ""}
+              profileName={profile?.name ?? null}
               needsPassword={!isUnlocked}
             />
           )}

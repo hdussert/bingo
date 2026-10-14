@@ -28,16 +28,16 @@ import { NAV_FORWARD } from "@/lib/transitions";
 
 type Props = {
   gameId: string;
-  /** The name the player used last time, if they played before on this phone. */
-  defaultName: string;
+  /** The name of this phone's profile, which joins as is, or `null` to ask for a name. */
+  profileName: string | null;
   /** A private game this phone hasn't unlocked yet. */
   needsPassword: boolean;
 };
 
-/** Asks the player's name (and the password of a private game), then slides to their new grid. */
+/** Joins the game under this phone's profile, or asks a name to start one (and the password of a private game), then slides to the new grid. */
 export default function JoinForm({
   gameId,
-  defaultName,
+  profileName,
   needsPassword,
 }: Props) {
   const [state, formAction, isPending] = useActionState(
@@ -49,7 +49,7 @@ export default function JoinForm({
     {},
   );
   // Controlled: an uncontrolled field can't take the name echoed back with an error as its new default
-  const [name, setName] = useState(defaultName);
+  const [name, setName] = useState("");
   const [isPasswordShown, setIsPasswordShown] = useState(false);
   const isNameInvalid = state.invalidField === "name";
   // Without a password field (the phone's unlock expired since the page loaded), its error goes in the alert
@@ -57,33 +57,31 @@ export default function JoinForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <Card>
-        <CardContent>
-          <FieldGroup className="gap-6">
-            <Field data-invalid={isNameInvalid}>
-              <FieldLabel htmlFor="name" className={CARD_LABEL_CLASS}>
-                Your name
-              </FieldLabel>
-              <Input
-                id="name"
-                name="name"
-                required
-                // The one thing to do on this page (iOS still waits for a tap to open the keyboard)
-                autoFocus
-                maxLength={MAX_NAME_LENGTH}
-                autoComplete="given-name"
-                placeholder="Greg"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                aria-invalid={isNameInvalid}
-              />
-              <FieldDescription>
-                Shown to the other players on the leaderboard.
-                {defaultName && " Changing it renames you in all your games."}
-                {/* A phone without a profile: maybe a new phone of someone who already plays */}
-                {!defaultName && (
-                  <>
-                    {" "}
+      {(!profileName || needsPassword) && (
+        <Card>
+          <CardContent>
+            <FieldGroup className="gap-6">
+              {!profileName && (
+                <Field data-invalid={isNameInvalid}>
+                  <FieldLabel htmlFor="name" className={CARD_LABEL_CLASS}>
+                    Your name
+                  </FieldLabel>
+                  <Input
+                    id="name"
+                    name="name"
+                    required
+                    // The one thing to do on this page (iOS still waits for a tap to open the keyboard)
+                    autoFocus
+                    maxLength={MAX_NAME_LENGTH}
+                    autoComplete="given-name"
+                    placeholder="Greg"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    aria-invalid={isNameInvalid}
+                  />
+                  <FieldDescription>
+                    Shown to the other players on the leaderboard.{" "}
+                    {/* Maybe a new phone of someone who already plays */}
                     <Link
                       href={withBackToGame("/recover", gameId)}
                       transitionTypes={NAV_FORWARD}
@@ -91,52 +89,59 @@ export default function JoinForm({
                     >
                       Played on another phone?
                     </Link>
-                  </>
-                )}
-              </FieldDescription>
-              {isNameInvalid && <FieldError>{state.message}</FieldError>}
-            </Field>
+                  </FieldDescription>
+                  {isNameInvalid && <FieldError>{state.message}</FieldError>}
+                </Field>
+              )}
 
-            {needsPassword && (
-              <Field data-invalid={isPasswordInvalid}>
-                <FieldLabel htmlFor="password" className={CARD_LABEL_CLASS}>
-                  Password
-                </FieldLabel>
-                <InputGroup>
-                  <InputGroupInput
-                    id="password"
-                    name="password"
-                    type={isPasswordShown ? "text" : "password"}
-                    // Fredoka's dots are small and tight: spread them out while hidden
-                    className={
-                      isPasswordShown ? undefined : "text-2xl tracking-[0.2em]"
-                    }
-                    required
-                    maxLength={MAX_PASSWORD_LENGTH}
-                    autoComplete="off"
-                    aria-invalid={isPasswordInvalid}
-                  />
-                  <InputGroupAddon align="inline-end">
-                    <InputGroupButton
-                      size="icon-sm"
-                      onClick={() => setIsPasswordShown((isShown) => !isShown)}
-                      aria-label={
-                        isPasswordShown ? "Hide password" : "Show password"
+              {needsPassword && (
+                <Field data-invalid={isPasswordInvalid}>
+                  <FieldLabel htmlFor="password" className={CARD_LABEL_CLASS}>
+                    Password
+                  </FieldLabel>
+                  <InputGroup>
+                    <InputGroupInput
+                      id="password"
+                      name="password"
+                      type={isPasswordShown ? "text" : "password"}
+                      // Fredoka's dots are small and tight: spread them out while hidden
+                      className={
+                        isPasswordShown
+                          ? undefined
+                          : "text-2xl tracking-[0.2em]"
                       }
-                    >
-                      {isPasswordShown ? <EyeOffIcon /> : <EyeIcon />}
-                    </InputGroupButton>
-                  </InputGroupAddon>
-                </InputGroup>
-                <FieldDescription>
-                  This game is private: ask the organizer for its password.
-                </FieldDescription>
-                {isPasswordInvalid && <FieldError>{state.message}</FieldError>}
-              </Field>
-            )}
-          </FieldGroup>
-        </CardContent>
-      </Card>
+                      required
+                      autoFocus={Boolean(profileName)}
+                      maxLength={MAX_PASSWORD_LENGTH}
+                      autoComplete="off"
+                      aria-invalid={isPasswordInvalid}
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        size="icon-sm"
+                        onClick={() =>
+                          setIsPasswordShown((isShown) => !isShown)
+                        }
+                        aria-label={
+                          isPasswordShown ? "Hide password" : "Show password"
+                        }
+                      >
+                        {isPasswordShown ? <EyeOffIcon /> : <EyeIcon />}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
+                  <FieldDescription>
+                    This game is private: ask the organizer for its password.
+                  </FieldDescription>
+                  {isPasswordInvalid && (
+                    <FieldError>{state.message}</FieldError>
+                  )}
+                </Field>
+              )}
+            </FieldGroup>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Errors about the game itself, not about a field on screen */}
       {state.message && !isNameInvalid && !isPasswordInvalid && (
@@ -146,6 +151,13 @@ export default function JoinForm({
         </Alert>
       )}
 
+      {/* The profile icon at the top changes the name */}
+      {profileName && (
+        <p className="text-center text-muted-foreground">
+          You&apos;ll play as{" "}
+          <span className="font-semibold text-foreground">{profileName}</span>
+        </p>
+      )}
       <Button type="submit" size="xl" disabled={isPending}>
         {isPending ? "Joining…" : "Get my grid"}
       </Button>
