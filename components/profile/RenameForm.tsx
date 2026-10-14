@@ -28,7 +28,7 @@ export default function RenameForm({ name: savedName }: Props) {
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
-      <Card>
+      <Card className="rounded-xl">
         <CardContent>
           <Field data-invalid={isInvalid}>
             <FieldLabel htmlFor="name" className={CARD_LABEL_CLASS}>

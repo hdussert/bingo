@@ -28,10 +28,11 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
   const recoverUrl = await absoluteUrl(`/recover#${code ?? ""}`);
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
         <BackLink href={backHref(back)} />
         <PageTitle>You</PageTitle>
+        <p className="text-muted-foreground">Your name and your code.</p>
       </div>
       {profile && code ? (
         <>

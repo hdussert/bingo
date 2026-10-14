@@ -31,7 +31,7 @@ export default function CodeCard({ code, url }: Props) {
   const Icon = { idle: LinkIcon, copied: CheckIcon, failed: XIcon }[copyStatus];
 
   return (
-    <Card>
+    <Card className="rounded-xl">
       <CardHeader>
         <CardTitle className={CARD_LABEL_CLASS}>On another phone</CardTitle>
         <CardDescription>
