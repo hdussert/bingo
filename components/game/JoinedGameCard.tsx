@@ -28,9 +28,9 @@ export default function JoinedGameCard({ game, profileId }: Props) {
       transitionTypes={NAV_FORWARD}
       className="block rounded-2xl transition-transform active:scale-[0.98]"
     >
-      <Card>
+      <Card size="sm">
         <CardHeader>
-          <CardTitle className="text-2xl break-words">{game.title}</CardTitle>
+          <CardTitle className="text-xl break-words">{game.title}</CardTitle>
           {(game.isEnded || game.isOrganizer) && (
             // Where the lock sits on the other games' cards
             <CardAction className="row-span-1 flex items-center gap-3 self-center">
