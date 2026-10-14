@@ -24,19 +24,24 @@ export default async function AdminPage({
   const { game, isPrivate, organizerId } = organized;
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
+    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
         <PageHeader back={`/play/${id}`} />
         <PageTitle>Manage game</PageTitle>
+        <p className="text-muted-foreground">
+          Only you see this page, as the organizer.
+        </p>
       </div>
-      <GameTitleForm gameId={game.id} title={game.title} />
-      <GameAccessForm gameId={game.id} isPrivate={isPrivate} />
-      <GamePlayersCard
-        gameId={game.id}
-        organizerId={organizerId}
-        players={players}
-      />
-      <EndGameForm gameId={game.id} isEnded={game.isEnded} />
+      <div className="flex flex-col gap-3">
+        <GameTitleForm gameId={game.id} title={game.title} />
+        <GameAccessForm gameId={game.id} isPrivate={isPrivate} />
+        <GamePlayersCard
+          gameId={game.id}
+          organizerId={organizerId}
+          players={players}
+        />
+        <EndGameForm gameId={game.id} isEnded={game.isEnded} />
+      </div>
     </main>
   );
 }

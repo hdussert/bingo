@@ -32,7 +32,7 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
 
   return (
     <form action={formAction}>
-      <Card>
+      <Card className="rounded-xl">
         <CardContent className="flex flex-col gap-4">
           <Field data-invalid={isInvalid}>
             <FieldLabel htmlFor="title" className={CARD_LABEL_CLASS}>

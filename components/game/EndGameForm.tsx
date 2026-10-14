@@ -27,7 +27,7 @@ export default function EndGameForm({ gameId, isEnded }: Props) {
 
   return (
     <form action={formAction}>
-      <Card>
+      <Card className="rounded-xl">
         <CardHeader>
           <CardTitle className={CARD_LABEL_CLASS}>
             {isEnded ? "Game over" : "End the game"}
