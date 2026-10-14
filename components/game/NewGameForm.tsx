@@ -110,7 +110,8 @@ export default function NewGameForm({ needsName }: Props) {
       {/* Glides down as the tiles grow a row */}
       <ViewTransition>
         <FormStep step={4} title="Who can join">
-          <FieldGroup className="gap-4">
+          {/* No gap: the closed password field would still leave one, so the open one brings its own */}
+          <FieldGroup className="gap-0">
             <Field orientation="horizontal">
               <FieldContent>
                 <FieldLabel htmlFor="isPrivate">
@@ -129,7 +130,7 @@ export default function NewGameForm({ needsName }: Props) {
             </Field>
             <Collapsible open={isPrivate}>
               <CollapsibleContent>
-                <Field>
+                <Field className="pt-4">
                   <Input
                     name="password"
                     aria-label="Password"

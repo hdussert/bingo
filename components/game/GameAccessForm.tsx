@@ -56,7 +56,7 @@ export default function GameAccessForm({
 
   return (
     <form action={formAction}>
-      <Card>
+      <Card className="rounded-xl">
         <CardHeader>
           <CardTitle className={CARD_LABEL_CLASS}>Who can join</CardTitle>
           <CardDescription>
@@ -64,7 +64,8 @@ export default function GameAccessForm({
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <FieldGroup className="gap-4">
+          {/* No gap: the closed password field would still leave one, so the open one brings its own */}
+          <FieldGroup className="gap-0">
             <input type="hidden" name="isPrivate" value={String(isPrivate)} />
             <Field orientation="horizontal">
               <FieldContent>
@@ -84,7 +85,7 @@ export default function GameAccessForm({
             </Field>
             <Collapsible open={isPrivate}>
               <CollapsibleContent>
-                <Field data-invalid={Boolean(state.message)}>
+                <Field data-invalid={Boolean(state.message)} className="pt-4">
                   <Input
                     name="password"
                     aria-label={savedIsPrivate ? "New password" : "Password"}
@@ -104,7 +105,9 @@ export default function GameAccessForm({
                 </Field>
               </CollapsibleContent>
             </Collapsible>
-            {state.message && <FieldError>{state.message}</FieldError>}
+            {state.message && (
+              <FieldError className="mt-4">{state.message}</FieldError>
+            )}
           </FieldGroup>
           <SaveButton
             label="Save"
