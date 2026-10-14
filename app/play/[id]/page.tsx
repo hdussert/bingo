@@ -12,6 +12,7 @@ import PlayerRank from "@/components/game/PlayerRank";
 import { findPlayableGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 import { findPlayer } from "@/lib/game/grid";
+import { withBackToGame } from "@/lib/game/links";
 import { rankPlayers } from "@/lib/game/lobby";
 import PageSlide from "@/components/game/PageSlide";
 import PageTitle from "@/components/game/PageTitle";
@@ -84,7 +85,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
               </span>{" "}
               ·{" "}
               <Link
-                href={`/me?${new URLSearchParams({ back: `/play/${game.id}` })}`}
+                href={withBackToGame("/me", game.id)}
                 transitionTypes={NAV_FORWARD}
                 className="text-primary underline-offset-4 hover:underline"
               >
