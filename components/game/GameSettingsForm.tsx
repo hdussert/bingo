@@ -1,12 +1,12 @@
 "use client";
 
-import { LockIcon } from "lucide-react";
 import { useActionState, useEffect, useState } from "react";
 import {
   saveGameSettings,
   type SaveGameSettingsState,
 } from "@/actions/game/saveGameSettings";
 import { BOTTOM_BAR_CLASS, CARD_LABEL_CLASS } from "@/components/game/const";
+import PrivateGameFields from "@/components/game/PrivateGameFields";
 import SaveButton from "@/components/game/SaveButton";
 import {
   Card,
@@ -15,22 +15,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
 import {
   Field,
-  FieldContent,
   FieldDescription,
   FieldError,
-  FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import {
-  MAX_PASSWORD_LENGTH,
-  MAX_TITLE_LENGTH,
-  MIN_PASSWORD_LENGTH,
-} from "@/lib/game/const";
+import { MAX_TITLE_LENGTH, MIN_PASSWORD_LENGTH } from "@/lib/game/const";
 import { cn } from "@/lib/utils";
 
 type Props = {
@@ -84,7 +76,6 @@ export default function GameSettingsForm({
   const isSavedShown = savedId !== null;
   const isBarShown = isChanged || isPending || isSavedShown;
   const isTitleInvalid = state.invalidField === "title";
-  const isPasswordInvalid = state.invalidField === "password";
 
   return (
     <form action={formAction} className="flex flex-col gap-8">
@@ -119,52 +110,26 @@ export default function GameSettingsForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          {/* No gap: the closed password field would still leave one, so the open one brings its own */}
-          <FieldGroup className="gap-0">
-            <input type="hidden" name="isPrivate" value={String(isPrivate)} />
-            <Field orientation="horizontal">
-              <FieldContent>
-                <FieldLabel htmlFor="isPrivate">
-                  <LockIcon strokeWidth={3} className="size-4" />
-                  Private game
-                </FieldLabel>
-                <FieldDescription>
-                  New players need a password to join.
-                </FieldDescription>
-              </FieldContent>
-              <Switch
-                id="isPrivate"
-                checked={isPrivate}
-                onCheckedChange={setIsPrivate}
-              />
-            </Field>
-            <Collapsible open={isPrivate}>
-              <CollapsibleContent>
-                <Field data-invalid={isPasswordInvalid} className="pt-4">
-                  <Input
-                    name="password"
-                    aria-label={savedIsPrivate ? "New password" : "Password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    maxLength={MAX_PASSWORD_LENGTH}
-                    autoComplete="off"
-                    placeholder={
-                      savedIsPrivate ? "Keep the current password" : "party2026"
-                    }
-                    aria-invalid={isPasswordInvalid}
-                  />
-                  <FieldDescription>
-                    {savedIsPrivate
-                      ? "A new one stops the old one from working."
-                      : `At least ${MIN_PASSWORD_LENGTH} characters, easy to say out loud.`}
-                  </FieldDescription>
-                  {isPasswordInvalid && (
-                    <FieldError>{state.message}</FieldError>
-                  )}
-                </Field>
-              </CollapsibleContent>
-            </Collapsible>
-          </FieldGroup>
+          <input type="hidden" name="isPrivate" value={String(isPrivate)} />
+          <PrivateGameFields
+            isPrivate={isPrivate}
+            onIsPrivateChange={setIsPrivate}
+            switchDescription="New players need a password to join."
+            password={password}
+            onPasswordChange={setPassword}
+            passwordLabel={savedIsPrivate ? "New password" : "Password"}
+            passwordPlaceholder={
+              savedIsPrivate ? "Keep the current password" : "party2026"
+            }
+            passwordDescription={
+              savedIsPrivate
+                ? "A new one stops the old one from working."
+                : `At least ${MIN_PASSWORD_LENGTH} characters, easy to say out loud.`
+            }
+            passwordError={
+              state.invalidField === "password" ? state.message : undefined
+            }
+          />
         </CardContent>
       </Card>
 
