@@ -35,6 +35,9 @@ export async function joinGame(
     if (!playable) {
       return { message: "This game doesn't exist anymore", values: { name } };
     }
+    if (playable.game.endedAt) {
+      return { message: "This game has ended", values: { name } };
+    }
     if (!playable.isUnlocked) {
       const password = String(formData.get("password") ?? "");
       if (!(await unlockGame(gameId, password))) {
