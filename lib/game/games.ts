@@ -1,4 +1,14 @@
-import { and, count, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import {
+  and,
+  count,
+  desc,
+  eq,
+  exists,
+  inArray,
+  isNull,
+  ne,
+  sql,
+} from "drizzle-orm";
 import { db } from "@/db";
 import { games, players, profiles } from "@/db/schema";
 import { newId } from "@/lib/id";
@@ -17,6 +27,10 @@ const playerColumns = {
 
 function isPlayer(gameId: string, profileId: string) {
   return and(eq(players.gameId, gameId), eq(players.profileId, profileId));
+}
+
+function isOrganizedBy(gameId: string, organizerId: string) {
+  return and(eq(games.id, gameId), eq(games.creatorId, organizerId));
 }
 
 /** Saves a new game, organized by that profile, with the organizer as its first player; returns its id, used in its link. */
@@ -68,10 +82,16 @@ export async function findGameWithPassword(
   if (!row) {
     return null;
   }
-  const { passwordHash, creatorId, creatorName, ...game } = row;
+  const { passwordHash, creatorId, creatorName, endedAt, ...game } = row;
+  // The left join: a name means the creator's profile is still there
   const creator =
-    creatorId && creatorName ? { id: creatorId, name: creatorName } : null;
-  return { game: { ...game, creator }, passwordHash };
+    creatorId && creatorName !== null
+      ? { id: creatorId, name: creatorName }
+      : null;
+  return {
+    game: { ...game, creator, isEnded: endedAt !== null },
+    passwordHash,
+  };
 }
 
 /** Lists the games still running with recent activity, most recently active first. */
@@ -183,10 +203,9 @@ export async function setCellTicked(
     .where(
       and(
         isPlayer(gameId, profileId),
-        inArray(
-          players.gameId,
+        exists(
           db
-            .select({ id: games.id })
+            .select()
             .from(games)
             .where(and(eq(games.id, gameId), isNull(games.endedAt))),
         ),
@@ -213,34 +232,65 @@ export async function setCellTicked(
     );
 }
 
-/** Renames a game. */
-export async function renameGame(gameId: string, title: string): Promise<void> {
-  await db.update(games).set({ title }).where(eq(games.id, gameId));
+/** Renames a game, if that profile organizes it; returns whether it did. */
+export async function renameGame(
+  gameId: string,
+  organizerId: string,
+  title: string,
+): Promise<boolean> {
+  const rows = await db
+    .update(games)
+    .set({ title })
+    .where(isOrganizedBy(gameId, organizerId))
+    .returning({ id: games.id });
+  return rows.length > 0;
 }
 
-/** Ends a game, or reopens it for more ticks. */
+/** Ends a game, or reopens it for more ticks, if that profile organizes it; returns whether it did. */
 export async function setGameEnded(
   gameId: string,
+  organizerId: string,
   isEnded: boolean,
-): Promise<void> {
-  await db
+): Promise<boolean> {
+  const rows = await db
     .update(games)
     .set({ endedAt: isEnded ? new Date() : null })
-    .where(eq(games.id, gameId));
+    .where(isOrganizedBy(gameId, organizerId))
+    .returning({ id: games.id });
+  return rows.length > 0;
 }
 
-/** Makes a game private with that password's hash, or public with `null`. */
+/** Makes a game private with that password's hash, or public with `null`, if that profile organizes it; returns whether it did. */
 export async function setGamePasswordHash(
   gameId: string,
+  organizerId: string,
   passwordHash: string | null,
-): Promise<void> {
-  await db.update(games).set({ passwordHash }).where(eq(games.id, gameId));
+): Promise<boolean> {
+  const rows = await db
+    .update(games)
+    .set({ passwordHash })
+    .where(isOrganizedBy(gameId, organizerId))
+    .returning({ id: games.id });
+  return rows.length > 0;
 }
 
-/** Removes a player and their grid from a game. */
+/** Removes a player and their grid from a game, if that profile organizes it (and isn't the player); returns whether it did. */
 export async function removePlayer(
   gameId: string,
+  organizerId: string,
   profileId: string,
-): Promise<void> {
-  await db.delete(players).where(isPlayer(gameId, profileId));
+): Promise<boolean> {
+  const rows = await db
+    .delete(players)
+    .where(
+      and(
+        isPlayer(gameId, profileId),
+        ne(players.profileId, organizerId),
+        exists(
+          db.select().from(games).where(isOrganizedBy(gameId, organizerId)),
+        ),
+      ),
+    )
+    .returning({ profileId: players.profileId });
+  return rows.length > 0;
 }

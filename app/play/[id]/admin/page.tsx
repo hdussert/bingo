@@ -18,11 +18,10 @@ export default async function AdminPage({
     listPlayers(id),
   ]);
   // Only for the organizer: everyone else gets the game itself
-  if (!organized?.game.creator) {
+  if (!organized) {
     redirect(`/play/${id}`);
   }
-  const organizerId = organized.game.creator.id;
-  const { game, isPrivate } = organized;
+  const { game, isPrivate, organizerId } = organized;
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
@@ -37,7 +36,7 @@ export default async function AdminPage({
         organizerId={organizerId}
         players={players}
       />
-      <EndGameForm gameId={game.id} isEnded={game.endedAt !== null} />
+      <EndGameForm gameId={game.id} isEnded={game.isEnded} />
     </main>
   );
 }

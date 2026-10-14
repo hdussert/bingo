@@ -1,15 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { findOrganizedGame } from "@/lib/game/access";
 import { renameGame as saveTitle } from "@/lib/game/games";
 import { gameTitleSchema } from "@/lib/game/schemas";
+import { findCurrentProfile } from "@/lib/profile/session";
 
 export type RenameGameState = {
   message?: string;
   values?: { title: string };
-  /** The new title, once saved. */
-  savedTitle?: string;
+  isSaved?: boolean;
 };
 
 /** Renames a game, for its organizer. */
@@ -25,13 +24,13 @@ export async function renameGame(
   }
 
   try {
-    if (!(await findOrganizedGame(gameId))) {
+    const profile = await findCurrentProfile();
+    if (!profile || !(await saveTitle(gameId, profile.id, result.data))) {
       return {
         message: "Only the organizer can rename the game",
         values: { title },
       };
     }
-    await saveTitle(gameId, result.data);
   } catch {
     return {
       message: "Couldn't rename the game, try again",
@@ -40,5 +39,5 @@ export async function renameGame(
   }
   // The game's pages and the lists of games
   revalidatePath("/", "layout");
-  return { savedTitle: result.data };
+  return { isSaved: true };
 }

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { findCurrentProfile } from "@/lib/profile/session";
+import type { Profile } from "@/lib/profile/types";
 import { findGameWithPassword } from "./games";
 import { accessToken, verifyPassword } from "./password";
 import type { Game } from "./types";
@@ -39,10 +40,11 @@ async function grantAccess(
   });
 }
 
-/** Finds a game, whether it's private, whether this phone's profile organizes it, and whether this phone may join it: always for a public game or its organizer, only after its password otherwise. Its players don't need it: they play from their profile. */
+/** Finds a game, whether it's private, this phone's profile, whether that profile organizes the game, and whether this phone may join it: always for a public game or its organizer, only after its password otherwise. Its players don't need it: they play from their profile. */
 export async function findPlayableGame(gameId: string): Promise<{
   game: Game;
   isPrivate: boolean;
+  profile: Profile | null;
   isOrganizer: boolean;
   isUnlocked: boolean;
 } | null> {
@@ -58,6 +60,7 @@ export async function findPlayableGame(gameId: string): Promise<{
   return {
     game: stored.game,
     isPrivate: stored.passwordHash !== null,
+    profile,
     isOrganizer,
     isUnlocked: isOrganizer || (await hasAccess(gameId, stored.passwordHash)),
   };
@@ -79,12 +82,20 @@ export async function unlockGame(
   return true;
 }
 
-/** Finds a game and whether it's private, if this phone's profile organizes it, so it may manage it. */
+/** Finds a game, whether it's private, and its organizer's profile id, if this phone's profile organizes it, so it may manage it. */
 export async function findOrganizedGame(
   gameId: string,
-): Promise<{ game: Game; isPrivate: boolean } | null> {
-  const playable = await findPlayableGame(gameId);
-  return playable?.isOrganizer
-    ? { game: playable.game, isPrivate: playable.isPrivate }
-    : null;
+): Promise<{ game: Game; isPrivate: boolean; organizerId: string } | null> {
+  const [stored, profile] = await Promise.all([
+    findGameWithPassword(gameId),
+    findCurrentProfile(),
+  ]);
+  if (!stored || !profile || stored.game.creator?.id !== profile.id) {
+    return null;
+  }
+  return {
+    game: stored.game,
+    isPrivate: stored.passwordHash !== null,
+    organizerId: profile.id,
+  };
 }

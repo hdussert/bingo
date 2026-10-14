@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { findOrganizedGame } from "@/lib/game/access";
 import { removePlayer as deletePlayer } from "@/lib/game/games";
+import { findCurrentProfile } from "@/lib/profile/session";
 
 export type RemovePlayerState = {
   message?: string;
@@ -21,10 +21,10 @@ export async function removePlayer(
   }
 
   try {
-    if (!(await findOrganizedGame(gameId))) {
-      return { message: "Only the organizer can remove players" };
+    const profile = await findCurrentProfile();
+    if (!profile || !(await deletePlayer(gameId, profile.id, result.data))) {
+      return { message: "Only the organizer can remove other players" };
     }
-    await deletePlayer(gameId, result.data);
   } catch {
     return { message: "Couldn't remove the player, try again" };
   }

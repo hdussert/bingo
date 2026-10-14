@@ -41,7 +41,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
     return <BrokenLink />;
   }
   const { game, isPrivate, isOrganizer, isUnlocked } = playable;
-  const isEnded = game.endedAt !== null;
+  const { isEnded } = game;
   // Joining a private game took its password: no need to unlock it again on another phone
   const player = findPlayer(players, profile?.id);
   const rows = rankPlayers(players);
@@ -99,28 +99,28 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
                 {game.creator && <span>by {game.creator.name}</span>}
               </p>
             )}
-            {player && isEnded && (
-              <p className="flex items-center gap-1.5 font-semibold text-highlight">
-                <FlagIcon strokeWidth={3} className="size-4" />
-                Game over
-              </p>
-            )}
-            {player && !isEnded && (
-              <p className="text-muted-foreground">
-                Playing as{" "}
-                <span className="font-semibold text-foreground">
-                  {player.name}
-                </span>{" "}
-                ·{" "}
-                <Link
-                  href={withBackToGame("/me", game.id)}
-                  transitionTypes={NAV_FORWARD}
-                  className="text-primary underline-offset-4 hover:underline"
-                >
-                  Change
-                </Link>
-              </p>
-            )}
+            {player &&
+              (isEnded ? (
+                <p className="flex items-center gap-1.5 font-semibold text-highlight">
+                  <FlagIcon strokeWidth={3} className="size-4" />
+                  Game over
+                </p>
+              ) : (
+                <p className="text-muted-foreground">
+                  Playing as{" "}
+                  <span className="font-semibold text-foreground">
+                    {player.name}
+                  </span>{" "}
+                  ·{" "}
+                  <Link
+                    href={withBackToGame("/me", game.id)}
+                    transitionTypes={NAV_FORWARD}
+                    className="text-primary underline-offset-4 hover:underline"
+                  >
+                    Change
+                  </Link>
+                </p>
+              ))}
           </div>
           {player ? (
             <>

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { findPlayableGame, unlockGame } from "@/lib/game/access";
 import { addPlayer } from "@/lib/game/games";
 import { playerNameSchema } from "@/lib/game/schemas";
-import { findCurrentProfile, findOrStartProfile } from "@/lib/profile/session";
+import { findOrStartProfile } from "@/lib/profile/session";
 
 export type JoinGameState = {
   message?: string;
@@ -35,7 +35,7 @@ export async function joinGame(
     if (!playable) {
       return { message: "This game doesn't exist anymore", values: { name } };
     }
-    if (playable.game.endedAt) {
+    if (playable.game.isEnded) {
       return { message: "This game has ended", values: { name } };
     }
     if (!playable.isUnlocked) {
@@ -50,7 +50,7 @@ export async function joinGame(
     }
     const profile = result
       ? await findOrStartProfile(result.data)
-      : await findCurrentProfile();
+      : playable.profile;
     if (!profile) {
       return {
         message: "Enter your name",

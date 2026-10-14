@@ -9,8 +9,7 @@ import { gamePasswordSchema } from "@/lib/game/schemas";
 
 export type SetGameAccessState = {
   message?: string;
-  /** Whether the game is private, once saved. */
-  savedIsPrivate?: boolean;
+  isSaved?: boolean;
 };
 
 const accessSchema = z.object({
@@ -46,6 +45,7 @@ export async function setGameAccess(
     if (!isPrivate || password) {
       await setGamePasswordHash(
         gameId,
+        organized.organizerId,
         isPrivate ? await hashPassword(password) : null,
       );
     }
@@ -54,5 +54,5 @@ export async function setGameAccess(
   }
   // The game's pages and the lists of games, with their lock
   revalidatePath("/", "layout");
-  return { savedIsPrivate: isPrivate };
+  return { isSaved: true };
 }

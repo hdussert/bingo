@@ -2,8 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
-import { findOrganizedGame } from "@/lib/game/access";
 import { setGameEnded } from "@/lib/game/games";
+import { findCurrentProfile } from "@/lib/profile/session";
 
 export type EndGameState = {
   message?: string;
@@ -21,10 +21,10 @@ export async function endGame(
   }
 
   try {
-    if (!(await findOrganizedGame(gameId))) {
+    const profile = await findCurrentProfile();
+    if (!profile || !(await setGameEnded(gameId, profile.id, result.data))) {
       return { message: "Only the organizer can end the game" };
     }
-    await setGameEnded(gameId, result.data);
   } catch {
     return { message: "Couldn't update the game, try again" };
   }

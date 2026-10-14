@@ -16,8 +16,8 @@ export type Game = {
   events: GameEvent[];
   /** The organizer, who can manage the game, or `null` for a game created before profiles. */
   creator: Profile | null;
-  /** When the organizer ended the game, or `null` while it runs. */
-  endedAt: Date | null;
+  /** Whether the organizer ended it: no more joining or ticking. */
+  isEnded: boolean;
 };
 
 /** A cell of a player's grid, row by row. */
