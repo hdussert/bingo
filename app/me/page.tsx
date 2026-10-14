@@ -12,6 +12,7 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import { backHref } from "@/lib/game/links";
 import { formatCode } from "@/lib/profile/code";
 import { findCurrentCode, findCurrentProfile } from "@/lib/profile/session";
 import { absoluteUrl } from "@/lib/url";
@@ -25,14 +26,11 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
   ]);
   // After the #, the code never reaches a server: not ours, not a link preview's
   const recoverUrl = await absoluteUrl(`/recover#${code ?? ""}`);
-  // Back to the game the player came from, if any; only a game page, so the link can't lead off the site
-  const backHref =
-    typeof back === "string" && back.startsWith("/play/") ? back : "/games";
 
   return (
     <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-6 px-4 py-8">
       <div className="flex flex-col items-start gap-2">
-        <BackLink href={backHref} />
+        <BackLink href={backHref(back)} />
         <PageTitle>You</PageTitle>
       </div>
       {profile && code ? (

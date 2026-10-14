@@ -1,4 +1,4 @@
-import BackLink from "@/components/game/BackLink";
+import PageHeader from "@/components/game/PageHeader";
 import BrokenLink from "@/components/game/BrokenLink";
 import GameReady from "@/components/game/GameReady";
 import { findPlayableGame } from "@/lib/game/access";
@@ -20,7 +20,7 @@ export default async function SharePage({ params }: PageProps<"/share/[id]">) {
     <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-6 px-4 py-8">
       <div className="self-start">
         {/* Home, not the filled-in form: the game is already saved */}
-        <BackLink href="/" />
+        <PageHeader back="/" />
       </div>
       <GameReady href={href} url={url} />
     </main>
