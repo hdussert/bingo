@@ -1,13 +1,10 @@
 import ButtonLink from "@/components/game/ButtonLink";
+import CenteredPageLayout from "@/components/game/CenteredPageLayout";
 import PageHeader from "@/components/game/PageHeader";
 
 export default function Home() {
   return (
-    // Equal rows above and below center the content on the whole screen, under the header
-    <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-10 px-4 py-8">
-      <div className="self-start">
-        <PageHeader />
-      </div>
+    <CenteredPageLayout header={<PageHeader />}>
       <div className="flex flex-col gap-8">
         <div className="flex flex-col items-center gap-4 text-center">
           <h1 className="font-heading text-7xl text-cartoon">Bingo!</h1>
@@ -25,6 +22,6 @@ export default function Home() {
           </ButtonLink>
         </div>
       </div>
-    </main>
+    </CenteredPageLayout>
   );
 }

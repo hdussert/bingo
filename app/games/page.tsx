@@ -1,5 +1,6 @@
 import { ClockIcon, Grid3x3Icon, LockIcon, UsersIcon } from "lucide-react";
 import { connection } from "next/server";
+import PageLayout from "@/components/game/PageLayout";
 import PageHeader from "@/components/game/PageHeader";
 import RefreshButton from "@/components/game/RefreshButton";
 import {
@@ -15,7 +16,6 @@ import JoinedGameCard from "@/components/game/JoinedGameCard";
 import { listJoinedGames, listRunningGames } from "@/lib/game/games";
 import { findCurrentProfile } from "@/lib/profile/session";
 import ButtonLink from "@/components/game/ButtonLink";
-import PageTitle from "@/components/game/PageTitle";
 import { SECTION_LABEL_CLASS } from "@/components/game/const";
 import { formatTimeAgo, pluralize } from "@/lib/game/format";
 
@@ -32,14 +32,15 @@ export default async function GamesPage() {
   const hasJoined = joinedGames.length > 0;
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 py-8">
-      <div className="flex flex-col items-start gap-2">
+    <PageLayout
+      header={
         <PageHeader back="/">
           <RefreshButton />
         </PageHeader>
-        <PageTitle>Join a game</PageTitle>
-        <p className="text-muted-foreground">Tap a game to get your grid.</p>
-      </div>
+      }
+      title="Join a game"
+      subtitle="Tap a game to get your grid."
+    >
       {profile && hasJoined && (
         <section className="flex flex-col gap-3">
           <h2 className={SECTION_LABEL_CLASS}>Your games</h2>
@@ -109,6 +110,6 @@ export default async function GamesPage() {
           </ul>
         )}
       </section>
-    </main>
+    </PageLayout>
   );
 }

@@ -1,5 +1,6 @@
 import { FlagIcon, Grid3x3Icon, LockIcon, SettingsIcon } from "lucide-react";
 import Link from "next/link";
+import CenteredPageLayout from "@/components/game/CenteredPageLayout";
 import PageHeader from "@/components/game/PageHeader";
 import BingoGrid from "@/components/game/BingoGrid";
 import BrokenLink from "@/components/game/BrokenLink";
@@ -51,9 +52,8 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
   return (
     // Keyed by screen: joining stays on this route, where the root template doesn't slide
     <PageSlide key={player ? "grid" : "join"}>
-      {/* Equal rows above and below center the content on the whole screen, the header staying at the top */}
-      <main className="mx-auto grid w-full max-w-lg flex-1 grid-rows-[1fr_auto_1fr] gap-6 px-4 py-8">
-        <div className="self-start">
+      <CenteredPageLayout
+        header={
           <PageHeader back="/games">
             {isOrganizer && (
               <ButtonLink
@@ -78,7 +78,8 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
               </>
             )}
           </PageHeader>
-        </div>
+        }
+      >
         <div className="flex flex-col gap-8">
           <div className="flex flex-col items-center gap-2 text-center">
             <PageTitle>{game.title}</PageTitle>
@@ -158,7 +159,7 @@ export default async function PlayPage({ params }: PageProps<"/play/[id]">) {
             />
           )}
         </div>
-      </main>
+      </CenteredPageLayout>
     </PageSlide>
   );
 }

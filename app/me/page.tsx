@@ -1,7 +1,7 @@
 import { UserIcon } from "lucide-react";
 import BackLink from "@/components/game/BackLink";
 import ButtonLink from "@/components/game/ButtonLink";
-import PageTitle from "@/components/game/PageTitle";
+import PageLayout from "@/components/game/PageLayout";
 import CodeCard from "@/components/profile/CodeCard";
 import RenameForm from "@/components/profile/RenameForm";
 import {
@@ -28,12 +28,11 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
   const recoverUrl = await absoluteUrl(`/recover#${code ?? ""}`);
 
   return (
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 py-8">
-      <div className="flex flex-col items-start gap-2">
-        <BackLink href={backHref(back)} />
-        <PageTitle>You</PageTitle>
-        <p className="text-muted-foreground">Your name and your code.</p>
-      </div>
+    <PageLayout
+      header={<BackLink href={backHref(back)} />}
+      title="You"
+      subtitle="Your name and your code."
+    >
       {profile && code ? (
         <>
           <RenameForm name={profile.name} />
@@ -59,6 +58,6 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
           </EmptyContent>
         </Empty>
       )}
-    </main>
+    </PageLayout>
   );
 }

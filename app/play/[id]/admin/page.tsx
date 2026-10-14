@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import EndGameForm from "@/components/game/EndGameForm";
 import GamePlayersCard from "@/components/game/GamePlayersCard";
 import GameSettingsForm from "@/components/game/GameSettingsForm";
+import PageLayout from "@/components/game/PageLayout";
 import PageHeader from "@/components/game/PageHeader";
-import PageTitle from "@/components/game/PageTitle";
 import { findOrganizedGame } from "@/lib/game/access";
 import { listPlayers } from "@/lib/game/games";
 
@@ -23,15 +23,13 @@ export default async function AdminPage({
   const { game, isPrivate, organizerId } = organized;
 
   return (
-    // Room at the bottom for the Save bar, so it never covers the last button
-    <main className="mx-auto flex w-full max-w-lg flex-1 flex-col gap-8 px-4 pt-8 pb-32">
-      <div className="flex flex-col items-start gap-2">
-        <PageHeader back={`/play/${id}`} />
-        <PageTitle>Manage game</PageTitle>
-        <p className="text-muted-foreground">
-          Only you see this page, as the organizer.
-        </p>
-      </div>
+    <PageLayout
+      header={<PageHeader back={`/play/${id}`} />}
+      title="Manage game"
+      subtitle="Only you see this page, as the organizer."
+      // Room at the bottom for the Save bar, so it never covers the last button
+      className="pb-32"
+    >
       <GameSettingsForm
         gameId={game.id}
         title={game.title}
@@ -43,6 +41,6 @@ export default async function AdminPage({
         players={players}
       />
       <EndGameForm gameId={game.id} isEnded={game.isEnded} />
-    </main>
+    </PageLayout>
   );
 }
