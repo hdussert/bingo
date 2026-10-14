@@ -28,7 +28,7 @@ export default function JoinedGameCard({ game, profileId }: Props) {
       transitionTypes={NAV_FORWARD}
       className="block rounded-xl transition-transform active:scale-[0.98]"
     >
-      <Card size="sm" className="rounded-xl">
+      <Card className="gap-3 rounded-xl py-5">
         <CardHeader>
           <CardTitle className="text-xl break-words">{game.title}</CardTitle>
           {(game.isEnded || game.isOrganizer) && (
