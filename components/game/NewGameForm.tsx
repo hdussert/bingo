@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlertIcon, LockIcon } from "lucide-react";
+import { CircleAlertIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useState, ViewTransition } from "react";
 import { createGame } from "@/actions/game/createGame";
@@ -9,22 +9,14 @@ import EventsTileInput from "@/components/game/EventsTileInput";
 import { BOTTOM_BAR_CLASS } from "@/components/game/const";
 import FormStep from "@/components/game/FormStep";
 import GridSizePicker from "@/components/game/GridSizePicker";
+import PrivateGameFields from "@/components/game/PrivateGameFields";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent } from "@/components/ui/collapsible";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
 import {
   DEFAULT_GRID_SIZE,
   MAX_NAME_LENGTH,
-  MAX_PASSWORD_LENGTH,
   MAX_TITLE_LENGTH,
   MIN_PASSWORD_LENGTH,
 } from "@/lib/game/const";
@@ -112,44 +104,21 @@ export default function NewGameForm({ needsName }: Props) {
       {/* Glides down as the tiles grow a row */}
       <ViewTransition>
         <FormStep step={4} title="Who can join">
-          {/* No gap: the closed password field would still leave one, so the open one brings its own */}
-          <FieldGroup className="gap-0">
-            <Field orientation="horizontal">
-              <FieldContent>
-                <FieldLabel htmlFor="isPrivate">
-                  <LockIcon strokeWidth={3} className="size-4" />
-                  Private game
-                </FieldLabel>
-                <FieldDescription>
-                  Players need a password to join.
-                </FieldDescription>
-              </FieldContent>
-              <Switch
-                id="isPrivate"
-                checked={isPrivate}
-                onCheckedChange={setIsPrivate}
-              />
-            </Field>
-            <Collapsible open={isPrivate}>
-              <CollapsibleContent>
-                <Field className="pt-4">
-                  <Input
-                    name="password"
-                    aria-label="Password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    maxLength={MAX_PASSWORD_LENGTH}
-                    autoComplete="off"
-                    placeholder="party2026"
-                  />
-                  <FieldDescription>
-                    At least {MIN_PASSWORD_LENGTH} characters. Keep it simple:
-                    you will say it out loud, and case doesn&apos;t matter.
-                  </FieldDescription>
-                </Field>
-              </CollapsibleContent>
-            </Collapsible>
-          </FieldGroup>
+          <PrivateGameFields
+            isPrivate={isPrivate}
+            onIsPrivateChange={setIsPrivate}
+            switchDescription="Players need a password to join."
+            password={password}
+            onPasswordChange={setPassword}
+            passwordLabel="Password"
+            passwordPlaceholder="party2026"
+            passwordDescription={
+              <>
+                At least {MIN_PASSWORD_LENGTH} characters. Keep it simple: you
+                will say it out loud, and case doesn&apos;t matter.
+              </>
+            }
+          />
         </FormStep>
       </ViewTransition>
 
