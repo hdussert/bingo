@@ -21,7 +21,7 @@ export default function FormStep({
   children,
 }: Props) {
   return (
-    <Card className="rounded-xl">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-3 text-xl">
           <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">

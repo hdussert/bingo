@@ -24,7 +24,7 @@ export default function GamePlayersCard({
   players,
 }: Props) {
   return (
-    <Card className="rounded-xl">
+    <Card>
       <CardHeader>
         <CardTitle className={CARD_LABEL_CLASS}>
           {pluralize(players.length, "player")}

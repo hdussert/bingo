@@ -6,7 +6,7 @@ import {
   saveGameSettings,
   type SaveGameSettingsState,
 } from "@/actions/game/saveGameSettings";
-import { CARD_LABEL_CLASS } from "@/components/game/const";
+import { BOTTOM_BAR_CLASS, CARD_LABEL_CLASS } from "@/components/game/const";
 import SaveButton from "@/components/game/SaveButton";
 import {
   Card,
@@ -84,7 +84,7 @@ export default function GameSettingsForm({
 
   return (
     <form action={formAction} className="flex flex-col gap-8">
-      <Card className="rounded-xl">
+      <Card>
         <CardContent>
           <Field data-invalid={isTitleInvalid}>
             <FieldLabel htmlFor="title" className={CARD_LABEL_CLASS}>
@@ -107,7 +107,7 @@ export default function GameSettingsForm({
         </CardContent>
       </Card>
 
-      <Card className="rounded-xl">
+      <Card>
         <CardHeader>
           <CardTitle className={CARD_LABEL_CLASS}>Who can join</CardTitle>
           <CardDescription>
@@ -168,7 +168,8 @@ export default function GameSettingsForm({
       <div
         inert={!isBarShown}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-10 mx-auto flex max-w-lg flex-col gap-2 bg-linear-to-t from-background from-60% to-transparent px-4 pt-6 pb-[max(1rem,env(safe-area-inset-bottom))] transition-transform duration-300 ease-out motion-reduce:transition-none",
+          "fixed inset-x-0 bottom-0 z-10 mx-auto flex max-w-lg flex-col gap-2 transition-transform duration-300 ease-out motion-reduce:transition-none",
+          BOTTOM_BAR_CLASS,
           !isBarShown && "translate-y-full",
         )}
       >

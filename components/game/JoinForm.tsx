@@ -58,7 +58,7 @@ export default function JoinForm({
   return (
     <form action={formAction} className="flex flex-col gap-4">
       {(!profileName || needsPassword) && (
-        <Card className="rounded-xl">
+        <Card>
           <CardContent>
             <FieldGroup className="gap-6">
               {!profileName && (

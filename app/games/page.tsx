@@ -1,15 +1,7 @@
 import { ClockIcon, Grid3x3Icon, LockIcon, UsersIcon } from "lucide-react";
-import Link from "next/link";
 import { connection } from "next/server";
 import PageHeader from "@/components/game/PageHeader";
 import RefreshButton from "@/components/game/RefreshButton";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   Empty,
   EmptyContent,
@@ -18,10 +10,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@/components/ui/empty";
+import GameCardLink from "@/components/game/GameCardLink";
 import JoinedGameCard from "@/components/game/JoinedGameCard";
 import { listJoinedGames, listRunningGames } from "@/lib/game/games";
 import { findCurrentProfile } from "@/lib/profile/session";
-import { NAV_FORWARD } from "@/lib/transitions";
 import ButtonLink from "@/components/game/ButtonLink";
 import PageTitle from "@/components/game/PageTitle";
 import { SECTION_LABEL_CLASS } from "@/components/game/const";
@@ -83,41 +75,34 @@ export default async function GamesPage() {
           <ul className="flex flex-col gap-3">
             {games.map((game) => (
               <li key={game.id}>
-                <Link
-                  href={`/play/${game.id}`}
-                  transitionTypes={NAV_FORWARD}
-                  className="block rounded-xl transition-transform active:scale-[0.98]"
+                <GameCardLink
+                  gameId={game.id}
+                  title={game.title}
+                  action={
+                    game.isPrivate && (
+                      <LockIcon
+                        strokeWidth={3}
+                        className="size-6"
+                        aria-label="Private game"
+                      />
+                    )
+                  }
                 >
-                  <Card className="gap-3 rounded-xl py-5">
-                    <CardHeader>
-                      <CardTitle className="text-xl break-words">
-                        {game.title}
-                      </CardTitle>
-                      {game.isPrivate && (
-                        <CardAction
-                          aria-label="Private game"
-                          className="row-span-1 self-center"
-                        >
-                          <LockIcon strokeWidth={3} className="size-6" />
-                        </CardAction>
-                      )}
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
-                      <span className="flex items-center gap-1.5 whitespace-nowrap">
-                        <Grid3x3Icon className="size-4" />
-                        {game.size}×{game.size}
-                      </span>
-                      <span className="flex items-center gap-1.5 whitespace-nowrap">
-                        <UsersIcon className="size-4" />
-                        {pluralize(game.playerCount, "player")}
-                      </span>
-                      <span className="flex items-center gap-1.5 whitespace-nowrap">
-                        <ClockIcon className="size-4" />
-                        {formatTimeAgo(game.lastActivityAt)}
-                      </span>
-                    </CardContent>
-                  </Card>
-                </Link>
+                  <div className="flex flex-wrap gap-x-5 gap-y-2 text-muted-foreground">
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                      <Grid3x3Icon className="size-4" />
+                      {game.size}×{game.size}
+                    </span>
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                      <UsersIcon className="size-4" />
+                      {pluralize(game.playerCount, "player")}
+                    </span>
+                    <span className="flex items-center gap-1.5 whitespace-nowrap">
+                      <ClockIcon className="size-4" />
+                      {formatTimeAgo(game.lastActivityAt)}
+                    </span>
+                  </div>
+                </GameCardLink>
               </li>
             ))}
           </ul>

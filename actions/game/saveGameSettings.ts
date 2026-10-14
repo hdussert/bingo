@@ -49,12 +49,12 @@ export async function saveGameSettings(
     if (isPrivate && !password && !organized.isPrivate) {
       return { message: "Choose a password", invalidField: "password" };
     }
-    // Private with no new password: undefined keeps the current one
-    const passwordHash = isPrivate
-      ? password
+    // Private with no new password keeps the current one
+    const passwordHash = !isPrivate
+      ? null
+      : password
         ? await hashPassword(password)
-        : undefined
-      : null;
+        : undefined;
     if (
       !(await saveSettings(gameId, organized.organizerId, {
         title,

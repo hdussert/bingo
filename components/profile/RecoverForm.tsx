@@ -41,7 +41,7 @@ export default function RecoverForm({ currentName, back }: Props) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="back" value={back} />
-      <Card className="rounded-xl">
+      <Card>
         <CardContent>
           <Field data-invalid={isInvalid}>
             <FieldLabel htmlFor="code" className={CARD_LABEL_CLASS}>

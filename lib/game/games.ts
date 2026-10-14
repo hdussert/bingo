@@ -234,17 +234,17 @@ export async function setCellTicked(
 
 /**
  * Saves a game's title and who can join, if that profile organizes it; returns whether it did.
- * `passwordHash` makes it private with that password, `null` public, and `undefined` keeps its current access.
+ * `passwordHash` makes it private with that password, `null` public, and leaving it out keeps its current access.
  */
 export async function saveGameSettings(
   gameId: string,
   organizerId: string,
-  settings: { title: string; passwordHash: string | null | undefined },
+  settings: { title: string; passwordHash?: string | null },
 ): Promise<boolean> {
-  const { title, passwordHash } = settings;
   const rows = await db
     .update(games)
-    .set(passwordHash === undefined ? { title } : { title, passwordHash })
+    // Drizzle leaves out a key set to undefined
+    .set(settings)
     .where(isOrganizedBy(gameId, organizerId))
     .returning({ id: games.id });
   return rows.length > 0;
