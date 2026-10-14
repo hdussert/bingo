@@ -31,9 +31,9 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
   const isSaved = state.savedTitle === title.trim();
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction}>
       <Card>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
           <Field data-invalid={isInvalid}>
             <FieldLabel htmlFor="title" className={CARD_LABEL_CLASS}>
               Title
@@ -52,24 +52,25 @@ export default function GameTitleForm({ gameId, title: savedTitle }: Props) {
             </FieldDescription>
             {isInvalid && <FieldError>{state.message}</FieldError>}
           </Field>
+          <Button
+            type="submit"
+            size="lg"
+            variant="outline"
+            disabled={isPending || title.trim() === savedTitle}
+          >
+            {isSaved ? (
+              <>
+                <CheckIcon strokeWidth={3} data-icon="inline-start" />
+                Saved
+              </>
+            ) : isPending ? (
+              "Saving…"
+            ) : (
+              "Rename"
+            )}
+          </Button>
         </CardContent>
       </Card>
-      <Button
-        type="submit"
-        size="xl"
-        disabled={isPending || title.trim() === savedTitle}
-      >
-        {isSaved ? (
-          <>
-            <CheckIcon strokeWidth={3} data-icon="inline-start" />
-            Saved
-          </>
-        ) : isPending ? (
-          "Saving…"
-        ) : (
-          "Rename"
-        )}
-      </Button>
     </form>
   );
 }
