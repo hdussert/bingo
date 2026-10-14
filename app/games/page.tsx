@@ -83,6 +83,7 @@ export default async function GamesPage() {
                       <LockIcon
                         strokeWidth={3}
                         className="size-6"
+                        role="img"
                         aria-label="Private game"
                       />
                     )

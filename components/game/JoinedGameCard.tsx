@@ -26,6 +26,7 @@ export default function JoinedGameCard({ game, profileId }: Props) {
               <CrownIcon
                 strokeWidth={3}
                 className="size-6"
+                role="img"
                 aria-label="You organize it"
               />
             )}

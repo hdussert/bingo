@@ -34,9 +34,11 @@ export async function saveGameSettings(
   });
   if (!result.success) {
     const issue = result.error.issues[0];
+    const field = issue.path[0];
     return {
       message: issue.message,
-      invalidField: issue.path[0] === "title" ? "title" : "password",
+      invalidField:
+        field === "title" || field === "password" ? field : undefined,
     };
   }
   const { title, isPrivate, password } = result.data;

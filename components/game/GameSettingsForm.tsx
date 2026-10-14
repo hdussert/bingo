@@ -51,15 +51,17 @@ export default function GameSettingsForm({
   const [title, setTitle] = useState(savedTitle);
   const [isPrivate, setIsPrivate] = useState(savedIsPrivate);
   const [password, setPassword] = useState("");
-  // Keeps the bar up for a moment after saving, to say it worked
-  const [isSavedShown, setIsSavedShown] = useState(false);
+  // Set by each save, to keep the bar up for a moment saying it worked; a new save restarts the moment
+  const [savedId, setSavedId] = useState<number | null>(null);
   const [state, formAction, isPending] = useActionState(
     async (previous: SaveGameSettingsState, formData: FormData) => {
       const next = await saveGameSettings(gameId, previous, formData);
       if (next.isSaved) {
         // The password field goes back to "keep the current one"
         setPassword("");
-        setIsSavedShown(true);
+        // As saved
+        setTitle((title) => title.trim());
+        setSavedId((id) => (id ?? 0) + 1);
       }
       return next;
     },
@@ -67,17 +69,19 @@ export default function GameSettingsForm({
   );
 
   useEffect(() => {
-    if (!isSavedShown) {
+    if (savedId === null) {
       return;
     }
-    const timeout = setTimeout(() => setIsSavedShown(false), SAVED_MS);
+    const timeout = setTimeout(() => setSavedId(null), SAVED_MS);
     return () => clearTimeout(timeout);
-  }, [isSavedShown]);
+  }, [savedId]);
 
   const isChanged =
     title.trim() !== savedTitle ||
     isPrivate !== savedIsPrivate ||
-    password !== "";
+    // Only sent while the switch is on
+    (isPrivate && password !== "");
+  const isSavedShown = savedId !== null;
   const isBarShown = isChanged || isPending || isSavedShown;
   const isTitleInvalid = state.invalidField === "title";
   const isPasswordInvalid = state.invalidField === "password";
