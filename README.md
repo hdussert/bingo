@@ -43,13 +43,13 @@ npm run dev
 
 Then open http://localhost:3000.
 
-| Script | What it does |
-| --- | --- |
-| `npm run dev` | Starts the dev server |
-| `npm run verify` | Type check, lint and build, as CI does |
-| `npm run db:generate` | Creates a migration from changes to `db/schema.ts` |
-| `npm run db:migrate` | Applies pending migrations to the `.env.local` database |
-| `npm run db:studio` | Opens Drizzle Studio on that database |
+| Script                | What it does                                            |
+| --------------------- | ------------------------------------------------------- |
+| `npm run dev`         | Starts the dev server                                   |
+| `npm run verify`      | Type check, lint and build, as CI does                  |
+| `npm run db:generate` | Creates a migration from changes to `db/schema.ts`      |
+| `npm run db:migrate`  | Applies pending migrations to the `.env.local` database |
+| `npm run db:studio`   | Opens Drizzle Studio on that database                   |
 
 ## Branches and deploys
 
