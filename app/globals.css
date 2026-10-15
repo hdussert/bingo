@@ -40,6 +40,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -54,12 +55,15 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  /* The shadow side of raised tiles and buttons */
+  --color-card-edge: var(--card-edge);
+  --color-primary-edge: var(--primary-edge);
+  --color-destructive-edge: var(--destructive-edge);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
-  /* Cards and card-like tiles: as round as xl, so their content stays clear of the corners */
-  --radius-2xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 }
@@ -68,11 +72,16 @@
   --background: oklch(0.36 0.16 295);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.45 0.17 295);
+  /* The shadow side of raised tiles and buttons: each edge is its face's color turned slightly
+     cooler, sitting between its face and the page (in OKLCH) so it stands out against both. The card
+     is close to the page, so its edge is only just darker than the page */
+  --card-edge: oklch(0.33 0.16 290);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.45 0.17 295);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.65 0.24 355);
   --primary-foreground: oklch(0.985 0 0);
+  --primary-edge: oklch(0.465 0.205 345);
   --highlight: oklch(0.88 0.18 95);
   --highlight-foreground: oklch(0.25 0.08 295);
   --secondary: oklch(1 0 0 / 15%);
@@ -82,6 +91,9 @@
   --accent: oklch(1 0 0 / 12%);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  /* Destructive text on its tinted fill: light enough for 4.5:1 */
+  --destructive-foreground: oklch(0.82 0.14 22);
+  --destructive-edge: oklch(0.3 0.12 12);
   --border: oklch(1 0 0 / 22%);
   --input: oklch(1 0 0 / 30%);
   --ring: var(--highlight);

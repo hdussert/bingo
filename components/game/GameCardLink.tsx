@@ -27,7 +27,7 @@ export default function GameCardLink({
     <Link
       href={`/play/${gameId}`}
       transitionTypes={NAV_FORWARD}
-      className="block rounded-2xl transition-transform active:scale-[0.98]"
+      className="block rounded-xl transition-transform active:scale-[0.98]"
     >
       {/* Tighter than a form card: a list shows more of them at once */}
       <Card className="gap-3 py-5">
