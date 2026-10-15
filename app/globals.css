@@ -54,8 +54,10 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  /* The shadow side of a raised card-colored tile (grid cells) */
+  /* The shadow side of raised tiles and buttons */
   --color-card-edge: var(--card-edge);
+  --color-primary-edge: var(--primary-edge);
+  --color-destructive-edge: var(--destructive-edge);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -77,6 +79,8 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.65 0.24 355);
   --primary-foreground: oklch(0.985 0 0);
+  /* Same rule for pink buttons: a third darker, the hue kept */
+  --primary-edge: oklch(0.45 0.2 358);
   --highlight: oklch(0.88 0.18 95);
   --highlight-foreground: oklch(0.25 0.08 295);
   --secondary: oklch(1 0 0 / 15%);
@@ -86,6 +90,8 @@
   --accent: oklch(1 0 0 / 12%);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  /* Under the destructive button's dark red face */
+  --destructive-edge: oklch(0.3 0.12 10);
   --border: oklch(1 0 0 / 22%);
   --input: oklch(1 0 0 / 30%);
   --ring: var(--highlight);
