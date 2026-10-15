@@ -25,16 +25,23 @@ export default function GridSizePicker({ size, onChange }: Props) {
           }
           onChange(Number(value[0]) as GridSize);
         }}
-        className="grid w-full grid-cols-3 gap-3"
+        className="grid w-full grid-cols-3 items-stretch gap-3"
       >
         {GRID_SIZES.map((option) => (
           <ToggleGroupItem
             key={option}
             value={String(option)}
             aria-label={`${option} by ${option} grid`}
-            className="h-auto flex-col gap-3 rounded-2xl py-4"
+            // The text fields' 2px border; the fill stops inside it, so it doesn't brighten it
+            className="h-auto flex-col gap-3 rounded-xl border-2 border-border bg-clip-padding py-4"
           >
-            <span className={cn("grid gap-1", GRID_COLUMNS[option])}>
+            {/* Takes the tile's spare height, so every label sits on the same line */}
+            <span
+              className={cn(
+                "grid flex-1 content-center gap-1",
+                GRID_COLUMNS[option],
+              )}
+            >
               {Array.from({ length: option ** 2 }, (_, i) => (
                 <span key={i} className="size-2 rounded-full bg-current" />
               ))}

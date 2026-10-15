@@ -16,7 +16,7 @@ export default function PlayerRank({ row, position, playerCount }: Props) {
   return (
     <LeaderboardTrigger
       aria-label={`You're ${position} of ${pluralize(playerCount, "player")}: open the leaderboard`}
-      className="cursor-pointer rounded-2xl bg-card px-6 py-4 transition-transform active:scale-[0.98]"
+      className="cursor-pointer rounded-xl bg-card px-6 py-4 transition-transform active:scale-[0.98]"
     >
       <RankSummary row={row} position={position} playerCount={playerCount} />
     </LeaderboardTrigger>
