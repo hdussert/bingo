@@ -23,7 +23,7 @@ export default function Lobby({ gameId, playerId, rows }: Props) {
         const isMe = row.profileId === playerId;
         const hasBingo = row.bingoRank !== null;
         const className = cn(
-          "flex items-center gap-3 rounded-2xl border-2 px-3 py-2.5 transition-transform active:scale-[0.98]",
+          "flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 transition-transform active:scale-[0.98]",
           isMe ? "border-primary bg-primary/10" : "border-border",
         );
         const content = (

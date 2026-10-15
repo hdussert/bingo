@@ -33,7 +33,7 @@ export default function GridSizePicker({ size, onChange }: Props) {
             value={String(option)}
             aria-label={`${option} by ${option} grid`}
             // The text fields' 2px border; the fill stops inside it, so it doesn't brighten it
-            className="h-auto flex-col gap-3 rounded-2xl border-2 border-border bg-clip-padding py-4"
+            className="h-auto flex-col gap-3 rounded-xl border-2 border-border bg-clip-padding py-4"
           >
             {/* Takes the tile's spare height, so every label sits on the same line */}
             <span
