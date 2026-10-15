@@ -2,8 +2,8 @@ import { Button as ButtonPrimitive } from "@base-ui/react/button"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "cn"
 
-// Raised like the grid's tiles: an edge in a darker shade of the face, which the button sinks into
-// when pressed. Disabled buttons sit flat
+// Raised like the grid's tiles: a hard edge under the face (see the edge colors in globals.css),
+// which the button sinks into when pressed. Disabled buttons sit flat
 const RAISED =
   "shadow-[0_0.25rem_0_var(--button-edge)] active:not-aria-[haspopup]:translate-y-1 active:not-aria-[haspopup]:shadow-none disabled:shadow-none"
 
@@ -28,7 +28,7 @@ const buttonVariants = cva(
           "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
         destructive: cn(
           RAISED,
-          "bg-destructive/10 text-destructive [--button-edge:var(--color-destructive-edge)] hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40"
+          "bg-destructive/10 text-destructive-foreground [--button-edge:var(--color-destructive-edge)] hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40"
         ),
         link: "text-primary underline-offset-4 hover:underline",
       },

@@ -40,6 +40,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -71,17 +72,17 @@
   --background: oklch(0.36 0.16 295);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.45 0.17 295);
-  /* The shadow side of raised tiles and buttons: darker than the card and turned toward pink, as the
-     titles' pink extrusion is to their white letters. Close to the page background, so it reads as
-     softly as the pink buttons' edge */
-  --card-edge: oklch(0.35 0.15 312);
+  /* The shadow side of raised tiles and buttons. Every edge follows the same rules: its face's hue
+     turned 10° cooler, and as far from its face as from the page (in OKLCH), so each one stands out
+     as much against both. The card sits close to the page, so its edge differs mostly in hue and
+     saturation */
+  --card-edge: oklch(0.395 0.22 285);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.45 0.17 295);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.65 0.24 355);
   --primary-foreground: oklch(0.985 0 0);
-  /* Same rule for pink buttons: a third darker, the hue kept */
-  --primary-edge: oklch(0.45 0.2 358);
+  --primary-edge: oklch(0.465 0.205 345);
   --highlight: oklch(0.88 0.18 95);
   --highlight-foreground: oklch(0.25 0.08 295);
   --secondary: oklch(1 0 0 / 15%);
@@ -91,8 +92,9 @@
   --accent: oklch(1 0 0 / 12%);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  /* Under the destructive button's dark red face */
-  --destructive-edge: oklch(0.3 0.12 10);
+  /* Destructive text on its tinted fill: light enough for 4.5:1 */
+  --destructive-foreground: oklch(0.82 0.14 22);
+  --destructive-edge: oklch(0.3 0.12 12);
   --border: oklch(1 0 0 / 22%);
   --input: oklch(1 0 0 / 30%);
   --ring: var(--highlight);
