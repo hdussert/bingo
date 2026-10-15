@@ -126,7 +126,7 @@ export default function BingoGrid({
             onPressedChange={() => handleToggle(i)}
             className={cn(
               // Raised like a game button, pressed flat once ticked; the gap leaves room for the raised edge
-              "aspect-square h-auto min-w-0 rounded-[22%] border-0 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-border)] transition-all",
+              "aspect-square h-auto min-w-0 rounded-[22%] border-0 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-card-edge)] transition-all",
               // Squashes and bounces back when ticked (the scale property, so it adds to the pressed translate)
               i === tappedIndex &&
                 "aria-pressed:animate-[tick-pop_300ms_ease-out] motion-reduce:animate-none",
