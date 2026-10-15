@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { ImageResponse } from "next/og";
+import { IMAGE_COLORS as COLORS } from "./const";
 import type { GridSize } from "./types";
 
 /** The size chat apps and social networks expect for a link's preview image. */
@@ -11,17 +12,6 @@ const [luckiestGuy, fredoka] = await Promise.all([
   readFile(join(process.cwd(), "app/fonts/LuckiestGuy-Latin.ttf")),
   readFile(join(process.cwd(), "app/fonts/Fredoka-600-Latin.ttf")),
 ]);
-
-/** The theme's colors (app/globals.css) in hex, for generated images: the renderer doesn't read oklch. */
-export const COLORS = {
-  background: "#471e86",
-  card: "#5f38a7",
-  primary: "#f43096",
-  highlight: "#fdd506",
-  foreground: "#fbfbfb",
-  muted: "rgba(255, 255, 255, 0.75)",
-  border: "rgba(255, 255, 255, 0.22)",
-};
 
 // The home page's text-7xl
 const LOGO_SIZE = 72;
