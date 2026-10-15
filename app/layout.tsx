@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 const fredoka = localFont({
@@ -49,7 +50,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         luckiestGuy.variable,
       )}
     >
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        {/* Top: the bottom of the screen has the Save bar and the leaderboard drawer */}
+        <Toaster theme="dark" position="top-center" />
+      </body>
     </html>
   );
 }

@@ -1,29 +1,20 @@
 "use client";
 
-import { CheckIcon, LinkIcon, XIcon } from "lucide-react";
-import { useCopyLink } from "@/components/game/useCopyLink";
+import { LinkIcon } from "lucide-react";
+import { copyLink } from "@/components/game/copyLink";
 import { Button } from "@/components/ui/button";
 
-const LABELS = {
-  idle: "Copy the game's link",
-  copied: "Link copied",
-  failed: "Couldn't copy the link",
-};
-
-/** Copies the game's link from the header, a check mark saying it worked. */
+/** Copies the game's link from the header. */
 export default function CopyLinkIconButton({ url }: { url: string }) {
-  const { copyStatus, copyLink } = useCopyLink(url);
-  const Icon = { idle: LinkIcon, copied: CheckIcon, failed: XIcon }[copyStatus];
-
   return (
     <Button
       variant="ghost"
       size="icon-xl"
-      onClick={copyLink}
-      aria-label={LABELS[copyStatus]}
-      title={LABELS[copyStatus]}
+      onClick={() => copyLink(url)}
+      aria-label="Copy the game's link"
+      title="Copy the game's link"
     >
-      <Icon strokeWidth={2.5} />
+      <LinkIcon strokeWidth={2.5} />
     </Button>
   );
 }

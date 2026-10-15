@@ -1,8 +1,8 @@
 "use client";
 
-import { CheckIcon, LinkIcon, XIcon } from "lucide-react";
+import { LinkIcon } from "lucide-react";
 import ButtonLink from "@/components/game/ButtonLink";
-import { useCopyLink } from "@/components/game/useCopyLink";
+import { copyLink } from "@/components/game/copyLink";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,12 +13,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const LABELS = {
-  idle: "Copy the link",
-  copied: "Link copied",
-  failed: "Couldn't copy",
-};
-
 type Props = {
   /** The profile's code, formatted. */
   code: string;
@@ -28,9 +22,6 @@ type Props = {
 
 /** The player's code, to play as them on another phone. */
 export default function CodeCard({ code, url }: Props) {
-  const { copyStatus, copyLink } = useCopyLink(url);
-  const Icon = { idle: LinkIcon, copied: CheckIcon, failed: XIcon }[copyStatus];
-
   return (
     <Card>
       <CardHeader>
@@ -44,9 +35,9 @@ export default function CodeCard({ code, url }: Props) {
         <p className="text-center font-mono text-2xl tracking-wider select-all">
           {code}
         </p>
-        <Button variant="outline" size="lg" onClick={copyLink}>
-          <Icon strokeWidth={2.5} data-icon="inline-start" />
-          {LABELS[copyStatus]}
+        <Button variant="outline" size="lg" onClick={() => copyLink(url)}>
+          <LinkIcon strokeWidth={2.5} data-icon="inline-start" />
+          Copy the link
         </Button>
         {/* This phone already plays as someone: the way to switch to another player's games */}
         <ButtonLink
