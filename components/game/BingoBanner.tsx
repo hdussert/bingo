@@ -3,7 +3,7 @@ export default function BingoBanner() {
   return (
     <p
       role="status"
-      className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center font-heading text-8xl text-cartoon animate-[banner-out_300ms_ease-in_1700ms_forwards] motion-reduce:animate-none"
+      className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center font-heading text-[min(6rem,25vw)] whitespace-nowrap text-cartoon animate-[banner-out_300ms_ease-in_1700ms_forwards] motion-reduce:animate-none"
     >
       <span className="sr-only">Bingo!</span>
       <span aria-hidden className="text-cartoon-ringed">

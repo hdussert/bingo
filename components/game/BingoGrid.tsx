@@ -33,8 +33,9 @@ const TEXT_SIZES: Record<GridSize, string> = {
 // Long enough for the letters to bounce in and be read
 const BANNER_MS = 2000;
 
-// Created on the first bingo. Draws on the main thread: the library's default draws in a worker,
-// which in Safari can stop drawing for the rest of the page's life
+// Created on the first bingo, from a library loaded with the page (a lazy load that failed once kept
+// failing, silently). Draws on the main thread: the library's default draws in a worker, which in
+// Safari can stop drawing for the rest of the page's life
 let fireConfetti: confetti.CreateTypes | null = null;
 
 // One burst from the middle, and one from each bottom corner
@@ -44,28 +45,29 @@ const CONFETTI_BURSTS: confetti.Options[] = [
   { particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.9 } },
 ];
 
-// A short, decaying jolt, like the grid took a hit
+// A short, decaying jolt, like the grid took a hit; small enough to stay within the page's side
+// padding, so it never widens the page
 const SHAKE: Keyframe[] = [
   { translate: "0 0", rotate: "0deg" },
-  { translate: "-8px 3px", rotate: "-1.5deg" },
-  { translate: "7px -4px", rotate: "1.2deg" },
-  { translate: "-5px 2px", rotate: "-0.8deg" },
-  { translate: "3px -1px", rotate: "0.4deg" },
+  { translate: "-6px 3px", rotate: "-1deg" },
+  { translate: "5px -3px", rotate: "0.8deg" },
+  { translate: "-4px 2px", rotate: "-0.5deg" },
+  { translate: "2px -1px", rotate: "0.3deg" },
   { translate: "0 0", rotate: "0deg" },
 ];
 
 function celebrate(grid: HTMLElement | null) {
+  // Checked on each bingo, in case the setting changed since the page loaded
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
   fireConfetti ??= confetti.create(undefined, {
     resize: true,
     useWorker: false,
-    disableForReducedMotion: true,
   });
   for (const burst of CONFETTI_BURSTS) {
     // Above the grid but under the Bingo! banner (and the leaderboard drawer)
     void fireConfetti({ ...burst, zIndex: 10 });
-  }
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    return;
   }
   grid?.animate(SHAKE, { duration: 450, easing: "ease-out" });
 }
