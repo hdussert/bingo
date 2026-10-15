@@ -37,6 +37,13 @@ const BANNER_MS = 2000;
 // which in Safari can stop drawing for the rest of the page's life
 let fireConfetti: confetti.CreateTypes | null = null;
 
+// One burst from the middle, and one from each bottom corner
+const CONFETTI_BURSTS: confetti.Options[] = [
+  { particleCount: 150, spread: 90, origin: { y: 0.7 } },
+  { particleCount: 80, angle: 60, spread: 55, origin: { x: 0, y: 0.9 } },
+  { particleCount: 80, angle: 120, spread: 55, origin: { x: 1, y: 0.9 } },
+];
+
 // A short, decaying jolt, like the grid took a hit
 const SHAKE: Keyframe[] = [
   { translate: "0 0", rotate: "0deg" },
@@ -53,29 +60,10 @@ function celebrate(grid: HTMLElement | null) {
     useWorker: false,
     disableForReducedMotion: true,
   });
-  // Above the grid but under the Bingo! banner (and the leaderboard drawer)
-  const zIndex = 10;
-  // One burst from the middle, and one from each bottom corner
-  void fireConfetti({
-    particleCount: 150,
-    spread: 90,
-    origin: { y: 0.7 },
-    zIndex,
-  });
-  void fireConfetti({
-    particleCount: 80,
-    angle: 60,
-    spread: 55,
-    origin: { x: 0, y: 0.9 },
-    zIndex,
-  });
-  void fireConfetti({
-    particleCount: 80,
-    angle: 120,
-    spread: 55,
-    origin: { x: 1, y: 0.9 },
-    zIndex,
-  });
+  for (const burst of CONFETTI_BURSTS) {
+    // Above the grid but under the Bingo! banner (and the leaderboard drawer)
+    void fireConfetti({ ...burst, zIndex: 10 });
+  }
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return;
   }
