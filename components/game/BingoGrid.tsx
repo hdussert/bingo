@@ -125,15 +125,15 @@ export default function BingoGrid({
             disabled={isReadOnly}
             onPressedChange={() => handleToggle(i)}
             className={cn(
-              // Raised like a game button, pressed flat once ticked; the gap leaves room for the raised edge
-              "aspect-square h-auto min-w-0 rounded-[22%] border-0 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto shadow-[0_0.25rem_0_var(--color-card-edge)] transition-all",
+              // The primary variant raises the tile and sinks it once ticked; the gap leaves room for the raised edge.
+              // A solid face on hover too, so the tile doesn't turn see-through on its edge
+              "aspect-square h-auto min-w-0 rounded-[22%] border-0 bg-card p-1 text-center leading-tight font-medium break-words whitespace-normal hyphens-auto hover:bg-card",
               // Squashes and bounces back when ticked (the scale property, so it adds to the pressed translate)
               i === tappedIndex &&
                 "aria-pressed:animate-[tick-pop_300ms_ease-out] motion-reduce:animate-none",
               TEXT_SIZES[size],
-              winningCells.has(i)
-                ? "translate-y-1 font-semibold shadow-none aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground"
-                : "aria-pressed:translate-y-1 aria-pressed:shadow-none",
+              winningCells.has(i) &&
+                "translate-y-1 font-semibold shadow-none aria-pressed:bg-highlight aria-pressed:text-highlight-foreground aria-pressed:hover:bg-highlight aria-pressed:hover:text-highlight-foreground",
               // Flat and at full color: nothing to press, but nothing grayed out either
               isReadOnly &&
                 "translate-y-0 shadow-none disabled:opacity-100 aria-pressed:translate-y-0",

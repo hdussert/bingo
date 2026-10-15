@@ -134,7 +134,7 @@ export default function EventsTileInput({ events, size, onChange }: Props) {
                 aria-label={`Remove “${event}”`}
                 // Hangs on the tile's corner, ringed in the card's color so it cuts out of the tile. The
                 // after: area makes a fingertip-sized target out of the small badge
-                className="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-background text-foreground ring-2 ring-card after:absolute after:-inset-2"
+                className="absolute -top-1.5 -right-1.5 flex size-6 items-center justify-center rounded-full bg-background text-foreground ring-2 ring-card after:absolute after:-inset-1"
               >
                 <XIcon strokeWidth={3} className="size-3.5" />
               </button>
