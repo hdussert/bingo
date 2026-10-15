@@ -1,7 +1,13 @@
 "use client";
 
 import confetti from "canvas-confetti";
-import { startTransition, useEffect, useOptimistic, useState } from "react";
+import {
+  startTransition,
+  useEffect,
+  useOptimistic,
+  useRef,
+  useState,
+} from "react";
 import { tickCell } from "@/actions/game/tickCell";
 import BingoBanner from "@/components/game/BingoBanner";
 import { Toggle } from "@/components/ui/toggle";
@@ -31,19 +37,51 @@ const BANNER_MS = 2000;
 // which in Safari can stop drawing for the rest of the page's life
 let fireConfetti: confetti.CreateTypes | null = null;
 
-function celebrate() {
+// A short, decaying jolt, like the grid took a hit
+const SHAKE: Keyframe[] = [
+  { translate: "0 0", rotate: "0deg" },
+  { translate: "-8px 3px", rotate: "-1.5deg" },
+  { translate: "7px -4px", rotate: "1.2deg" },
+  { translate: "-5px 2px", rotate: "-0.8deg" },
+  { translate: "3px -1px", rotate: "0.4deg" },
+  { translate: "0 0", rotate: "0deg" },
+];
+
+function celebrate(grid: HTMLElement | null) {
   fireConfetti ??= confetti.create(undefined, {
     resize: true,
     useWorker: false,
     disableForReducedMotion: true,
   });
+  // Above the grid but under the Bingo! banner (and the leaderboard drawer)
+  const zIndex = 10;
+  // One burst from the middle, and one from each bottom corner
   void fireConfetti({
     particleCount: 150,
     spread: 90,
     origin: { y: 0.7 },
-    // Above the grid but under the Bingo! banner (and the leaderboard drawer)
-    zIndex: 10,
+    zIndex,
   });
+  void fireConfetti({
+    particleCount: 80,
+    angle: 60,
+    spread: 55,
+    origin: { x: 0, y: 0.9 },
+    zIndex,
+  });
+  void fireConfetti({
+    particleCount: 80,
+    angle: 120,
+    spread: 55,
+    origin: { x: 1, y: 0.9 },
+    zIndex,
+  });
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+  grid?.animate(SHAKE, { duration: 450, easing: "ease-out" });
+  // Android only: iOS has no vibration API
+  navigator.vibrate?.([40, 30, 80]);
 }
 
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
@@ -59,6 +97,7 @@ export default function BingoGrid({
   );
   const lines = findBingoLines(ticked, size);
   const winningCells = new Set(lines.flat());
+  const gridRef = useRef<HTMLDivElement>(null);
   // The last cell tapped, so only it bounces: cells already ticked on page load stay still
   const [tappedIndex, setTappedIndex] = useState<number | null>(null);
   // Set when a tick completes a line, to show the banner for a moment
@@ -77,7 +116,7 @@ export default function BingoGrid({
     setTappedIndex(index);
     const next = ticked.map((value, i) => (i === index ? isTicked : value));
     if (findBingoLines(next, size).length > lines.length) {
-      celebrate();
+      celebrate(gridRef.current);
       setCelebrationId((id) => (id ?? 0) + 1);
     }
     startTransition(async () => {
@@ -89,7 +128,7 @@ export default function BingoGrid({
 
   return (
     <>
-      <div className={cn("grid gap-1.5", GRID_COLUMNS[size])}>
+      <div ref={gridRef} className={cn("grid gap-1.5", GRID_COLUMNS[size])}>
         {cells.map((cell, i) => (
           <Toggle
             key={i}
