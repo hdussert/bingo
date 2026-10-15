@@ -139,6 +139,22 @@
   text-shadow: var(--extrusion);
 }
 
+/* Text fields: a 2px outline in the border color, like the new game form's empty event tiles.
+   Unlayered, to beat the generated components' utilities; focus and error colors still apply */
+[data-slot="input"],
+[data-slot="input-group"] {
+  border-width: 2px;
+  /* The fill stops inside the border: under it, it would brighten the see-through border */
+  background-clip: padding-box;
+}
+[data-slot="input"]:not(:focus-visible, [aria-invalid="true"]),
+[data-slot="input-group"]:not(
+  :has([data-slot="input-group-control"]:focus-visible),
+  :has([aria-invalid="true"])
+) {
+  border-color: var(--color-border);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
