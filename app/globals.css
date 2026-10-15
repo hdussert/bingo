@@ -55,7 +55,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   /* The shadow side of a raised card-colored tile (grid cells) */
-  --color-card-edge: color-mix(in oklab, var(--card), black 50%);
+  --color-card-edge: var(--card-edge);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -69,6 +69,9 @@
   --background: oklch(0.36 0.16 295);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.45 0.17 295);
+  /* The shadow side of raised tiles: a third darker than the card and turned toward pink, as the
+     titles' pink extrusion is to their white letters */
+  --card-edge: oklch(0.3 0.16 325);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.45 0.17 295);
   --popover-foreground: oklch(0.985 0 0);
