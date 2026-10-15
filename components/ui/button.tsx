@@ -18,7 +18,7 @@ const buttonVariants = cva(
         ),
         outline: cn(
           RAISED,
-          "border-border bg-input/30 [--button-edge:var(--color-card-edge)] hover:bg-input/50 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground"
+          "border-2 border-border bg-input/30 [--button-edge:var(--color-card-edge)] hover:bg-input/50 hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground"
         ),
         secondary: cn(
           RAISED,
