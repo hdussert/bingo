@@ -80,8 +80,6 @@ function celebrate(grid: HTMLElement | null) {
     return;
   }
   grid?.animate(SHAKE, { duration: 450, easing: "ease-out" });
-  // Android only: iOS has no vibration API
-  navigator.vibrate?.([40, 30, 80]);
 }
 
 /** A player's bingo grid: tap a cell to tick it, and complete a line to get a bingo. */
