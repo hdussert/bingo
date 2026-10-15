@@ -71,9 +71,10 @@
   --background: oklch(0.36 0.16 295);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.45 0.17 295);
-  /* The shadow side of raised tiles: a third darker than the card and turned toward pink, as the
-     titles' pink extrusion is to their white letters */
-  --card-edge: oklch(0.3 0.16 325);
+  /* The shadow side of raised tiles and buttons: darker than the card and turned toward pink, as the
+     titles' pink extrusion is to their white letters. Close to the page background, so it reads as
+     softly as the pink buttons' edge */
+  --card-edge: oklch(0.35 0.15 312);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.45 0.17 295);
   --popover-foreground: oklch(0.985 0 0);
