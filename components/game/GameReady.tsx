@@ -2,7 +2,7 @@
 
 import { CopyIcon } from "lucide-react";
 import ButtonLink from "@/components/game/ButtonLink";
-import { copyLink } from "@/components/game/copyLink";
+import { copyText } from "@/components/game/copyText";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -34,7 +34,7 @@ export default function GameReady({ href, url }: Props) {
         <div className="flex w-full flex-col gap-3">
           <Button
             size="xl"
-            onClick={() => copyLink(url, "Copy it from the field")}
+            onClick={() => copyText(url, { failed: "Copy it from the field" })}
           >
             <CopyIcon data-icon="inline-start" />
             Copy link

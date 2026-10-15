@@ -1,7 +1,7 @@
 "use client";
 
 import { LinkIcon } from "lucide-react";
-import { copyLink } from "@/components/game/copyLink";
+import { copyText } from "@/components/game/copyText";
 import { Button } from "@/components/ui/button";
 
 /** Copies the game's link from the header. */
@@ -10,7 +10,7 @@ export default function CopyLinkIconButton({ url }: { url: string }) {
     <Button
       variant="ghost"
       size="icon-xl"
-      onClick={() => copyLink(url)}
+      onClick={() => copyText(url)}
       aria-label="Copy the game's link"
       title="Copy the game's link"
     >
