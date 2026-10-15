@@ -5,7 +5,7 @@ type Messages = {
   failed?: string;
 };
 
-/** Copies `text` to the clipboard, says in a toast whether it worked, and returns whether it did. */
+/** Copies `text` to the clipboard, says in a toast whether it worked (about a link, unless told otherwise), and returns whether it did. */
 export async function copyText(
   text: string,
   { copied = "Link copied", failed = "Couldn't copy the link" }: Messages = {},

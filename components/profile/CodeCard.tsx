@@ -24,23 +24,25 @@ type Props = {
 
 /** The player's code in a code snippet with a copy button, to play as them on another phone. */
 export default function CodeCard({ code }: Props) {
-  const [isCopied, setIsCopied] = useState(false);
+  // Set by each successful copy, so a new copy restarts the tick's time
+  const [copiedId, setCopiedId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!isCopied) {
+    if (copiedId === null) {
       return;
     }
-    const timeout = setTimeout(() => setIsCopied(false), COPIED_MS);
+    const timeout = setTimeout(() => setCopiedId(null), COPIED_MS);
     return () => clearTimeout(timeout);
-  }, [isCopied]);
+  }, [copiedId]);
 
   async function copyCode() {
-    setIsCopied(
-      await copyText(code, {
-        copied: "Code copied",
-        failed: "Couldn't copy the code",
-      }),
-    );
+    const isCopied = await copyText(code, {
+      copied: "Code copied",
+      failed: "Couldn't copy the code",
+    });
+    if (isCopied) {
+      setCopiedId((id) => (id ?? 0) + 1);
+    }
   }
 
   return (
@@ -48,7 +50,8 @@ export default function CodeCard({ code }: Props) {
       <CardHeader>
         <CardTitle className={CARD_LABEL_CLASS}>On another phone</CardTitle>
         <CardDescription>
-          Type this code there. It unlocks your games, so keep it to yourself.
+          There, tap “Played on another phone?” and type this code. It unlocks
+          your games, so keep it to yourself.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -61,9 +64,11 @@ export default function CodeCard({ code }: Props) {
             variant="ghost"
             size="icon-lg"
             onClick={copyCode}
-            aria-label={isCopied ? "Code copied" : "Copy the code"}
+            // The toast says it worked: the label stays put
+            aria-label="Copy the code"
+            title="Copy the code"
           >
-            {isCopied ? (
+            {copiedId !== null ? (
               <CheckIcon strokeWidth={2.5} className="text-highlight" />
             ) : (
               <CopyIcon strokeWidth={2.5} />
