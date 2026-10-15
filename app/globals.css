@@ -162,6 +162,13 @@
     @apply font-sans tracking-[0.01em];
     color-scheme: dark;
   }
+  /* Framed, as on the portfolio (class set in app/layout.tsx): no scrollbar, scrolling still works */
+  html.in-iframe {
+    scrollbar-width: none;
+  }
+  html.in-iframe::-webkit-scrollbar {
+    display: none;
+  }
   /* Every heading uses the heading font. Also sets --tw-leading, which text-* size utilities read, so the line height survives them */
   .font-heading {
     @apply leading-[1.1] tracking-[0.04em] uppercase;
