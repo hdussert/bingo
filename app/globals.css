@@ -120,6 +120,19 @@
     0.15em 0.15em 0 var(--color-primary);
 }
 
+/* A thin ring in the background color and a soft dark purple shadow around the whole cartoon text, so its
+   pink outline still stands out on pink (ticked grid cells) */
+@utility text-cartoon-ringed {
+  filter: drop-shadow(0.035em 0 0 var(--color-background))
+    drop-shadow(-0.035em 0 0 var(--color-background))
+    drop-shadow(0 0.035em 0 var(--color-background))
+    drop-shadow(0 -0.035em 0 var(--color-background))
+    drop-shadow(
+      0 0.08em 0.25em
+        color-mix(in oklab, var(--color-highlight-foreground) 80%, transparent)
+    );
+}
+
 /* White letters on a pink 3D extrusion, for page headings */
 @utility text-extruded {
   color: white;
