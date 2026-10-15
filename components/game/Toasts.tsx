@@ -1,14 +1,17 @@
 import { Toaster } from "@/components/ui/sonner";
 
-/** The app's toasts: floating pills in the heading font, like the game's big buttons, at the top of the screen. */
+// Under the page header, rather than half over its buttons (phones and wider screens alike)
+const OFFSET = { top: 88 };
+
+/** The app's toasts: floating pills in the heading font, like the game's big buttons, under the page header. */
 export default function Toasts() {
   return (
     <Toaster
       theme="dark"
       // Top: the bottom of the screen has the Save bar and the leaderboard drawer
       position="top-center"
-      // Under the page header, rather than half over its buttons
-      mobileOffset={{ top: 88 }}
+      offset={OFFSET}
+      mobileOffset={OFFSET}
       style={
         {
           "--normal-bg": "var(--card)",
