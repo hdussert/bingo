@@ -13,7 +13,7 @@ const toggleVariants = cva(
         outline: "border border-input bg-transparent hover:bg-muted",
         // Raised like an outline button, and sunk in pink once picked, like a ticked tile
         primary:
-          "border border-input bg-input/30 shadow-[0_0.25rem_0_var(--color-card-edge)] transition-all hover:bg-input/50 aria-pressed:translate-y-1 aria-pressed:border-primary aria-pressed:bg-primary aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary aria-pressed:hover:text-primary-foreground",
+          "border border-input bg-input/30 shadow-[0_0.25rem_0_var(--color-card-edge)] transition-all hover:bg-input/50 aria-pressed:translate-y-1 aria-pressed:border-transparent aria-pressed:bg-primary aria-pressed:bg-clip-border aria-pressed:text-primary-foreground aria-pressed:shadow-none aria-pressed:hover:bg-primary aria-pressed:hover:text-primary-foreground",
       },
       size: {
         default:
