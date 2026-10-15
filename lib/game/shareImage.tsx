@@ -12,8 +12,8 @@ const [luckiestGuy, fredoka] = await Promise.all([
   readFile(join(process.cwd(), "app/fonts/Fredoka-600-Latin.ttf")),
 ]);
 
-// The theme's colors (app/globals.css) in hex: the renderer doesn't read oklch
-const COLORS = {
+/** The theme's colors (app/globals.css) in hex, for generated images: the renderer doesn't read oklch. */
+export const COLORS = {
   background: "#471e86",
   card: "#5f38a7",
   primary: "#f43096",
