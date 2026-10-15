@@ -72,11 +72,10 @@
   --background: oklch(0.36 0.16 295);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.45 0.17 295);
-  /* The shadow side of raised tiles and buttons. Every edge follows the same rules: its face's hue
-     turned 10° cooler, and as far from its face as from the page (in OKLCH), so each one stands out
-     as much against both. The card sits close to the page, so its edge differs mostly in hue and
-     saturation */
-  --card-edge: oklch(0.395 0.22 285);
+  /* The shadow side of raised tiles and buttons: each edge is its face's color turned slightly
+     cooler, sitting between its face and the page (in OKLCH) so it stands out against both. The card
+     is close to the page, so its edge is only just darker than the page */
+  --card-edge: oklch(0.33 0.16 290);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.45 0.17 295);
   --popover-foreground: oklch(0.985 0 0);
