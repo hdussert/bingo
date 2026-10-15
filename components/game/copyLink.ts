@@ -5,11 +5,13 @@ export async function copyLink(
   url: string,
   failedMessage = "Couldn't copy the link",
 ) {
+  // One toast whatever the number of taps: each replaces the one on screen
+  const id = "copy-link";
   try {
     await navigator.clipboard.writeText(url);
-    toast.success("Link copied");
+    toast.success("Link copied", { id });
   } catch {
     // No clipboard on plain-HTTP pages, or access refused
-    toast.error(failedMessage);
+    toast.error(failedMessage, { id });
   }
 }

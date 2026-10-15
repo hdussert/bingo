@@ -34,7 +34,7 @@ export default function GameReady({ href, url }: Props) {
         <div className="flex w-full flex-col gap-3">
           <Button
             size="xl"
-            onClick={() => copyLink(url, "Copy it from the field above")}
+            onClick={() => copyLink(url, "Copy it from the field")}
           >
             <CopyIcon data-icon="inline-start" />
             Copy link
