@@ -120,14 +120,13 @@
     0.15em 0.15em 0 var(--color-primary);
 }
 
-/* A thin dark ring and a soft shadow around the whole cartoon text, so its pink outline still
-   stands out on pink (ticked grid cells) */
+/* A thin dark ring around the whole cartoon text, so its pink outline still stands out on pink
+   (ticked grid cells) */
 @utility text-cartoon-ringed {
   filter: drop-shadow(0.035em 0 0 var(--color-highlight-foreground))
     drop-shadow(-0.035em 0 0 var(--color-highlight-foreground))
     drop-shadow(0 0.035em 0 var(--color-highlight-foreground))
-    drop-shadow(0 -0.035em 0 var(--color-highlight-foreground))
-    drop-shadow(0 0.08em 0.25em rgb(0 0 0 / 0.5));
+    drop-shadow(0 -0.035em 0 var(--color-highlight-foreground));
 }
 
 /* White letters on a pink 3D extrusion, for page headings */
