@@ -1,8 +1,9 @@
 "use client";
 
-import { LinkIcon } from "lucide-react";
+import { CheckIcon, CopyIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import ButtonLink from "@/components/game/ButtonLink";
-import { copyLink } from "@/components/game/copyLink";
+import { copyText } from "@/components/game/copyText";
 import { CARD_LABEL_CLASS } from "@/components/game/const";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,32 +14,62 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+// Long enough to see the tick before the copy icon comes back
+const COPIED_MS = 2000;
+
 type Props = {
   /** The profile's code, formatted. */
   code: string;
-  /** The link that fills the code in on another phone. */
-  url: string;
 };
 
-/** The player's code, to play as them on another phone. */
-export default function CodeCard({ code, url }: Props) {
+/** The player's code in a code snippet with a copy button, to play as them on another phone. */
+export default function CodeCard({ code }: Props) {
+  const [isCopied, setIsCopied] = useState(false);
+
+  useEffect(() => {
+    if (!isCopied) {
+      return;
+    }
+    const timeout = setTimeout(() => setIsCopied(false), COPIED_MS);
+    return () => clearTimeout(timeout);
+  }, [isCopied]);
+
+  async function copyCode() {
+    setIsCopied(
+      await copyText(code, {
+        copied: "Code copied",
+        failed: "Couldn't copy the code",
+      }),
+    );
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className={CARD_LABEL_CLASS}>On another phone</CardTitle>
         <CardDescription>
-          Open this link there, or type the code. It unlocks your games, so keep
-          it to yourself.
+          Type this code there. It unlocks your games, so keep it to yourself.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <p className="text-center font-mono text-2xl tracking-wider select-all">
-          {code}
-        </p>
-        <Button variant="outline" size="lg" onClick={() => copyLink(url)}>
-          <LinkIcon strokeWidth={2.5} data-icon="inline-start" />
-          Copy the link
-        </Button>
+        {/* Sunk into the card, like a code block */}
+        <div className="flex items-center gap-2 rounded-xl border-2 border-border bg-background bg-clip-padding py-2 pr-2 pl-4">
+          <code className="flex-1 font-mono text-xl tracking-wider select-all">
+            {code}
+          </code>
+          <Button
+            variant="ghost"
+            size="icon-lg"
+            onClick={copyCode}
+            aria-label={isCopied ? "Code copied" : "Copy the code"}
+          >
+            {isCopied ? (
+              <CheckIcon strokeWidth={2.5} className="text-highlight" />
+            ) : (
+              <CopyIcon strokeWidth={2.5} />
+            )}
+          </Button>
+        </div>
         {/* This phone already plays as someone: the way to switch to another player's games */}
         <ButtonLink
           href="/recover?back=/me"
