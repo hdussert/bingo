@@ -1,5 +1,6 @@
 "use client";
 
+import confetti from "canvas-confetti";
 import { startTransition, useEffect, useOptimistic, useState } from "react";
 import { tickCell } from "@/actions/game/tickCell";
 import BingoBanner from "@/components/game/BingoBanner";
@@ -26,13 +27,20 @@ const TEXT_SIZES: Record<GridSize, string> = {
 // Long enough for the letters to bounce in and be read
 const BANNER_MS = 2000;
 
-async function celebrate() {
-  const { default: confetti } = await import("canvas-confetti");
-  confetti({
+// Created on the first bingo. Draws on the main thread: the library's default draws in a worker,
+// which in Safari can stop drawing for the rest of the page's life
+let fireConfetti: confetti.CreateTypes | null = null;
+
+function celebrate() {
+  fireConfetti ??= confetti.create(undefined, {
+    resize: true,
+    useWorker: false,
+    disableForReducedMotion: true,
+  });
+  void fireConfetti({
     particleCount: 150,
     spread: 90,
     origin: { y: 0.7 },
-    disableForReducedMotion: true,
     // Above the grid but under the Bingo! banner (and the leaderboard drawer)
     zIndex: 10,
   });
@@ -69,7 +77,7 @@ export default function BingoGrid({
     setTappedIndex(index);
     const next = ticked.map((value, i) => (i === index ? isTicked : value));
     if (findBingoLines(next, size).length > lines.length) {
-      void celebrate();
+      celebrate();
       setCelebrationId((id) => (id ?? 0) + 1);
     }
     startTransition(async () => {
