@@ -41,3 +41,14 @@ export const EVENT_SUGGESTIONS = [
   "Someone falls asleep",
   "A new inside joke is born",
 ];
+
+/** The theme's colors (app/globals.css) in hex, for generated images: the renderer doesn't read oklch. */
+export const IMAGE_COLORS = {
+  background: "#471e86",
+  card: "#5f38a7",
+  primary: "#f43096",
+  highlight: "#fdd506",
+  foreground: "#fbfbfb",
+  muted: "rgba(255, 255, 255, 0.75)",
+  border: "rgba(255, 255, 255, 0.22)",
+};
