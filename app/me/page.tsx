@@ -15,7 +15,6 @@ import {
 import { backHref } from "@/lib/game/links";
 import { formatCode } from "@/lib/profile/code";
 import { findCurrentCode, findCurrentProfile } from "@/lib/profile/session";
-import { absoluteUrl } from "@/lib/url";
 
 /** The player's profile on this phone: their name, and their code for another phone. */
 export default async function MePage({ searchParams }: PageProps<"/me">) {
@@ -24,8 +23,6 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
     findCurrentProfile(),
     findCurrentCode(),
   ]);
-  // After the #, the code never reaches a server: not ours, not a link preview's
-  const recoverUrl = await absoluteUrl(`/recover#${code ?? ""}`);
 
   return (
     <PageLayout
@@ -36,7 +33,7 @@ export default async function MePage({ searchParams }: PageProps<"/me">) {
       {profile && code ? (
         <>
           <RenameForm name={profile.name} />
-          <CodeCard code={formatCode(code)} url={recoverUrl} />
+          <CodeCard code={formatCode(code)} />
         </>
       ) : (
         <Empty>
