@@ -49,7 +49,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         fredoka.variable,
         luckiestGuy.variable,
       )}
+      // The script below adds a class before hydration
+      suppressHydrationWarning
     >
+      <head>
+        {/* Flags a framed page, to hide its scrollbar (see globals.css) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if (window.self !== window.top) document.documentElement.classList.add("in-iframe")`,
+          }}
+        />
+      </head>
       <body className="flex min-h-full flex-col">
         {children}
         <Toaster />
